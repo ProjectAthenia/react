@@ -1,0 +1,21 @@
+#welcome-section {
+  .sign-up-page {
+    .email-signup-step {
+
+      @media screen and (min-width: 514px) {
+        .email-box {
+          ion-input {
+            font-size: 36px;
+          }
+        }
+      }
+      .disclaimer-checkbox {
+        @media screen and (min-width: 480px) {
+          ion-checkbox {
+            margin-right: 24px;
+          }
+        }
+      }
+    }
+  }
+}
