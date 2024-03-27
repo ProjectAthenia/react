@@ -1,0 +1,46 @@
+#welcome-section {
+  .sign-up-page {
+    .email-signup-step {
+      h3 {
+        margin: 54px 6px 30px;
+        color: var(--ion-color-dark);
+        text-align: left;
+        font-weight: normal;
+      }
+      .email-box {
+        border: none;
+        border-bottom: 3px black solid;
+        margin: 0 6px 16px 6px;
+        --padding-start: 0;
+        ion-input {
+          color: var(--ion-color-medium);
+          --placeholder-color: var(--ion-color-light-shade);
+          --placeholder-font-weight: normal;
+          --placeholder-opacity: 1;
+          font-style: italic;
+          font-size: 7vw;
+        }
+      }
+      .disclaimer-checkbox {
+        border: none;
+        margin: 48px 6px 0;
+        --padding-start: 0;
+        ion-checkbox {
+          vertical-align: top;
+          margin-right: 5vw;
+          padding-left: 0;
+        }
+        .disclaimer {
+          display: inline-block;
+          font-style: italic;
+          color: var(--ion-color-medium);
+          text-align: left;
+          padding-bottom: 32px;
+          margin: 0;
+        }
+      }
+    }
+  }
+}
+
+@import "responsive";

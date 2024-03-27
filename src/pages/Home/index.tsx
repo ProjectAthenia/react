@@ -8,9 +8,9 @@ interface HomeProps {
 const Home: React.FC<HomeProps> = (props) => {
 
     return (
-        <div>
+        <section id={"home-page"}>
             <h1>Home Page</h1>
-        </div>
+        </section>
     )
 }
 

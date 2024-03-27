@@ -1,0 +1,35 @@
+.input-wrapper {
+  margin: 8vw 0 5vw;
+  &.rounded{
+    ion-input{
+      border-radius: 5px;
+    }
+  }
+  &.dark{
+    ion-input{
+      border-color: var(--ion-color-dark);
+    }
+  }
+  ion-label {
+    padding-left: 5px;
+    padding-bottom: 4px;
+    margin-bottom: 0;
+    display: block;
+  }
+  ion-input {
+    border: 1px var(--ion-color-primary) solid;
+    --padding-start: 3.125vw;
+  }
+  .subtext {
+    padding-top: 5px;
+    padding-left: 5px;
+  }
+}
+.plt-android {
+  .input-wrapper {
+    ion-label {
+      padding-bottom: 3.5vw;
+    }
+  }
+}
+@import "responsive";

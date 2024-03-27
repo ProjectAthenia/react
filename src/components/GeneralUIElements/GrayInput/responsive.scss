@@ -1,6 +1,5 @@
 .gray-input {
-  ion-datetime,
-  ion-input {
+  input {
     @media screen and (min-width: 576px) {
       --padding-start: 18px;
     }

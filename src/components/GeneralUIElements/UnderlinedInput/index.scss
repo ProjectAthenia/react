@@ -1,12 +1,10 @@
 .underlined-input {
-  ion-datetime,
-  ion-textarea,
-  ion-input {
+  input {
     --padding-start: 10px;
     border: transparent;
-    border-bottom: 3px var(--ion-color-medium) solid;
+    border-bottom: 3px var(--color-medium) solid;
   }
-  ion-label {
+  label {
     font-weight: 600;
   }
 }
