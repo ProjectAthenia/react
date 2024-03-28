@@ -1,10 +1,10 @@
 .welcome-section {
   .sign-up-page {
-    ion-router-link {
+    a {
       display: block;
       font-weight: normal;
       align-self: flex-start;
-      color: var(--ion-color-secondary);
+      color: var(--color-secondary);
       margin-bottom: 6.25vw;
       padding-left: 1.875vw;
     }

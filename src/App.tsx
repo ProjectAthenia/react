@@ -11,7 +11,7 @@ import {BrowserRouter, Redirect, useHistory} from "react-router-dom";
 /* Theme variables */
 import './theme/main.scss'
 import Splash from "./pages/Splash";
-import SignInEmail from "./pages/SignIn/SignInEmail";
+import SignInEmail from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 
 

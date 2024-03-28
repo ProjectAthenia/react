@@ -4,14 +4,14 @@
 
       @media screen and (min-width: 514px) {
         .email-box {
-          ion-input {
+          input {
             font-size: 36px;
           }
         }
       }
       .disclaimer-checkbox {
         @media screen and (min-width: 480px) {
-          ion-checkbox {
+          input[type="checkbox"]{
             margin-right: 24px;
           }
         }

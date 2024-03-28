@@ -1,9 +1,9 @@
 import React from 'react';
-import SignInEmail from './index';
+import SignIn from './index';
 import { shallow } from 'enzyme';
 import { MemoryRouter } from 'react-router-dom';
 
 test('renders without crashing', () => {
-    const baseElement = shallow(<MemoryRouter><SignInEmail /></MemoryRouter>);
+    const baseElement = shallow(<MemoryRouter><SignIn /></MemoryRouter>);
     expect(baseElement).toBeDefined();
 });

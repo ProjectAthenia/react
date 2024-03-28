@@ -2,14 +2,14 @@ import React, {useState} from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
-import AuthRequests, { LoginReq } from '../../../services/requests/AuthRequests';
-import InputWrapper from '../../../components/InputWrapper';
+import AuthRequests, { LoginReq } from '../../services/requests/AuthRequests';
+import InputWrapper from '../../components/InputWrapper';
 import './index.scss';
 import {Link, useHistory} from 'react-router-dom';
 
-interface SignInEmailProps { }
+interface SignInProps { }
 
-const SignInEmail: React.FC<SignInEmailProps> = ({}) => {
+const SignIn: React.FC<SignInProps> = ({}) => {
 	const [credentialError, setCredentialError] = useState(false);
 	const history = useHistory();
 
@@ -100,4 +100,4 @@ const SignInEmail: React.FC<SignInEmailProps> = ({}) => {
 	)
 }
 
-export default SignInEmail
+export default SignIn

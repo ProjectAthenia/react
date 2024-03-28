@@ -3,7 +3,7 @@
     .email-signup-step {
       h3 {
         margin: 54px 6px 30px;
-        color: var(--ion-color-dark);
+        color: var(--color-dark);
         text-align: left;
         font-weight: normal;
       }
@@ -12,9 +12,9 @@
         border-bottom: 3px black solid;
         margin: 0 6px 16px 6px;
         --padding-start: 0;
-        ion-input {
-          color: var(--ion-color-medium);
-          --placeholder-color: var(--ion-color-light-shade);
+        input {
+          color: var(--color-medium);
+          --placeholder-color: var(--color-light-shade);
           --placeholder-font-weight: normal;
           --placeholder-opacity: 1;
           font-style: italic;
@@ -25,7 +25,7 @@
         border: none;
         margin: 48px 6px 0;
         --padding-start: 0;
-        ion-checkbox {
+        input[type='checkbox'] {
           vertical-align: top;
           margin-right: 5vw;
           padding-left: 0;
@@ -33,7 +33,7 @@
         .disclaimer {
           display: inline-block;
           font-style: italic;
-          color: var(--ion-color-medium);
+          color: var(--color-medium);
           text-align: left;
           padding-bottom: 32px;
           margin: 0;
