@@ -6,6 +6,7 @@ import {useFormik} from "formik";
 import AuthRequests, {LoginReq} from "../../services/requests/AuthRequests";
 import {useHistory} from "react-router-dom";
 import {Button, Form, FormControl, FormLabel} from "react-bootstrap";
+import Page from "../../components/Template/Page";
 
 const SignIn: React.FC = ({}) => {
 
@@ -18,6 +19,8 @@ const SignIn: React.FC = ({}) => {
     })
 
     const submit = async (userReq: LoginReq) => {
+
+        console.log('userReq', userReq)
 
         setError(null);
         try {
@@ -43,9 +46,8 @@ const SignIn: React.FC = ({}) => {
         onSubmit: (values) => submit(values)
     })
 
-
     return (
-        <section id={'sign-in-page'}>
+        <Page id={'sign-in-page'}>
             <div>
             </div>
             <Form onSubmit={(event) => form.handleSubmit(event)}>
@@ -58,10 +60,19 @@ const SignIn: React.FC = ({}) => {
                     onInput={email => form.setFieldValue('email', email.currentTarget.value)}
                     type={'email'}
                 />
+                <FormLabel>
+                    {(form.submitCount > 0 && form.errors.password) ? <p className={'error'}>{form.errors.password}</p> : 'Password'}
+
+                </FormLabel>
+                <FormControl
+                    value={form.values.password}
+                    onInput={password => form.setFieldValue('password', password.currentTarget.value)}
+                    type={'password'}
+                />
                 <Button type={"submit"}>Submit</Button>
-                <p className={'error'}></p>
+                <p className={'error'}>{error}</p>
             </Form>
-        </section>
+        </Page>
     );
 }
 
