@@ -11,6 +11,7 @@ import {BrowserRouter, Redirect, useHistory} from "react-router-dom";
 /* Theme variables */
 import './theme/main.scss'
 import Splash from "./pages/Splash";
+import SignIn from "./pages/SignIn";
 
 
 interface StateProps {
@@ -31,6 +32,7 @@ const ReactApp: React.FC<AppProps> = ({tokenData}) => {
 			<main id={"main"}>
 				<AuthenticatedRoute path="/home*" render={() => <Home/>}/>
 				<Route exact path='/splash'><Splash/></Route>
+				<Route exact path='/sign-in'><SignIn/></Route>
 				<Route exact path='/'><Redirect to={'/splash'}/></Route>
 			</main>
 		</BrowserRouter>
