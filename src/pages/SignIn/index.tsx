@@ -1,103 +1,84 @@
-import React, {useState} from 'react';
-import { useFormik } from 'formik';
+import React, {useState} from 'react'
 import * as Yup from 'yup';
 
-import AuthRequests, { LoginReq } from '../../services/requests/AuthRequests';
-import InputWrapper from '../../components/InputWrapper';
 import './index.scss';
+import {useFormik} from "formik";
+import AuthRequests, {LoginReq} from "../../services/requests/AuthRequests";
 import {Link, useHistory} from 'react-router-dom';
+import {Button, Form, FormControl, FormLabel} from "react-bootstrap";
+import Page from "../../components/Template/Page";
 
-interface SignInProps { }
+const SignIn: React.FC = ({}) => {
 
-const SignIn: React.FC<SignInProps> = ({}) => {
-	const [credentialError, setCredentialError] = useState(false);
-	const history = useHistory();
+    const history = useHistory();
+    const [error, setError] = useState<string|null>(null);
 
-	const SignupSchema = Yup.object().shape({
-		emailOrPhone: Yup.string().required('Email or Phone is required'),
-		password: Yup.string().required('Password is required')
-	})
+    const SignupSchema = Yup.object().shape({
+        email: Yup.string().required('Email required'),
+        password: Yup.string().required('Password is required')
+    })
 
-	const form = useFormik({
-		initialValues: {
-			emailOrPhone: '',
-			password: ''
-		},
-		validationSchema: SignupSchema,
-		onSubmit: (values) => submit(values)
-	})
+    const submit = async (userReq: LoginReq) => {
 
-	const submit = (values: { emailOrPhone: string; password: string }) => {
-		const { emailOrPhone, password } = values
-		let userReq: LoginReq = { password }
-		const isPhoneNumber = /^\d+$/.test(emailOrPhone)
-		if (isPhoneNumber) {
-			userReq.phone = emailOrPhone
-		} else {
-			userReq.email = emailOrPhone
-		}
+        console.log('userReq', userReq)
 
-		AuthRequests.signIn(userReq).then(async () => {
-			const redirectUrl = localStorage.getItem('login_redirect');
-			localStorage.removeItem('login_redirect');
+        setError(null);
+        try {
+            if (await AuthRequests.signIn(userReq)) {
+                const redirectUrl = localStorage.getItem('login_redirect');
+                localStorage.removeItem('login_redirect');
+                history.push(redirectUrl ?? '/');
+            } else {
+                setError('Unknown Error')
+            }
+        } catch (error: any)  {
+            if (error.status && error.status == 401) {
+                setError('Invalid Login Credentials.');
+            }
+        }
+    }
 
-			if (redirectUrl) {
-				history.push(redirectUrl);
-			}
-			else {
-				history.push('/')
-			}
-		}).catch(error => {
-			if (error.status && error.status == 401) {
-				setCredentialError(true);
-			}
-		})
-	}
+    const form = useFormik({
+        initialValues: {
+            email: '',
+            password: ''
+        },
+        validationSchema: SignupSchema,
+        onSubmit: (values) => submit(values)
+    })
 
-	const locationOptions: PositionOptions = {
-		maximumAge: 5 * 60 * 60 * 1000,
-		enableHighAccuracy: false
-	}
+    return (
+        <Page id={'sign-in-page'}>
+            <div>
+            </div>
+            <Form onSubmit={(event) => form.handleSubmit(event)}>
+                <FormLabel>
+                    {(form.submitCount > 0 && form.errors.email) ? <p className={'error'}>{form.errors.email}</p> : 'Email'}
 
-	return (
-		<section className={'sign-up-page'}>
-			<header>Cancel</header>
-			<div className={'section'}>
-				<h1>Sign In</h1>
-				{credentialError &&
-					<p className={'error'}>Invalid Email or Password</p>
-				}
-				<InputWrapper
-					label='Email'
-					error={form.errors.emailOrPhone && form.touched.emailOrPhone ? form.errors.emailOrPhone : undefined}
-					>
-					<input
-						type='text'
-						name='emailOrPhone'
-						onChange={form.handleChange}
-						value={form.values.emailOrPhone}
-						/>
-				</InputWrapper>
-				<InputWrapper
-					label='Password'
-					error={form.errors.password && form.touched.password ? form.errors.password : undefined}
-					>
-					<input
-						type='password'
-						name='password'
-						onChange={form.handleChange}
-						value={form.values.password}
-						/>
-				</InputWrapper>
-				<Link to='/forgot-password'>
-					forgot password?
-				</Link>
-				<button onClick={() => form.handleSubmit()}>
-					Sign In
-				</button>
-			</div>
-		</section>
-	)
+                </FormLabel>
+                <FormControl
+                    value={form.values.email}
+                    onInput={email => form.setFieldValue('email', email.currentTarget.value)}
+                    type={'email'}
+                />
+                <FormLabel>
+                    {(form.submitCount > 0 && form.errors.password) ? <p className={'error'}>{form.errors.password}</p> : 'Password'}
+
+                </FormLabel>
+                <FormControl
+                    value={form.values.password}
+                    onInput={password => form.setFieldValue('password', password.currentTarget.value)}
+                    type={'password'}
+                />
+                
+                <Link to='/forgot-password'>
+                    forgot password?
+                </Link>
+                <Button type={"submit"}>Submit</Button>
+                <p className={'error'}>{error}</p>
+            </Form>
+        </Page>
+    );
 }
 
-export default SignIn
+export default SignIn;

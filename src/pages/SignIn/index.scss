@@ -1,12 +1,7 @@
-.welcome-section {
-  .sign-up-page {
-    a {
-      display: block;
-      font-weight: normal;
-      align-self: flex-start;
-      color: var(--color-secondary);
-      margin-bottom: 6.25vw;
-      padding-left: 1.875vw;
-    }
-  }
+#sign-in {
+	h2 {
+		text-transform: uppercase;
+	}
 }
+
+@import "responsive";
