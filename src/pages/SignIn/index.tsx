@@ -4,7 +4,7 @@ import * as Yup from 'yup';
 import './index.scss';
 import {useFormik} from "formik";
 import AuthRequests, {LoginReq} from "../../services/requests/AuthRequests";
-import {useHistory} from "react-router-dom";
+import {Link, useHistory} from 'react-router-dom';
 import {Button, Form, FormControl, FormLabel} from "react-bootstrap";
 import Page from "../../components/Template/Page";
 
@@ -26,6 +26,7 @@ const SignIn: React.FC = ({}) => {
         try {
             if (await AuthRequests.signIn(userReq)) {
                 const redirectUrl = localStorage.getItem('login_redirect');
+                localStorage.removeItem('login_redirect');
                 history.push(redirectUrl ?? '/');
             } else {
                 setError('Unknown Error')
@@ -69,6 +70,10 @@ const SignIn: React.FC = ({}) => {
                     onInput={password => form.setFieldValue('password', password.currentTarget.value)}
                     type={'password'}
                 />
+                
+                <Link to='/forgot-password'>
+                    forgot password?
+                </Link>
                 <Button type={"submit"}>Submit</Button>
                 <p className={'error'}>{error}</p>
             </Form>
