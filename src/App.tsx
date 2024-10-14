@@ -25,17 +25,18 @@ interface DispatchProps {
 interface AppProps extends StateProps, DispatchProps {
 }
 
-const ReactApp: React.FC<AppProps> = ({tokenData}) => {
+const ReactApp: React.FC<AppProps> = () => {
 
-	const history = useHistory();
 	return (
 		<BrowserRouter>
 			<main id={"main"}>
+				<Route path='/splash'><Splash/></Route>
+				<Route path='/sign-in'><SignIn/></Route>
+				<Route path='/sign-up'><SignUp/></Route>
+				<Route exact path='/'>
+					<Redirect to={'/home'}/>
+				</Route>
 				<AuthenticatedRoute path="/home*" render={() => <Home/>}/>
-				<Route exact path='/splash'><Splash/></Route>
-				<Route exact path='/sign-in'><SignIn/></Route>
-				<Route exact path='/sign-up'><SignUp/></Route>
-				<Route exact path='/'><Redirect to={'/splash'}/></Route>
 			</main>
 		</BrowserRouter>
 	)
