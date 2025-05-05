@@ -8,14 +8,6 @@ const Menu: React.FC = () => {
             <MenuLink to="/browse">
                 Browse
             </MenuLink>
-            <div className="list-group list-group-flush ms-3">
-                <MenuLink to="/browse/platforms">
-                    Platforms
-                </MenuLink>
-                <MenuLink to="/browse/platform-groups">
-                    Platform Groups
-                </MenuLink>
-            </div>
             <MenuLink to="/data-view">
                 Data View
             </MenuLink>
