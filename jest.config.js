@@ -1,0 +1,24 @@
+module.exports = {
+  preset: 'ts-jest',
+  testEnvironment: 'jsdom',
+  setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
+  moduleNameMapper: {
+    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+    '^@/(.*)$': '<rootDir>/src/$1',
+    '^src/services/api$': '<rootDir>/src/test-utils/mocks/__mocks__/api.ts',
+  },
+  transform: {
+    '^.+\\.(ts|tsx)$': 'ts-jest',
+    '^.+\\.(js|jsx)$': ['babel-jest', { presets: ['@babel/preset-env'] }],
+  },
+  transformIgnorePatterns: [
+    '/node_modules/(?!(@mantine|@emotion|cheerio|parse5|entities|dom-serializer|htmlparser2|domelementtype|domhandler|domutils)/)',
+  ],
+  testMatch: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
+  collectCoverageFrom: [
+    'src/**/*.{js,jsx,ts,tsx}',
+    '!src/index.tsx',
+    '!src/reportWebVitals.ts',
+    '!src/setupTests.ts',
+  ],
+}; 

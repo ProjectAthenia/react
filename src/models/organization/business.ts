@@ -1,8 +1,9 @@
 import BaseModel from '../base-model';
 import Location from '../location/location';
 import Asset from '../asset';
-import Category, {isCategoryEligibleForProPlan} from '../category';
+import Category from '../category';
 import Organization from './organization';
+import {isCategoryEligibleForProPlan} from '../../util/category-utils';
 
 /**
  * The interface for our business model

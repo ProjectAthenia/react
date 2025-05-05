@@ -1,6 +1,6 @@
 import Post from '../../models/post/post';
 import PostResponse from '../../models/post/post-response';
-import {api} from '../api';
+import api from '../api';
 import Page from '../../models/page';
 import {isNaN} from 'formik';
 

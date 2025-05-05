@@ -1,6 +1,6 @@
 import Business from '../../models/organization/business';
 import Post, {PublisherEndpointModel, PublisherEndpointType} from '../../models/post/post';
-import {api} from '../api';
+import api from '../api';
 import User from '../../models/user/user';
 
 export default class PostManagementRequests {

@@ -1,9 +1,9 @@
 import React from 'react';
+import { render, screen } from '@testing-library/react';
 import Home from './index';
-import { shallow } from 'enzyme';
-import {MemoryRouter} from 'react-router';
+import { renderWithRouter } from '../../test-utils';
 
 test('renders without crashing', () => {
-    const baseElement = shallow(<MemoryRouter><Home  /></MemoryRouter>);
-    expect(baseElement).toBeDefined();
+  renderWithRouter(<Home />);
+  expect(screen.getByText('Welcome to Game Museum')).toBeInTheDocument();
 });

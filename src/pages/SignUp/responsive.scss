@@ -1,21 +1,4 @@
-#welcome-section {
-  .sign-up-page {
-    .email-signup-step {
-
-      @media screen and (min-width: 514px) {
-        .email-box {
-          input {
-            font-size: 36px;
-          }
-        }
-      }
-      .disclaimer-checkbox {
-        @media screen and (min-width: 480px) {
-          input[type="checkbox"]{
-            margin-right: 24px;
-          }
-        }
-      }
-    }
+#account-page {
+  @media screen and (min-width: 600px) {
   }
-}
+} 

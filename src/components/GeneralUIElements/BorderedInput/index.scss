@@ -1,7 +1,9 @@
 .bordered-input {
   margin: 0 0 12px;
-  input, textarea {
+  ion-datetime,
+  ion-textarea,
+  ion-input {
     --padding-start: 12px;
-    border: 2px var(--color-primary) solid;
+    border: 2px var(--ion-color-primary) solid;
   }
 }

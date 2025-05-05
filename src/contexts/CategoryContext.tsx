@@ -1,5 +1,6 @@
 import React, {PropsWithChildren, useEffect, useState} from 'react';
-import Category, {generateEmptyCategory} from '../models/category';
+import Category from '../models/category';
+import {generateEmptyCategory} from '../util/category-utils';
 import CategoryRequests from '../services/requests/CategoryRequests';
 import LoadingScreen from '../components/LoadingScreen';
 

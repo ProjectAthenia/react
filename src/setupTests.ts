@@ -3,8 +3,73 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom/extend-expect';
-import {  configure } from 'enzyme';
-import Adapter from '@cfaester/enzyme-adapter-react-18';
-import './testing/wrappers'
+import '@testing-library/jest-dom';
+import { jest } from '@jest/globals';
+import api from './test-utils/mocks/api';
 
-configure({adapter: new Adapter()});
+// Mock axios
+jest.mock('axios', () => ({
+  create: jest.fn(() => ({
+    interceptors: {
+      request: { use: jest.fn() },
+      response: { use: jest.fn() }
+    },
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn()
+  })),
+  interceptors: {
+    request: { use: jest.fn() },
+    response: { use: jest.fn() }
+  },
+  get: jest.fn(),
+  post: jest.fn(),
+  put: jest.fn(),
+  delete: jest.fn()
+}));
+
+// Mock API
+jest.mock('./services/api', () => ({
+  __esModule: true,
+  default: api
+}));
+
+// Mock react-router-dom
+const mockNavigate = jest.fn();
+jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom') as Record<string, unknown>;
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+    useLocation: () => ({
+      pathname: '/',
+      search: '',
+      hash: '',
+      state: null
+    })
+  };
+});
+
+// Mock IntersectionObserver
+class IntersectionObserver {
+    observe = jest.fn();
+    disconnect = jest.fn();
+    unobserve = jest.fn();
+}
+
+Object.defineProperty(window, 'IntersectionObserver', {
+    writable: true,
+    configurable: true,
+    value: IntersectionObserver,
+});
+
+// Also mock the IntersectionObserverEntry
+Object.defineProperty(window, 'IntersectionObserverEntry', {
+    writable: true,
+    configurable: true,
+    value: class IntersectionObserverEntry {
+        isIntersecting = false;
+        constructor() {}
+    },
+});

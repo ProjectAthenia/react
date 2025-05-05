@@ -1,9 +1,10 @@
 import React from 'react';
-import Albums from './index';
-import { shallow } from 'enzyme';
-import {MemoryRouter} from 'react-router';
+import { render, screen } from '@testing-library/react';
+import Splash from './index';
+import { renderWithRouter } from '../../test-utils';
 
 test('renders without crashing', () => {
-    const baseElement = shallow(<MemoryRouter><Albums  /></MemoryRouter>);
-    expect(baseElement).toBeDefined();
+  renderWithRouter(<Splash />);
+  expect(screen.getByText('Hello World!')).toBeInTheDocument();
+  expect(screen.getByText('Sign In')).toBeInTheDocument();
 });
