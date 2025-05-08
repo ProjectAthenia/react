@@ -2,7 +2,6 @@ import React from 'react';
 import { mockAuthRequests } from './auth-requests';
 import { mockCategoryRequests } from './category-requests';
 import { mockCollectionManagementRequests } from './collection-management-requests';
-import { mockLocationRequests } from './location-requests';
 import { mockMeRequests } from './me-requests';
 import { mockOrganizationRequests } from './organization-requests';
 import { mockPostManagementRequests } from './post-management-requests';
@@ -34,13 +33,6 @@ jest.mock('../../services/requests/CollectionManagementRequests', () => ({
     __esModule: true,
     default: mockCollectionManagementRequests,
     ...mockCollectionManagementRequests
-}));
-
-// Mock LocationRequests
-jest.mock('../../services/requests/LocationRequests', () => ({
-    __esModule: true,
-    default: mockLocationRequests,
-    ...mockLocationRequests
 }));
 
 // Mock MeRequests
