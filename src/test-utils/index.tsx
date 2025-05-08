@@ -1,52 +1,31 @@
 import React from 'react';
-import { render, RenderOptions } from '@testing-library/react';
-import { Router, MemoryRouter } from 'react-router-dom';
+import { render } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import { MantineProvider } from '@mantine/core';
-import { GamesContext } from '../contexts/GamingComponents/GamesContext';
-import { MeContextProvider, mockGamesContextValue } from './mocks/contexts';
+import { MeContextProvider } from './mocks/contexts';
 
 // Import mocks
 import './mocks/requests';
-import { mockHistoryPush } from './mocks/external';
+import './mocks/contexts';
 
-interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
-    route?: string;
-    value?: any;
-}
-
-export function renderWithRouter(ui: React.ReactElement, { route = '/' }: { route?: string } = {}) {
-    return render(
-        <MantineProvider>
-            <MemoryRouter initialEntries={[route]}>
-                {ui}
-            </MemoryRouter>
-        </MantineProvider>
-    );
-}
-
-export function renderWithProviders(ui: React.ReactElement, { route = '/', value = mockGamesContextValue }: CustomRenderOptions = {}) {
-    const history = createMemoryHistory({ initialEntries: [route] });
-
-    const Wrapper = ({ children }: { children: React.ReactNode }) => {
-        return (
-            <MantineProvider>
-                <Router history={history}>
-                    <MeContextProvider>
-                        <GamesContext.Provider value={value}>
-                            {children}
-                        </GamesContext.Provider>
-                    </MeContextProvider>
-                </Router>
-            </MantineProvider>
-        );
-    };
-
+export const renderWithRouter = (
+    component: React.ReactElement,
+    {
+        route = '/',
+        history = createMemoryHistory({ initialEntries: [route] }),
+    } = {}
+) => {
     return {
-        ...render(ui, { wrapper: Wrapper }),
+        ...render(
+            <MantineProvider>
+                <MeContextProvider>
+                    {component}
+                </MeContextProvider>
+            </MantineProvider>
+        ),
         history,
     };
-}
+};
 
 // Re-export mocks
 export { mockHistory, mockHistoryPush, mockUseParams } from './mocks/external';

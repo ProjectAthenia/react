@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { MeContextStateConsumer } from '../../contexts/MeContext';
+import { MeContextStateConsumer, MeContext } from '../../contexts/MeContext';
 import { placeholderUser } from '../../models/user/user';
 import { appState } from '../../data/AppContext';
 import { CategoriesContextState, CategoriesContext } from '../../contexts/CategoriesContext';
@@ -58,3 +58,18 @@ jest.mock('../../contexts/CategoriesContext', () => ({
     __esModule: true,
     CategoriesContext: React.createContext<CategoriesContextState>(mockCategoriesContextValue)
 }));
+
+// MeContext Provider
+export const MeContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+    return (
+        <MeContext.Provider value={{
+            me: placeholderUser(),
+            networkError: false,
+            isLoggedIn: false,
+            isLoading: false,
+            setMe: () => {}
+        }}>
+            {children}
+        </MeContext.Provider>
+    );
+};

@@ -2,17 +2,12 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MantineProvider } from '@mantine/core';
 import CollectionItemComponent from './index';
-import { isReleaseInCollection, getCollectionItemForRelease } from '../../../../util/gaming-utils';
 import CollectionManagementRequests from '../../../../services/requests/CollectionManagementRequests';
 import { CollectionItemContextState } from '../../../../contexts/CollectionItemsContext';
-import CollectionItem, { CollectionItemType } from '../../../../models/user/collection-items';
+import CollectionItem from '../../../../models/user/collection-items';
+import { HasType } from '../../../../models/has-type';
 
 // Mock dependencies
-jest.mock('../../../../util/gaming-utils', () => ({
-    isReleaseInCollection: jest.fn(),
-    getCollectionItemForRelease: jest.fn()
-}));
-
 jest.mock('../../../../services/requests/CollectionManagementRequests', () => ({
     createCollectionItem: jest.fn(),
     removeCollectionItem: jest.fn(),
@@ -52,23 +47,33 @@ const renderWithProviders = (ui: React.ReactElement) => {
 };
 
 describe('CollectionItemComponent', () => {
-    const mockRelease = {
+    const mockItem: HasType = {
         id: 1,
-        game: { name: 'Test Game' }
-    } as any;
+        type: 'release',
+        created_at: '2024-03-20T00:00:00Z',
+        updated_at: '2024-03-20T00:00:00Z'
+    };
 
     const mockCollection = {
         id: 1,
+        type: 'collection',
+        owner_id: 1,
+        owner_type: 'user',
+        is_public: false,
         name: 'Test Collection',
-        collection_items_count: 5
-    } as any;
+        collection_items_count: 5,
+        created_at: '2024-03-20T00:00:00Z',
+        updated_at: '2024-03-20T00:00:00Z'
+    };
 
     const mockCollectionItem: CollectionItem = {
         id: 100,
-        item_id: mockRelease.id,
-        item_type: 'release' as CollectionItemType,
-        collection_id: mockCollection.id,
+        item_id: 1,
+        item_type: 'release',
+        collection_id: 1,
         order: 0,
+        created_at: '2024-03-20T00:00:00Z',
+        updated_at: '2024-03-20T00:00:00Z',
         collection_item_categories: [
             {
                 id: 50,
@@ -79,8 +84,12 @@ describe('CollectionItemComponent', () => {
                 category: {
                     id: 1,
                     name: 'Action',
-                    can_be_primary: true
-                }
+                    can_be_primary: true,
+                    created_at: '2024-03-20T00:00:00Z',
+                    updated_at: '2024-03-20T00:00:00Z'
+                },
+                created_at: '2024-03-20T00:00:00Z',
+                updated_at: '2024-03-20T00:00:00Z'
             }
         ]
     };
@@ -116,16 +125,13 @@ describe('CollectionItemComponent', () => {
     // Reset mocks before each test
     beforeEach(() => {
         jest.clearAllMocks();
-        (getCollectionItemForRelease as jest.Mock).mockReturnValue(mockCollectionItem);
     });
 
     it('renders in not-in-collection state', () => {
-        (isReleaseInCollection as jest.Mock).mockReturnValue(false);
-
         renderWithProviders(
             <CollectionItemComponent
                 collection={mockCollection}
-                release={mockRelease}
+                item={mockItem}
                 collectionItemsContext={mockCollectionItemsContext}
             />
         );
@@ -137,12 +143,10 @@ describe('CollectionItemComponent', () => {
     });
 
     it('renders in in-collection state with categories', () => {
-        (isReleaseInCollection as jest.Mock).mockReturnValue(true);
-
         renderWithProviders(
             <CollectionItemComponent
                 collection={mockCollection}
-                release={mockRelease}
+                item={mockItem}
                 collectionItemsContext={mockCollectionItemsContext}
             />
         );
@@ -156,13 +160,12 @@ describe('CollectionItemComponent', () => {
     });
 
     it('handles adding to collection', async () => {
-        (isReleaseInCollection as jest.Mock).mockReturnValue(false);
         (CollectionManagementRequests.createCollectionItem as jest.Mock).mockResolvedValue(mockCollectionItem);
 
         renderWithProviders(
             <CollectionItemComponent
                 collection={mockCollection}
-                release={mockRelease}
+                item={mockItem}
                 collectionItemsContext={mockCollectionItemsContext}
             />
         );
@@ -173,8 +176,8 @@ describe('CollectionItemComponent', () => {
             expect(CollectionManagementRequests.createCollectionItem).toHaveBeenCalledWith(
                 mockCollection,
                 {
-                    item_id: mockRelease.id,
-                    item_type: 'release' as CollectionItemType,
+                    item_id: mockItem.id,
+                    item_type: mockItem.type,
                     order: 0
                 }
             );
@@ -183,13 +186,12 @@ describe('CollectionItemComponent', () => {
     });
 
     it('handles removing from collection', async () => {
-        (isReleaseInCollection as jest.Mock).mockReturnValue(true);
         (CollectionManagementRequests.removeCollectionItem as jest.Mock).mockResolvedValue({});
 
         renderWithProviders(
             <CollectionItemComponent
                 collection={mockCollection}
-                release={mockRelease}
+                item={mockItem}
                 collectionItemsContext={mockCollectionItemsContext}
             />
         );
@@ -203,7 +205,6 @@ describe('CollectionItemComponent', () => {
     });
 
     it('handles adding a category', async () => {
-        (isReleaseInCollection as jest.Mock).mockReturnValue(true);
         const newCollectionItemCategory = { id: 51, category_id: 2 };
         
         (CollectionManagementRequests.createCollectionItemCategory as jest.Mock).mockResolvedValue(newCollectionItemCategory);
@@ -211,7 +212,7 @@ describe('CollectionItemComponent', () => {
         renderWithProviders(
             <CollectionItemComponent
                 collection={mockCollection}
-                release={mockRelease}
+                item={mockItem}
                 collectionItemsContext={mockCollectionItemsContext}
             />
         );
@@ -230,13 +231,12 @@ describe('CollectionItemComponent', () => {
     });
 
     it('handles removing a category', async () => {
-        (isReleaseInCollection as jest.Mock).mockReturnValue(true);
         (CollectionManagementRequests.deleteCollectionItemCategory as jest.Mock).mockResolvedValue({});
 
         renderWithProviders(
             <CollectionItemComponent
                 collection={mockCollection}
-                release={mockRelease}
+                item={mockItem}
                 collectionItemsContext={mockCollectionItemsContext}
             />
         );
