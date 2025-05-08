@@ -5,7 +5,7 @@ import type CollectionItem from '../models/user/collection-items';
 
 describe('collection-utils', () => {
     describe('isInCollection', () => {
-        const mockItem: HasType = { id: 1, type: 'release' };
+        const mockItem: HasType = { id: 1, type: 'item' };
         const mockCollectionId = 123;
         
         const createMockContextState = (items: Array<{ item_id: number; item_type: string }>) => ({
@@ -58,8 +58,8 @@ describe('collection-utils', () => {
         it('should return false when item is not in collection', () => {
             const context: CollectionItemsContextState = {
                 [mockCollectionId]: createMockContextState([
-                    { item_id: 2, item_type: 'release' },
-                    { item_id: 1, item_type: 'game' }
+                    { item_id: 2, item_type: 'item' },
+                    { item_id: 1, item_type: 'other' }
                 ])
             };
             expect(isInCollection(mockItem, mockCollectionId, context)).toBe(false);
@@ -68,8 +68,8 @@ describe('collection-utils', () => {
         it('should return true when item exists in collection with matching id and type', () => {
             const context: CollectionItemsContextState = {
                 [mockCollectionId]: createMockContextState([
-                    { item_id: 2, item_type: 'release' },
-                    { item_id: 1, item_type: 'release' }
+                    { item_id: 2, item_type: 'item' },
+                    { item_id: 1, item_type: 'item' }
                 ])
             };
             expect(isInCollection(mockItem, mockCollectionId, context)).toBe(true);
