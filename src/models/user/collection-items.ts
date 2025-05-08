@@ -1,11 +1,7 @@
-import Release from 'models/game/release';
 import BaseModel from '../base-model';
-import Post from "../post/post";
-import Category from 'models/category';
-import {CollectionItemCategory} from "./collection-item-category";
-
-export type CollectionItemType = 'post' | 'release';
-export type CollectionItemTypes = Post | Release;
+import { HasType } from '../has-type';
+import Category from '../category';
+import { CollectionItemCategory } from './collection-item-category';
 
 /**
  * The data interface for albums
@@ -20,7 +16,7 @@ export default interface CollectionItem extends BaseModel {
 	/**
 	 * The type of the collection item
 	 */
-	item_type?: CollectionItemType;
+	item_type: string;
 
 	/**
 	 * The collection id
@@ -35,7 +31,7 @@ export default interface CollectionItem extends BaseModel {
 	/**
 	 * The item object
 	 */
-	item?: CollectionItemTypes;
+	item?: HasType;
 
 	/**
 	 * The categories of the item

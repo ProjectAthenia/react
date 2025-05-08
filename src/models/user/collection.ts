@@ -1,4 +1,5 @@
 import BaseModel from '../base-model';
+import { HasType } from '../has-type';
 import CollectionItem from "./collection-items";
 
 export const collectionDefaultData = {
@@ -6,21 +7,17 @@ export const collectionDefaultData = {
 	owner_type: 'user',
 }
 
-export const collectionPlaceholder = (): Collection => {
+export const collectionPlaceholder: Collection = {
+	type: 'collection',
+	owner_id: 0,
+	owner_type: '',
+	is_public: false
+};
 
-	return {
-		owner_id: 0,
-		owner_type: 'user',
-		name: '',
-		is_public: false,
-		collection_items_count: 0,
-		collectionItems: [],
-	}
-}
 /**
  * The data interface for albums
  */
-export default interface Collection extends BaseModel {
+export default interface Collection extends HasType {
 
 	/**
 	 * The primary id of album creator

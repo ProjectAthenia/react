@@ -3,31 +3,32 @@ import { Button, Stack, Text, ActionIcon } from '@mantine/core';
 import { IconX, IconPlus, IconTrash } from '@tabler/icons-react';
 import Collection from '../../../../models/user/collection';
 import CollectionItem from '../../../../models/user/collection-items';
-import Release from '../../../../models/game/release';
 import CategoryAutocomplete from '../../../GeneralUIElements/CategoryAutocomplete';
 import Category from '../../../../models/category';
 import { CollectionItemCategory } from '../../../../models/user/collection-item-category';
-import { isReleaseInCollection, getCollectionItemForRelease } from '../../../../util/gaming-utils';
 import CollectionManagementRequests from '../../../../services/requests/CollectionManagementRequests';
 import { CollectionItemsContextState } from '../../../../contexts/CollectionItemsContext';
 import './index.scss';
+import BaseModel from '../../../../models/base-model';
+import { HasType } from '../../../../models/has-type';
+import { isInCollection } from '../../../../utils/collection-utils';
 
-// Function to add a release to a collection
+// Function to add an item to a collection
 const handleAddToCollection = async (
-    release: Release, 
+    item: HasType, 
     collection: Collection, 
     collectionItemsContext: CollectionItemsContextState,
     setLoadingCollectionId: (id: number | null) => void
 ): Promise<void> => {
-    if (!release || !collection.id) return;
+    if (!item || !collection.id) return;
     
     setLoadingCollectionId(collection.id);
     
     try {
         // Create the collection item
         const collectionItemData = {
-            item_id: release.id,
-            item_type: 'release',
+            item_id: item.id,
+            item_type: item.type,
             order: 0
         };
         
@@ -35,7 +36,9 @@ const handleAddToCollection = async (
         
         // Add the item to the collection items context
         const collectionState = collectionItemsContext[collection.id];
-        collectionState.addModel(newCollectionItem);
+        if (collectionState) {
+            collectionState.addModel(newCollectionItem);
+        }
     } catch (error) {
         console.error('Error adding to collection:', error);
     } finally {
@@ -43,9 +46,9 @@ const handleAddToCollection = async (
     }
 };
 
-// Function to add multiple releases to a collection
+// Function to add multiple items to a collection
 const handleBulkAddToCollection = async (
-    releases: Release[],
+    items: HasType[],
     collection: Collection,
     collectionItemsContext: CollectionItemsContextState,
     setLoadingCollectionId: (id: number | null) => void
@@ -55,11 +58,11 @@ const handleBulkAddToCollection = async (
     setLoadingCollectionId(collection.id);
     
     try {
-        // Create collection items for each release
-        const collectionItemPromises = releases.map(release => {
+        // Create collection items for each item
+        const collectionItemPromises = items.map(item => {
             const collectionItemData = {
-                item_id: release.id,
-                item_type: 'release' as const,
+                item_id: item.id,
+                item_type: item.type,
                 order: 0
             };
             return CollectionManagementRequests.createCollectionItem(collection, collectionItemData);
@@ -69,7 +72,9 @@ const handleBulkAddToCollection = async (
         
         // Add all items to the collection items context
         const collectionState = collectionItemsContext[collection.id];
-        newCollectionItems.forEach(item => collectionState.addModel(item));
+        if (collectionState) {
+            newCollectionItems.forEach(item => collectionState.addModel(item));
+        }
     } catch (error) {
         console.error('Error bulk adding to collection:', error);
     } finally {
@@ -77,19 +82,25 @@ const handleBulkAddToCollection = async (
     }
 };
 
-// Function to remove a release from a collection
+// Function to remove an item from a collection
 const handleRemoveFromCollection = async (
-    release: Release, 
+    item: HasType, 
     collection: Collection, 
-    collectionItemsContext: any,
+    collectionItemsContext: CollectionItemsContextState,
     setLoadingCollectionId: (id: number | null) => void
 ): Promise<void> => {
-    if (!release || !collection.id) return;
+    if (!item || !collection.id) return;
     
     setLoadingCollectionId(collection.id);
     
     try {
-        const collectionItem = getCollectionItemForRelease(release, collection, collectionItemsContext);
+        const collectionState = collectionItemsContext[collection.id];
+        if (!collectionState) return;
+
+        const collectionItem = collectionState.loadedData?.find(
+            (ci: CollectionItem) => ci.item_id === item.id
+        );
+        
         if (!collectionItem) {
             throw new Error('Collection item not found');
         }
@@ -98,7 +109,6 @@ const handleRemoveFromCollection = async (
         await CollectionManagementRequests.removeCollectionItem(collectionItem);
         
         // Remove the item from the collection items context
-        const collectionState = collectionItemsContext[collection.id];
         collectionState.removeModel(collectionItem);
     } catch (error) {
         console.error('Error removing from collection:', error);
@@ -112,17 +122,16 @@ const handleAddCategory = async (
     collectionItem: CollectionItem,
     category: Category,
     setLoadingCategoryId: (id: number | null) => void,
-    collectionItemsContext: any
+    collectionItemsContext: CollectionItemsContextState
 ): Promise<void> => {
     if (!collectionItem || !category || !collectionItem.id || !category.id) return;
     
     setLoadingCategoryId(category.id);
     
     try {
-        // Create the collection item category
         const categoryData = {
             category_id: category.id,
-            linked_at: new Date().toISOString().split('T')[0], // Today's date in YYYY-MM-DD format
+            linked_at: new Date().toISOString().split('T')[0],
             linked_at_format: 'Y-m-d' as const
         };
         
@@ -133,9 +142,9 @@ const handleAddCategory = async (
         
         // Update the collection items context with the new category
         const collectionId = collectionItem.collection_id;
-        if (collectionId && collectionItemsContext.callbacks?.[collectionId]?.addModel) {
+        if (collectionId && collectionItemsContext[collectionId]) {
             // Find the collection item in the context
-            const collectionItems = collectionItemsContext[collectionId]?.loadedData || [];
+            const collectionItems = collectionItemsContext[collectionId].loadedData || [];
             const itemIndex = collectionItems.findIndex((item: CollectionItem) => item.id === collectionItem.id);
             
             if (itemIndex !== -1) {
@@ -148,19 +157,19 @@ const handleAddCategory = async (
                 }
                 
                 // Add the new category to the collection item
-                // Make sure the category object has the expected structure
                 const categoryWithName = {
                     ...newCollectionItemCategory,
                     category: {
                         id: category.id,
-                        name: category.name
+                        name: category.name,
+                        can_be_primary: category.can_be_primary
                     }
                 };
                 
                 updatedCollectionItem.collection_item_categories.push(categoryWithName);
                 
                 // Update the collection item in the context
-                collectionItemsContext.callbacks[collectionId].addModel(updatedCollectionItem);
+                collectionItemsContext[collectionId].addModel(updatedCollectionItem);
             }
         }
     } catch (error) {
@@ -175,21 +184,20 @@ const handleRemoveCategory = async (
     collection: Collection,
     collectionItemCategory: CollectionItemCategory,
     setLoadingCategoryId: (id: number | null) => void,
-    collectionItemsContext: any
+    collectionItemsContext: CollectionItemsContextState
 ): Promise<void> => {
     if (!collectionItemCategory || !collectionItemCategory.id) return;
     
     setLoadingCategoryId(collectionItemCategory.category_id);
     
     try {
-        // Delete the collection item category
         await CollectionManagementRequests.deleteCollectionItemCategory(collectionItemCategory.id);
         
         // Update the collection items context by removing the category
         const collectionId = collection.id;
-        if (collectionId && collectionItemsContext.callbacks?.[collectionId]?.removeModel) {
+        if (collectionId && collectionItemsContext[collectionId]) {
             // Find the collection item in the context
-            const collectionItems = collectionItemsContext[collectionId]?.loadedData || [];
+            const collectionItems = collectionItemsContext[collectionId].loadedData || [];
             const itemIndex = collectionItems.findIndex((item: CollectionItem) => 
                 item.id === collectionItemCategory.collection_item_id
             );
@@ -209,7 +217,7 @@ const handleRemoveCategory = async (
                 );
                 
                 // Update the collection item in the context
-                collectionItemsContext.callbacks[collectionId].addModel(updatedCollectionItem);
+                collectionItemsContext[collectionId].addModel(updatedCollectionItem);
             }
         }
     } catch (error) {
@@ -219,19 +227,18 @@ const handleRemoveCategory = async (
     }
 };
 
-// Component props interface
 interface CollectionItemProps {
     collection: Collection;
-    release: Release;
+    item: HasType;
     collectionItemsContext: CollectionItemsContextState;
     isBulkOperation?: boolean;
-    selectedItems?: Set<number>;
+    selectedItems?: Set<HasType>;
     isCommonCollection?: boolean;
 }
 
 const CollectionItemComponent: React.FC<CollectionItemProps> = ({
     collection,
-    release,
+    item,
     collectionItemsContext,
     isBulkOperation = false,
     selectedItems,
@@ -242,19 +249,24 @@ const CollectionItemComponent: React.FC<CollectionItemProps> = ({
     const [selectedCategories, setSelectedCategories] = useState<{[key: number]: Category}>({});
     const categoryAutocompleteRef = useRef<{ clearInput: () => void } | null>(null);
 
-    const isInCollection = isReleaseInCollection(release, collectionItemsContext[collection.id!]?.loadedData ?? []);
-    const collectionItem = isInCollection ? getCollectionItemForRelease(release, collection, collectionItemsContext) : null;
+    const itemIsInCollection = useMemo((): boolean => {
+        if (!collection.id) return false;
+        return isInCollection(item, collection.id, collectionItemsContext);
+    }, [collection.id, collectionItemsContext, item]);
+
+    const collectionItem = collection.id && itemIsInCollection ? collectionItemsContext[collection.id]?.loadedData.find(
+        (ci: CollectionItem) => ci.item_id === item.id
+    ) : null;
     const categories = collectionItem?.collection_item_categories || [];
 
     // Get selected releases for bulk operation
     const selectedReleases = useMemo(() => {
-        if (!isBulkOperation || !selectedItems) return [];
-        // Get all releases that are selected but not already in the collection
-        const collectionState = collectionItemsContext[collection.id!];
+        if (!isBulkOperation || !selectedItems || !collection.id) return [];
+        // Get all items that are selected but not already in the collection
+        const collectionState = collectionItemsContext[collection.id];
         const existingItemIds = new Set(collectionState?.loadedData?.map(item => item.item_id) ?? []);
         return Array.from(selectedItems)
-            .filter(itemId => !existingItemIds.has(itemId))
-            .map(itemId => ({ id: itemId } as Release));
+            .filter(item => !existingItemIds.has(item.id));
     }, [isBulkOperation, selectedItems, collectionItemsContext, collection.id]);
 
     // Function to handle category selection
@@ -288,7 +300,7 @@ const CollectionItemComponent: React.FC<CollectionItemProps> = ({
                     <div className="collection-count">{collection.collection_items_count}</div>
                 </div>
                 
-                {isInCollection && collectionItem && collectionItem.id && (
+                {itemIsInCollection && collectionItem && collectionItem.id && (
                     <>
                         <div className="collection-categories">
                             <Text size="sm" fw={500} mb="xs">Categories:</Text>
@@ -330,55 +342,48 @@ const CollectionItemComponent: React.FC<CollectionItemProps> = ({
                                 }
                             }}
                         />
-                    </>
-                )}
-                
-                <div className="collection-actions">
-                    {isInCollection ? (
+                        
                         <Button
-                            size="xs"
-                            variant="light"
+                            variant="subtle"
                             color="red"
-                            leftSection={<IconX size={14} />}
-                            loading={loadingCollectionId === collection.id}
+                            size="sm"
                             onClick={() => handleRemoveFromCollection(
-                                release,
+                                item,
                                 collection,
                                 collectionItemsContext,
                                 setLoadingCollectionId
                             )}
-                        >
-                            Remove
-                        </Button>
-                    ) : (
-                        <Button
-                            size="xs"
-                            variant="light"
-                            color="blue"
-                            leftSection={<IconPlus size={14} />}
                             loading={loadingCollectionId === collection.id}
-                            onClick={() => {
-                                if (isBulkOperation && selectedReleases.length > 0) {
-                                    handleBulkAddToCollection(
-                                        selectedReleases,
-                                        collection,
-                                        collectionItemsContext,
-                                        setLoadingCollectionId
-                                    );
-                                } else {
-                                    handleAddToCollection(
-                                        release,
-                                        collection,
-                                        collectionItemsContext,
-                                        setLoadingCollectionId
-                                    );
-                                }
-                            }}
                         >
-                            {isBulkOperation ? `Add ${selectedReleases.length} Items` : 'Add'}
+                            Remove from Collection
                         </Button>
-                    )}
-                </div>
+                    </>
+                )}
+                
+                {!itemIsInCollection && (
+                    <Button
+                        variant="subtle"
+                        color="blue"
+                        size="sm"
+                        onClick={() => isBulkOperation && selectedItems
+                            ? handleBulkAddToCollection(
+                                selectedReleases,
+                                collection,
+                                collectionItemsContext,
+                                setLoadingCollectionId
+                            )
+                            : handleAddToCollection(
+                                item,
+                                collection,
+                                collectionItemsContext,
+                                setLoadingCollectionId
+                            )
+                        }
+                        loading={loadingCollectionId === collection.id}
+                    >
+                        {isBulkOperation ? `Add ${selectedReleases.length} Items` : 'Add to Collection'}
+                    </Button>
+                )}
             </Stack>
         </li>
     );
