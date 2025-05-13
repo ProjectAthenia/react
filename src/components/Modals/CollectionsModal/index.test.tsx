@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import CollectionsModal from './index';
-import Release from '../../../models/game/release';
+import { HasType } from '../../../models/has-type';
 import Collection from '../../../models/user/collection';
 import {renderWithRouter} from "../../../test-utils";
 import { CollectionItemsContext } from '../../../contexts/CollectionItemsContext';
@@ -68,32 +68,16 @@ jest.mock('../../../contexts/CollectionItemsContext', () => {
 });
 
 describe('CollectionsModalContent', () => {
-  const mockRelease: Release = {
+  const mockItem: HasType = {
     id: 123,
-    game_id: 456,
-    platform_id: 789,
-    release_type: 'retail',
-    release_date: '2023-01-01',
+    type: 'release',
     created_at: '2023-01-01',
-    updated_at: '2023-01-01',
-    game: {
-      id: 456,
-      name: 'Test Game',
-      created_at: '2023-01-01',
-      updated_at: '2023-01-01'
-    },
-    platform: {
-      id: 789,
-      name: 'Test Platform',
-      total_games: 100,
-      created_at: '2023-01-01',
-      updated_at: '2023-01-01'
-    }
+    updated_at: '2023-01-01'
   };
 
   const mockCollections: Collection[] = [
-    { id: 1, name: 'Collection 1', collection_items_count: 5, owner_id: 1, owner_type: 'user', is_public: true, created_at: '2023-01-01', updated_at: '2023-01-01' },
-    { id: 2, name: 'Collection 2', collection_items_count: 10, owner_id: 1, owner_type: 'user', is_public: true, created_at: '2023-01-01', updated_at: '2023-01-01' }
+    { id: 1, name: 'Collection 1', collection_items_count: 5, owner_id: 1, owner_type: 'user', is_public: true, created_at: '2023-01-01', updated_at: '2023-01-01', type: 'collection' },
+    { id: 2, name: 'Collection 2', collection_items_count: 10, owner_id: 1, owner_type: 'user', is_public: true, created_at: '2023-01-01', updated_at: '2023-01-01', type: 'collection' }
   ];
 
   // Mock function for onRequestClose
@@ -102,7 +86,7 @@ describe('CollectionsModalContent', () => {
   it('renders collections list when data is loaded', () => {
     renderWithRouter(
       <CollectionsModal
-        release={mockRelease} 
+        items={mockItem}
         collections={mockCollections} 
         isLoading={false}
         isOpen={true}
@@ -114,5 +98,4 @@ describe('CollectionsModalContent', () => {
     expect(screen.getByText('Collection 1')).toBeInTheDocument();
     expect(screen.getByText('Collection 2')).toBeInTheDocument();
   });
-
 });

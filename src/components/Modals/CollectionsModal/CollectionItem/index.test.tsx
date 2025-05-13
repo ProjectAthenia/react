@@ -54,18 +54,6 @@ describe('CollectionItemComponent', () => {
         updated_at: '2024-03-20T00:00:00Z'
     };
 
-    const mockCollection = {
-        id: 1,
-        type: 'collection',
-        owner_id: 1,
-        owner_type: 'user',
-        is_public: false,
-        name: 'Test Collection',
-        collection_items_count: 5,
-        created_at: '2024-03-20T00:00:00Z',
-        updated_at: '2024-03-20T00:00:00Z'
-    };
-
     const mockCollectionItem: CollectionItem = {
         id: 100,
         item_id: 1,
@@ -92,6 +80,19 @@ describe('CollectionItemComponent', () => {
                 updated_at: '2024-03-20T00:00:00Z'
             }
         ]
+    };
+
+    const mockCollection = {
+        id: 1,
+        type: 'collection',
+        owner_id: 1,
+        owner_type: 'user',
+        is_public: false,
+        name: 'Test Collection',
+        collection_items_count: 5,
+        created_at: '2024-03-20T00:00:00Z',
+        updated_at: '2024-03-20T00:00:00Z',
+        items: [mockCollectionItem]
     };
 
     const mockCollectionContextState: CollectionItemContextState = {
