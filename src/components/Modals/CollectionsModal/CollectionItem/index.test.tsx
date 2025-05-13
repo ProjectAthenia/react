@@ -139,7 +139,7 @@ describe('CollectionItemComponent', () => {
 
         expect(screen.getByText('Test Collection')).toBeInTheDocument();
         expect(screen.getByText('5')).toBeInTheDocument();
-        expect(screen.getByText('Add')).toBeInTheDocument();
+        expect(screen.getByText('Add to Collection')).toBeInTheDocument();
         expect(screen.queryByText('Categories:')).not.toBeInTheDocument();
     });
 
@@ -154,7 +154,7 @@ describe('CollectionItemComponent', () => {
 
         expect(screen.getByText('Test Collection')).toBeInTheDocument();
         expect(screen.getByText('5')).toBeInTheDocument();
-        expect(screen.getByText('Remove')).toBeInTheDocument();
+        expect(screen.getByText('Remove from Collection')).toBeInTheDocument();
         expect(screen.getByText('Categories:')).toBeInTheDocument();
         expect(screen.getByText('Action')).toBeInTheDocument();
         expect(screen.getByTestId('category-autocomplete')).toBeInTheDocument();
@@ -171,7 +171,7 @@ describe('CollectionItemComponent', () => {
             />
         );
 
-        fireEvent.click(screen.getByText('Add'));
+        fireEvent.click(screen.getByText('Add to Collection'));
 
         await waitFor(() => {
             expect(CollectionManagementRequests.createCollectionItem).toHaveBeenCalledWith(
@@ -197,7 +197,7 @@ describe('CollectionItemComponent', () => {
             />
         );
 
-        fireEvent.click(screen.getByText('Remove'));
+        fireEvent.click(screen.getByText('Remove from Collection'));
 
         await waitFor(() => {
             expect(CollectionManagementRequests.removeCollectionItem).toHaveBeenCalledWith(mockCollectionItem);

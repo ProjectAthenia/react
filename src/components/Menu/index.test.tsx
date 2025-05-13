@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react';
 import Menu from './index';
 import { MeContext } from '../../contexts/MeContext';
 import { placeholderUser } from '../../models/user/user';
-import { renderWithRouter } from '../../test-utils';
+import { renderWithProviders } from '../../test-utils';
 
 // Mock the MeContextProvider component
 jest.mock('../../contexts/MeContext', () => ({
@@ -36,7 +36,7 @@ describe('Menu', () => {
             )
         );
 
-        renderWithRouter(<Menu />);
+        renderWithProviders(<Menu />);
 
         expect(screen.getByText('Browse')).toBeInTheDocument();
         expect(screen.getByText('Data View')).toBeInTheDocument();
@@ -61,7 +61,7 @@ describe('Menu', () => {
             )
         );
 
-        renderWithRouter(<Menu />);
+        renderWithProviders(<Menu />);
 
         expect(screen.getByText('Browse')).toBeInTheDocument();
         expect(screen.getByText('Data View')).toBeInTheDocument();

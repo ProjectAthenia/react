@@ -61,14 +61,24 @@ jest.mock('../../contexts/CategoriesContext', () => ({
 
 // MeContext Provider
 export const MeContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+    const [meContext, setMeContext] = React.useState({
+        me: placeholderUser(),
+        networkError: false,
+        isLoggedIn: false,
+        isLoading: false,
+    });
+
+    const fullContext = {
+        ...meContext,
+        setMe: (user: any) => setMeContext(prev => ({
+            ...prev,
+            me: user,
+            isLoggedIn: !!user.id,
+        })),
+    } as MeContextStateConsumer;
+
     return (
-        <MeContext.Provider value={{
-            me: placeholderUser(),
-            networkError: false,
-            isLoggedIn: false,
-            isLoading: false,
-            setMe: () => {}
-        }}>
+        <MeContext.Provider value={fullContext}>
             {children}
         </MeContext.Provider>
     );

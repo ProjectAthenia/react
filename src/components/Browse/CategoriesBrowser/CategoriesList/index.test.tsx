@@ -30,8 +30,8 @@ describe('CategoriesList', () => {
             <CategoriesList contextState={mockCategoriesContextValue} />
         );
 
-        expect(screen.getByText('Action')).toBeInTheDocument();
-        expect(screen.getByText('Adventure')).toBeInTheDocument();
+        expect(screen.getByText('Actions')).toBeInTheDocument();
+        expect(screen.getByText('Test Category')).toBeInTheDocument();
     });
 
     it('handles delete action correctly', async () => {

@@ -11,7 +11,7 @@ import { CollectionItemsContextState } from '../../../../contexts/CollectionItem
 import './index.scss';
 import BaseModel from '../../../../models/base-model';
 import { HasType } from '../../../../models/has-type';
-import { isInCollection } from '../../../../utils/collection-utils';
+import { isInCollection } from '../../../../util/collection-utils';
 
 // Function to add an item to a collection
 const handleAddToCollection = async (
