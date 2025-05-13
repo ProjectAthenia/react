@@ -266,7 +266,7 @@ const CollectionItemComponent: React.FC<CollectionItemProps> = ({
         const collectionState = collectionItemsContext[collection.id];
         const existingItemIds = new Set(collectionState?.loadedData?.map(item => item.item_id) ?? []);
         return Array.from(selectedItems)
-            .filter(item => !existingItemIds.has(item.id));
+            .filter(item => item.id !== undefined && !existingItemIds.has(item.id));
     }, [isBulkOperation, selectedItems, collectionItemsContext, collection.id]);
 
     // Function to handle category selection

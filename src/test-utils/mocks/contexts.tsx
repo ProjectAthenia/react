@@ -4,6 +4,8 @@ import { placeholderUser } from '../../models/user/user';
 import { appState } from '../../data/AppContext';
 import { CategoriesContextState, CategoriesContext } from '../../contexts/CategoriesContext';
 import Category from '../../models/category';
+import { Provider } from 'react-redux';
+import configureStore from 'redux-mock-store';
 
 // Mock appState
 (global as any).appState = {
@@ -59,6 +61,17 @@ jest.mock('../../contexts/CategoriesContext', () => ({
     CategoriesContext: React.createContext<CategoriesContextState>(mockCategoriesContextValue)
 }));
 
+// Create mock store
+const mockStore = configureStore([]);
+const store = mockStore({
+    me: {
+        user: placeholderUser(),
+        networkError: false,
+        isLoggedIn: false,
+        isLoading: false
+    }
+});
+
 // MeContext Provider
 export const MeContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [meContext, setMeContext] = React.useState({
@@ -70,16 +83,21 @@ export const MeContextProvider: React.FC<{ children: ReactNode }> = ({ children 
 
     const fullContext = {
         ...meContext,
-        setMe: (user: any) => setMeContext(prev => ({
-            ...prev,
-            me: user,
-            isLoggedIn: !!user.id,
-        })),
+        setMe: (user: any) => {
+            setMeContext(prev => ({
+                ...prev,
+                me: user,
+                isLoggedIn: !!user.id,
+            }));
+            store.dispatch({ type: 'SET_USER', payload: user });
+        },
     } as MeContextStateConsumer;
 
     return (
-        <MeContext.Provider value={fullContext}>
-            {children}
-        </MeContext.Provider>
+        <Provider store={store}>
+            <MeContext.Provider value={fullContext}>
+                {children}
+            </MeContext.Provider>
+        </Provider>
     );
 };

@@ -106,7 +106,7 @@ describe('CollectionItemComponent', () => {
         filter: {},
         search: {},
         limit: 50,
-        loadedData: [mockCollectionItem],
+        loadedData: [],
         loadAll: true,
         params: {},
         loadNext: jest.fn(),
@@ -144,6 +144,8 @@ describe('CollectionItemComponent', () => {
     });
 
     it('renders in in-collection state with categories', () => {
+        mockCollectionContextState.loadedData = [mockCollectionItem];
+
         renderWithProviders(
             <CollectionItemComponent
                 collection={mockCollection}
