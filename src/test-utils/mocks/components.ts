@@ -12,10 +12,6 @@ jest.mock('ag-grid-react', () => ({
     AgGridColumn: () => null
 }));
 
-// Mock ag-grid styles
-jest.mock('ag-grid-community/styles/ag-grid.css', () => {});
-jest.mock('ag-grid-community/styles/ag-theme-quartz.css', () => {});
-
 // Mock FontAwesome
 jest.mock('@fortawesome/react-fontawesome', () => ({
     FontAwesomeIcon: () => null

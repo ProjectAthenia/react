@@ -1,5 +1,4 @@
 import React from 'react'
-import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import Home from './pages/Home';
 import AuthenticatedRoute from './components/AuthenticatedRoute';
@@ -13,9 +12,6 @@ import '@mantine/dates/styles.css';
 import Browse from './pages/Browse';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
-
-// Register all Community features
-ModuleRegistry.registerModules([AllCommunityModule]);
 
 export const mantimeTheme = createTheme({
 	primaryColor: 'blue',
