@@ -2,10 +2,11 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import PostPage from './index';
 import { renderWithProviders } from '../../../test-utils';
-import { PostContext } from '../../../contexts/PostContext';
+import { PostContext, PostContextProvider } from '../../../contexts/PostContext';
 import { MeContext } from '../../../contexts/MeContext';
 import { useParams, useLocation } from 'react-router-dom';
 import Post, { postPlaceholder } from '../../../models/post/post';
+import { placeholderUser } from '../../../models/user/user';
 
 // Mock react-router-dom hooks
 jest.mock('react-router-dom', () => ({
@@ -15,8 +16,14 @@ jest.mock('react-router-dom', () => ({
 }));
 
 // Mock the hooks
-(useParams as jest.Mock).mockReturnValue({ id: '123' });
+(useParams as jest.Mock).mockReturnValue({ postId: '123' });
 (useLocation as jest.Mock).mockReturnValue({ pathname: '/post/123' });
+
+// Mock PostContextProvider
+jest.mock('../../../contexts/PostContext', () => ({
+    ...jest.requireActual('../../../contexts/PostContext'),
+    PostContextProvider: ({ children }: { children: React.ReactNode }) => children
+}));
 
 describe('PostPage', () => {
     const mockPost = postPlaceholder(['news']);
@@ -25,14 +32,11 @@ describe('PostPage', () => {
     mockPost.article_content = 'Test Content';
 
     const mockMeContext = {
-        me: {
-            id: 1,
-            username: 'testuser',
-            email: 'test@example.com'
-        },
+        me: placeholderUser(),
         isLoggedIn: true,
         isLoading: false,
-        networkError: false
+        networkError: false,
+        setMe: jest.fn()
     };
 
     const mockPostContext = {
@@ -44,9 +48,11 @@ describe('PostPage', () => {
 
     it('renders post details without crashing', () => {
         renderWithProviders(
-            <PostContext.Provider value={mockPostContext}>
-                <PostPage />
-            </PostContext.Provider>
+            <MeContext.Provider value={mockMeContext}>
+                <PostContext.Provider value={mockPostContext}>
+                    <PostPage />
+                </PostContext.Provider>
+            </MeContext.Provider>
         );
 
         expect(screen.getByTestId('post-details-content')).toBeInTheDocument();
