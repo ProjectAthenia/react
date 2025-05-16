@@ -126,6 +126,7 @@ describe('CollectionItemComponent', () => {
     // Reset mocks before each test
     beforeEach(() => {
         jest.clearAllMocks();
+        mockCollectionContextState.loadedData = [];
     });
 
     it('renders in not-in-collection state', () => {
@@ -173,7 +174,8 @@ describe('CollectionItemComponent', () => {
             />
         );
 
-        fireEvent.click(screen.getByText('Add to Collection'));
+        const addButton = screen.getByText('Add to Collection');
+        fireEvent.click(addButton);
 
         await waitFor(() => {
             expect(CollectionManagementRequests.createCollectionItem).toHaveBeenCalledWith(
@@ -190,6 +192,7 @@ describe('CollectionItemComponent', () => {
 
     it('handles removing from collection', async () => {
         (CollectionManagementRequests.removeCollectionItem as jest.Mock).mockResolvedValue({});
+        mockCollectionContextState.loadedData = [mockCollectionItem];
 
         renderWithProviders(
             <CollectionItemComponent
@@ -199,7 +202,8 @@ describe('CollectionItemComponent', () => {
             />
         );
 
-        fireEvent.click(screen.getByText('Remove from Collection'));
+        const removeButton = screen.getByText('Remove from Collection');
+        fireEvent.click(removeButton);
 
         await waitFor(() => {
             expect(CollectionManagementRequests.removeCollectionItem).toHaveBeenCalledWith(mockCollectionItem);
@@ -208,9 +212,23 @@ describe('CollectionItemComponent', () => {
     });
 
     it('handles adding a category', async () => {
-        const newCollectionItemCategory = { id: 51, category_id: 2 };
-        
-        (CollectionManagementRequests.createCollectionItemCategory as jest.Mock).mockResolvedValue(newCollectionItemCategory);
+        (CollectionManagementRequests.createCollectionItemCategory as jest.Mock).mockResolvedValue({
+            id: 51,
+            category_id: 1,
+            collection_item_id: 100,
+            linked_at: '2024-03-20T00:00:00Z',
+            linked_at_format: 'Y-m-d',
+            category: {
+                id: 1,
+                name: 'Test Category',
+                can_be_primary: true,
+                created_at: '2024-03-20T00:00:00Z',
+                updated_at: '2024-03-20T00:00:00Z'
+            },
+            created_at: '2024-03-20T00:00:00Z',
+            updated_at: '2024-03-20T00:00:00Z'
+        });
+        mockCollectionContextState.loadedData = [mockCollectionItem];
 
         renderWithProviders(
             <CollectionItemComponent
@@ -220,21 +238,24 @@ describe('CollectionItemComponent', () => {
             />
         );
 
-        fireEvent.click(screen.getByTestId('mock-select-category'));
+        const selectButton = screen.getByTestId('mock-select-category');
+        fireEvent.click(selectButton);
 
         await waitFor(() => {
             expect(CollectionManagementRequests.createCollectionItemCategory).toHaveBeenCalledWith(
-                mockCollectionItem.id,
-                expect.objectContaining({
+                100,
+                {
                     category_id: 1,
+                    linked_at: expect.any(String),
                     linked_at_format: 'Y-m-d'
-                })
+                }
             );
         });
     });
 
     it('handles removing a category', async () => {
         (CollectionManagementRequests.deleteCollectionItemCategory as jest.Mock).mockResolvedValue({});
+        mockCollectionContextState.loadedData = [mockCollectionItem];
 
         renderWithProviders(
             <CollectionItemComponent
@@ -244,10 +265,13 @@ describe('CollectionItemComponent', () => {
             />
         );
 
-        // Find the delete button for the category and click it
-        const deleteButtons = screen.getAllByRole('button');
-        const deleteButton = deleteButtons.find(button => button.querySelector('svg'));
-        fireEvent.click(deleteButton!);
+        // The ActionIcon trash button does not have an accessible name, so select the first button in the category list
+        const categoryButtons = screen.getAllByRole('button');
+        // The first ActionIcon button in the category list is the remove category button
+        const removeCategoryButton = categoryButtons.find(
+            btn => btn.querySelector('svg') && btn.querySelector('svg')?.className.baseVal.includes('tabler-icon-trash')
+        );
+        fireEvent.click(removeCategoryButton!);
 
         await waitFor(() => {
             expect(CollectionManagementRequests.deleteCollectionItemCategory).toHaveBeenCalledWith(50);

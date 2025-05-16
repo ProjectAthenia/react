@@ -2,57 +2,53 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import PostPage from './index';
 import { renderWithProviders } from '../../../test-utils';
+import { PostContext } from '../../../contexts/PostContext';
+import { MeContext } from '../../../contexts/MeContext';
+import { useParams, useLocation } from 'react-router-dom';
+import Post, { postPlaceholder } from '../../../models/post/post';
 
-// Mock the contexts
-jest.mock('../../../contexts/MeContext', () => ({
-  __esModule: true,
-  default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  MeContext: {
-    Consumer: ({ children }: { children: (value: any) => React.ReactNode }) =>
-      children({
-        me: {
-          id: 1,
-          name: 'Test User',
-          email: 'test@example.com'
-        }
-      })
-  }
-}));
-
-jest.mock('../../../contexts/PostContext', () => ({
-  __esModule: true,
-  PostContextProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  PostContext: {
-    Consumer: ({ children }: { children: (value: any) => React.ReactNode }) =>
-      children({
-        post: {
-          id: 1,
-          title: 'Test Post',
-          content: 'Test Content'
-        },
-        setPost: jest.fn()
-      })
-  }
-}));
-
-// Mock useParams
+// Mock react-router-dom hooks
 jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: () => ({ postId: '1' }),
-  useHistory: () => ({
-    push: jest.fn()
-  })
+    ...jest.requireActual('react-router-dom'),
+    useParams: jest.fn(),
+    useLocation: jest.fn()
 }));
 
-// Mock useLocation
-jest.mock('react-router', () => ({
-  ...jest.requireActual('react-router'),
-  useLocation: () => ({
-    pathname: '/post/1'
-  })
-}));
+// Mock the hooks
+(useParams as jest.Mock).mockReturnValue({ id: '123' });
+(useLocation as jest.Mock).mockReturnValue({ pathname: '/post/123' });
 
-test('renders without crashing', () => {
-  renderWithProviders(<PostPage />);
-  expect(screen.getByTestId('post-details-content')).toBeInTheDocument();
+describe('PostPage', () => {
+    const mockPost = postPlaceholder(['news']);
+    mockPost.id = 123;
+    mockPost.title = 'Test Post';
+    mockPost.article_content = 'Test Content';
+
+    const mockMeContext = {
+        me: {
+            id: 1,
+            username: 'testuser',
+            email: 'test@example.com'
+        },
+        isLoggedIn: true,
+        isLoading: false,
+        networkError: false
+    };
+
+    const mockPostContext = {
+        hasLoaded: true,
+        notFound: false,
+        post: mockPost,
+        setPost: jest.fn()
+    };
+
+    it('renders post details without crashing', () => {
+        renderWithProviders(
+            <PostContext.Provider value={mockPostContext}>
+                <PostPage />
+            </PostContext.Provider>
+        );
+
+        expect(screen.getByTestId('post-details-content')).toBeInTheDocument();
+    });
 });

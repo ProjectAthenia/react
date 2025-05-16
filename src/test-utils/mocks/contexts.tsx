@@ -90,10 +90,10 @@ export const MeContextProvider: React.FC<MeContextProviderProps> = ({ children, 
     });
 
     const [meContext, setMeContext] = React.useState({
-        me: initialState?.me.user || placeholderUser(),
-        networkError: initialState?.me.networkError || false,
-        isLoggedIn: initialState?.me.isLoggedIn || false,
-        isLoading: initialState?.me.isLoading || false,
+        me: initialState?.me?.user || placeholderUser(),
+        networkError: initialState?.me?.networkError || false,
+        isLoggedIn: initialState?.me?.isLoggedIn || false,
+        isLoading: initialState?.me?.isLoading || false,
     });
 
     const fullContext = {
