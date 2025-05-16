@@ -63,22 +63,37 @@ jest.mock('../../contexts/CategoriesContext', () => ({
 
 // Create mock store
 const mockStore = configureStore([]);
-const store = mockStore({
-    me: {
-        user: placeholderUser(),
-        networkError: false,
-        isLoggedIn: false,
-        isLoading: false
-    }
-});
+
+interface MeContextProviderProps {
+    children: ReactNode;
+    initialState?: {
+        me: {
+            user: any;
+            networkError: boolean;
+            isLoggedIn: boolean;
+            isLoading: boolean;
+        };
+    };
+    optional?: boolean;
+    hideLoadingSpace?: boolean;
+}
 
 // MeContext Provider
-export const MeContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const MeContextProvider: React.FC<MeContextProviderProps> = ({ children, initialState, optional, hideLoadingSpace }) => {
+    const store = mockStore(initialState || {
+        me: {
+            user: placeholderUser(),
+            networkError: false,
+            isLoggedIn: false,
+            isLoading: false
+        }
+    });
+
     const [meContext, setMeContext] = React.useState({
-        me: placeholderUser(),
-        networkError: false,
-        isLoggedIn: false,
-        isLoading: false,
+        me: initialState?.me.user || placeholderUser(),
+        networkError: initialState?.me.networkError || false,
+        isLoggedIn: initialState?.me.isLoggedIn || false,
+        isLoading: initialState?.me.isLoading || false,
     });
 
     const fullContext = {
@@ -88,6 +103,7 @@ export const MeContextProvider: React.FC<{ children: ReactNode }> = ({ children 
                 ...prev,
                 me: user,
                 isLoggedIn: !!user.id,
+                isLoading: false
             }));
             store.dispatch({ type: 'SET_USER', payload: user });
         },
@@ -96,7 +112,12 @@ export const MeContextProvider: React.FC<{ children: ReactNode }> = ({ children 
     return (
         <Provider store={store}>
             <MeContext.Provider value={fullContext}>
-                {children}
+                {(!meContext.isLoading || hideLoadingSpace) ? children :
+                    (meContext.networkError ?
+                        <div>Network Error</div> :
+                        <div>Loading...</div>
+                    )
+                }
             </MeContext.Provider>
         </Provider>
     );

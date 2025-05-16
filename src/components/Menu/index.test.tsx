@@ -1,42 +1,38 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
 import Menu from './index';
-import { MeContext } from '../../contexts/MeContext';
 import { placeholderUser } from '../../models/user/user';
-import { renderWithProviders } from '../../test-utils';
+import { renderWithProviders, MeContextProvider as RealMeContextProvider } from '../../test-utils';
 
-// Mock the MeContextProvider component
-jest.mock('../../contexts/MeContext', () => ({
-    __esModule: true,
-    MeContext: {
-        Consumer: ({ children }: { children: (context: any) => React.ReactNode }) => (
-            <div>{children({
-                me: null,
-                networkError: false,
-                isLoggedIn: false,
-                isLoading: false,
-                setMe: () => {}
-            })}</div>
-        )
-    },
-    default: ({ children }: { children: React.ReactNode }) => children
-}));
+// Passthrough mock for MeContextProvider (default and named)
+jest.mock('../../contexts/MeContext', () => {
+    const actual = jest.requireActual('../../contexts/MeContext');
+    const Passthrough = ({ children }: { children: React.ReactNode }) => React.createElement(React.Fragment, null, children);
+    return {
+        __esModule: true,
+        ...actual,
+        MeContextProvider: Passthrough,
+        default: Passthrough,
+    };
+});
+
+// Use the real MeContextProvider for context setup in the test
+const MeContextProvider = RealMeContextProvider;
 
 describe('Menu', () => {
     it('renders basic navigation links when not logged in', () => {
-        jest.spyOn(MeContext, 'Consumer').mockImplementation(
-            ({ children }: { children: (context: any) => React.ReactNode }) => (
-                <div>{children({
-                    me: placeholderUser(),
+        renderWithProviders(
+            <MeContextProvider initialState={{
+                me: {
+                    user: placeholderUser(),
                     networkError: false,
                     isLoggedIn: false,
-                    isLoading: false,
-                    setMe: () => {}
-                })}</div>
-            )
+                    isLoading: false
+                }
+            }}>
+                <Menu />
+            </MeContextProvider>
         );
-
-        renderWithProviders(<Menu />);
 
         expect(screen.getByText('Browse')).toBeInTheDocument();
         expect(screen.getByText('Data View')).toBeInTheDocument();
@@ -49,19 +45,18 @@ describe('Menu', () => {
         const loggedInUser = placeholderUser();
         loggedInUser.id = 1;
         
-        jest.spyOn(MeContext, 'Consumer').mockImplementation(
-            ({ children }: { children: (context: any) => React.ReactNode }) => (
-                <div>{children({
-                    me: loggedInUser,
+        renderWithProviders(
+            <MeContextProvider initialState={{
+                me: {
+                    user: loggedInUser,
                     networkError: false,
                     isLoggedIn: true,
-                    isLoading: false,
-                    setMe: () => {}
-                })}</div>
-            )
+                    isLoading: false
+                }
+            }}>
+                <Menu />
+            </MeContextProvider>
         );
-
-        renderWithProviders(<Menu />);
 
         expect(screen.getByText('Browse')).toBeInTheDocument();
         expect(screen.getByText('Data View')).toBeInTheDocument();

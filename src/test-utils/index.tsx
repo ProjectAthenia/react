@@ -42,6 +42,7 @@ export const renderWithProviders = (
 
 // Re-export mocks
 export { mockHistory, mockHistoryPush, mockUseParams } from './mocks/external';
+export { MeContextProvider } from './mocks/contexts';
 
 // Re-export everything
 export * from '@testing-library/react';
