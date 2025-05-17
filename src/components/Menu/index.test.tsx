@@ -1,7 +1,7 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
 import Menu from './index';
-import { placeholderUser } from '../../models/user/user';
+import { mockUser } from '../../test-utils/mocks/models';
 import { renderWithProviders, MeContextProvider as RealMeContextProvider } from '../../test-utils';
 
 // Passthrough mock for MeContextProvider (default and named)
@@ -24,7 +24,7 @@ describe('Menu', () => {
         renderWithProviders(
             <MeContextProvider initialState={{
                 me: {
-                    user: placeholderUser(),
+                    user: mockUser(),
                     networkError: false,
                     isLoggedIn: false,
                     isLoading: false
@@ -42,8 +42,7 @@ describe('Menu', () => {
     });
 
     it('renders authenticated navigation links when logged in', () => {
-        const loggedInUser = placeholderUser();
-        loggedInUser.id = 1;
+        const loggedInUser = mockUser({ id: 1 });
         
         renderWithProviders(
             <MeContextProvider initialState={{

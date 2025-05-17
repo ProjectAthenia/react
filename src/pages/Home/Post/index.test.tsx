@@ -6,7 +6,7 @@ import { PostContext, PostContextProvider } from '../../../contexts/PostContext'
 import { MeContext } from '../../../contexts/MeContext';
 import { useParams, useLocation } from 'react-router-dom';
 import Post, { postPlaceholder } from '../../../models/post/post';
-import { placeholderUser } from '../../../models/user/user';
+import { mockUser } from '../../../test-utils/mocks/models';
 
 // Mock react-router-dom hooks
 jest.mock('react-router-dom', () => ({
@@ -32,7 +32,7 @@ describe('PostPage', () => {
     mockPost.article_content = 'Test Content';
 
     const mockMeContext = {
-        me: placeholderUser(),
+        me: mockUser(),
         isLoggedIn: true,
         isLoading: false,
         networkError: false,
