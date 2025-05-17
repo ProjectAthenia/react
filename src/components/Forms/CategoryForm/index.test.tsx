@@ -3,15 +3,9 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import CategoryForm from './index';
 import Category from '../../../models/category';
+import { mockCategory } from '../../../test-utils/mocks/models/category';
 
 describe('CategoryForm', () => {
-  const mockCategory: Category = {
-    id: 1,
-    name: 'Test Category',
-    description: 'Test Description',
-    can_be_primary: true
-  };
-
   const mockOnSubmit = jest.fn();
   const mockOnCancel = jest.fn();
   
@@ -40,7 +34,7 @@ describe('CategoryForm', () => {
   test('renders form elements correctly in edit mode with category data', () => {
     render(
       <CategoryForm 
-        category={mockCategory}
+        category={mockCategory({ description: 'Test Description' })}
         onSubmit={mockOnSubmit} 
         onCancel={mockOnCancel}
         isSubmitting={false}

@@ -5,6 +5,7 @@ import { mockCategoriesContextValue } from '../../../../test-utils/mocks/context
 import { renderWithProviders } from '../../../../test-utils';
 import CategoryRequests from '../../../../services/requests/CategoryRequests';
 import Category from '../../../../models/category';
+import { mockCategory } from '../../../../test-utils/mocks/models/category';
 
 // Mock the useHistory hook
 jest.mock('react-router-dom', () => ({
@@ -21,13 +22,6 @@ jest.mock('../../../../services/requests/CategoryRequests');
 const mockConfirm = jest.spyOn(window, 'confirm');
 mockConfirm.mockImplementation(() => true);
 
-const mockCategory: Category = {
-    id: 1,
-    name: 'Test Category',
-    description: '',
-    can_be_primary: true
-};
-
 describe('CategoriesList', () => {
     beforeEach(() => {
         jest.clearAllMocks();
@@ -37,7 +31,7 @@ describe('CategoriesList', () => {
         renderWithProviders(
             <CategoriesList contextState={{
                 ...mockCategoriesContextValue,
-                loadedData: [mockCategory]
+                loadedData: [mockCategory()]
             }} />
         );
 
