@@ -6,6 +6,7 @@ import CollectionManagementRequests from '../../../../services/requests/Collecti
 import { CollectionItemContextState } from '../../../../contexts/CollectionItemsContext';
 import CollectionItem from '../../../../models/user/collection-items';
 import { HasType } from '../../../../models/has-type';
+import { mockCollection } from '../../../../test-utils/mocks/models/collection';
 
 // Mock dependencies
 jest.mock('../../../../services/requests/CollectionManagementRequests', () => ({
@@ -82,18 +83,12 @@ describe('CollectionItemComponent', () => {
         ]
     };
 
-    const mockCollection = {
+    const testCollection = mockCollection({
         id: 1,
-        type: 'collection',
-        owner_id: 1,
-        owner_type: 'user',
-        is_public: false,
         name: 'Test Collection',
         collection_items_count: 5,
-        created_at: '2024-03-20T00:00:00Z',
-        updated_at: '2024-03-20T00:00:00Z',
-        items: [mockCollectionItem]
-    };
+        collectionItems: [mockCollectionItem]
+    });
 
     const mockCollectionContextState: CollectionItemContextState = {
         hasAnotherPage: false,
@@ -132,7 +127,7 @@ describe('CollectionItemComponent', () => {
     it('renders in not-in-collection state', () => {
         renderWithProviders(
             <CollectionItemComponent
-                collection={mockCollection}
+                collection={testCollection}
                 item={mockItem}
                 collectionItemsContext={mockCollectionItemsContext}
             />
@@ -149,7 +144,7 @@ describe('CollectionItemComponent', () => {
 
         renderWithProviders(
             <CollectionItemComponent
-                collection={mockCollection}
+                collection={testCollection}
                 item={mockItem}
                 collectionItemsContext={mockCollectionItemsContext}
             />
@@ -168,7 +163,7 @@ describe('CollectionItemComponent', () => {
 
         renderWithProviders(
             <CollectionItemComponent
-                collection={mockCollection}
+                collection={testCollection}
                 item={mockItem}
                 collectionItemsContext={mockCollectionItemsContext}
             />
@@ -179,7 +174,7 @@ describe('CollectionItemComponent', () => {
 
         await waitFor(() => {
             expect(CollectionManagementRequests.createCollectionItem).toHaveBeenCalledWith(
-                mockCollection,
+                testCollection,
                 {
                     item_id: mockItem.id,
                     item_type: mockItem.type,
@@ -196,7 +191,7 @@ describe('CollectionItemComponent', () => {
 
         renderWithProviders(
             <CollectionItemComponent
-                collection={mockCollection}
+                collection={testCollection}
                 item={mockItem}
                 collectionItemsContext={mockCollectionItemsContext}
             />
@@ -232,7 +227,7 @@ describe('CollectionItemComponent', () => {
 
         renderWithProviders(
             <CollectionItemComponent
-                collection={mockCollection}
+                collection={testCollection}
                 item={mockItem}
                 collectionItemsContext={mockCollectionItemsContext}
             />
@@ -259,7 +254,7 @@ describe('CollectionItemComponent', () => {
 
         renderWithProviders(
             <CollectionItemComponent
-                collection={mockCollection}
+                collection={testCollection}
                 item={mockItem}
                 collectionItemsContext={mockCollectionItemsContext}
             />

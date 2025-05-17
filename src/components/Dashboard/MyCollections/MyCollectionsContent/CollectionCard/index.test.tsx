@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { MantineProvider } from '@mantine/core';
 import CollectionCard from './index';
 import Collection from '../../../../../models/user/collection';
+import { mockCollection } from '../../../../../test-utils/mocks/models/collection';
 
 // Mock react-router-dom
 jest.mock('react-router-dom', () => ({
@@ -23,15 +24,6 @@ const renderWithMantine = (ui: React.ReactElement) => {
 };
 
 describe('CollectionCard', () => {
-    const mockCollection: Collection = {
-        id: 1,
-        name: 'Test Collection',
-        is_public: true,
-        collection_items_count: 5,
-        owner_id: 1,
-        owner_type: 'user'
-    };
-    
     const mockOnEditClick = jest.fn();
     
     beforeEach(() => {
@@ -41,7 +33,7 @@ describe('CollectionCard', () => {
     it('renders correctly with provided props', () => {
         renderWithMantine(
             <CollectionCard 
-                collection={mockCollection} 
+                collection={mockCollection()} 
                 itemCount={10} 
                 onEditClick={mockOnEditClick} 
             />
@@ -67,7 +59,7 @@ describe('CollectionCard', () => {
     it('does not show edit button when onEditClick is not provided', () => {
         renderWithMantine(
             <CollectionCard 
-                collection={mockCollection} 
+                collection={mockCollection()} 
                 itemCount={10} 
             />
         );
@@ -80,7 +72,7 @@ describe('CollectionCard', () => {
     it('calls onEditClick when edit button is clicked', () => {
         renderWithMantine(
             <CollectionCard 
-                collection={mockCollection} 
+                collection={mockCollection()} 
                 itemCount={10} 
                 onEditClick={mockOnEditClick} 
             />
@@ -92,6 +84,6 @@ describe('CollectionCard', () => {
         
         // Check if the mock function was called
         expect(mockOnEditClick).toHaveBeenCalledTimes(1);
-        expect(mockOnEditClick).toHaveBeenCalledWith(expect.any(Object), mockCollection);
+        expect(mockOnEditClick).toHaveBeenCalledWith(expect.any(Object), mockCollection());
     });
 }); 

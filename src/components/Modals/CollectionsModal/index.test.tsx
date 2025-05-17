@@ -3,8 +3,9 @@ import { render, screen } from '@testing-library/react';
 import CollectionsModal from './index';
 import { HasType } from '../../../models/has-type';
 import Collection from '../../../models/user/collection';
-import {renderWithRouter} from "../../../test-utils";
+import { renderWithRouter } from "../../../test-utils";
 import { CollectionItemsContext } from '../../../contexts/CollectionItemsContext';
+import { mockCollection } from '../../../test-utils/mocks/models/collection';
 
 // Mock the CollectionItemsContextProvider
 jest.mock('../../../contexts/CollectionItemsContext', () => {
@@ -75,9 +76,9 @@ describe('CollectionsModalContent', () => {
     updated_at: '2023-01-01'
   };
 
-  const mockCollections: Collection[] = [
-    { id: 1, name: 'Collection 1', collection_items_count: 5, owner_id: 1, owner_type: 'user', is_public: true, created_at: '2023-01-01', updated_at: '2023-01-01', type: 'collection' },
-    { id: 2, name: 'Collection 2', collection_items_count: 10, owner_id: 1, owner_type: 'user', is_public: true, created_at: '2023-01-01', updated_at: '2023-01-01', type: 'collection' }
+  const mockCollections = [
+    mockCollection({ id: 1, name: 'Collection 1', collection_items_count: 5 }),
+    mockCollection({ id: 2, name: 'Collection 2', collection_items_count: 10 })
   ];
 
   // Mock function for onRequestClose
