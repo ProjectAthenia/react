@@ -11,27 +11,27 @@ import { mockCategoriesContextValue } from '../../../../test-utils/mocks/context
 import { renderWithProviders } from '../../../../test-utils';
 
 // Mock the UserCollectionsContextState type
-const mockCollections: Collection[] = [
-  {
-    id: 1,
-    name: 'Test Collection 1',
-    collection_items_count: 5,
-    created_at: '2023-01-01',
-    updated_at: '2023-01-01',
-    owner_id: 1,
-    owner_type: 'user',
-    is_public: false
-  },
-  {
-    id: 2,
-    name: 'Test Collection 2',
-    collection_items_count: 10,
-    created_at: '2023-01-02',
-    updated_at: '2023-01-02',
-    owner_id: 1,
-    owner_type: 'user',
-    is_public: false
-  }
+const mockCollections = [
+    mockCollection({
+        id: 1,
+        name: 'Test Collection 1',
+        collection_items_count: 5,
+        created_at: '2023-01-01',
+        updated_at: '2023-01-01',
+        owner_id: 1,
+        owner_type: 'user',
+        is_public: false
+    }),
+    mockCollection({
+        id: 2,
+        name: 'Test Collection 2',
+        collection_items_count: 10,
+        created_at: '2023-01-02',
+        updated_at: '2023-01-02',
+        owner_id: 1,
+        owner_type: 'user',
+        is_public: false
+    })
 ];
 
 // Mock the CollectionItemsContext
@@ -107,11 +107,6 @@ jest.mock('../../../../contexts/CollectionItemsContext', () => ({
 }));
 
 describe('MyCollectionsContent', () => {
-    const mockCollections = [
-        mockCollection({ id: 1, name: 'Collection 1' }),
-        mockCollection({ id: 2, name: 'Collection 2' })
-    ];
-
     const mockContextState: UserCollectionsContextState = {
         loadedData: mockCollections,
         refreshing: false,
@@ -202,7 +197,7 @@ describe('MyCollectionsContent', () => {
         const collection1Card = screen.getByTestId('collection-card-1');
         const collection2Card = screen.getByTestId('collection-card-2');
         
-        expect(collection1Card).toHaveTextContent('Collection 1');
-        expect(collection2Card).toHaveTextContent('Collection 2');
+        expect(collection1Card).toHaveTextContent('Test Collection 1');
+        expect(collection2Card).toHaveTextContent('Test Collection 2');
     });
 }); 

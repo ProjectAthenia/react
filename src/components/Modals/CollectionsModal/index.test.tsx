@@ -77,8 +77,16 @@ describe('CollectionsModalContent', () => {
   };
 
   const mockCollections = [
-    mockCollection({ id: 1, name: 'Collection 1', collection_items_count: 5 }),
-    mockCollection({ id: 2, name: 'Collection 2', collection_items_count: 10 })
+    mockCollection({ 
+      id: 1, 
+      name: 'Collection 1', 
+      collection_items_count: 5 
+    }),
+    mockCollection({ 
+      id: 2, 
+      name: 'Collection 2', 
+      collection_items_count: 10 
+    })
   ];
 
   // Mock function for onRequestClose
