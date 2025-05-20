@@ -11,8 +11,6 @@ export { mockAuthRequests } from './auth-requests';
 export { mockCategoryRequests } from './category-requests';
 export { mockCollectionManagementRequests } from './collection-management-requests';
 export { mockOrganizationRequests } from './organization-requests';
-export { mockPostManagementRequests } from './post-management-requests';
-export { mockUserPostRequests } from './user-post-requests';
 export { mockUserRequests } from './user-requests';
 
 // Import all request mocks for jest.mock
@@ -20,8 +18,6 @@ import { mockAuthRequests } from './auth-requests';
 import { mockCategoryRequests } from './category-requests';
 import { mockCollectionManagementRequests } from './collection-management-requests';
 import { mockOrganizationRequests } from './organization-requests';
-import { mockPostManagementRequests } from './post-management-requests';
-import { mockUserPostRequests } from './user-post-requests';
 import { mockUserRequests } from './user-requests';
 
 // Mock all request services
@@ -47,18 +43,6 @@ jest.mock('../../../services/requests/OrganizationRequests', () => ({
     __esModule: true,
     default: mockOrganizationRequests,
     ...mockOrganizationRequests
-}));
-
-jest.mock('../../../services/requests/PostManagementRequests', () => ({
-    __esModule: true,
-    default: mockPostManagementRequests,
-    ...mockPostManagementRequests
-}));
-
-jest.mock('../../../services/requests/UserPostRequests', () => ({
-    __esModule: true,
-    default: mockUserPostRequests,
-    ...mockUserPostRequests
 }));
 
 jest.mock('../../../services/requests/UserRequests', () => ({
