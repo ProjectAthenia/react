@@ -37,13 +37,12 @@ const mockCollections = [
 
 // Mock the CollectionItemsContext
 const mockCollectionItemsContext = {
-  1: {
+  1: mockPagination({
     loadedData: Array(5).fill({}),
     hasAnotherPage: false,
     initialLoadComplete: true,
     initiated: true,
     noResults: false,
-    refreshing: false,
     expands: [],
     order: {},
     filter: {},
@@ -59,14 +58,13 @@ const mockCollectionItemsContext = {
     removeModel: jest.fn(),
     getModel: jest.fn(),
     params: {}
-  },
-  2: {
+  }),
+  2: mockPagination({
     loadedData: Array(10).fill({}),
     hasAnotherPage: false,
     initialLoadComplete: true,
     initiated: true,
     noResults: false,
-    refreshing: false,
     expands: [],
     order: {},
     filter: {},
@@ -82,7 +80,7 @@ const mockCollectionItemsContext = {
     removeModel: jest.fn(),
     getModel: jest.fn(),
     params: {}
-  }
+  })
 };
 
 // Mock the CollectionCard component
