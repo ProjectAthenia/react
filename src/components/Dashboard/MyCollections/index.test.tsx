@@ -68,7 +68,9 @@ describe('MyCollections', () => {
       <MyCollections user={userWithoutId} />
     );
 
-    expect(container.firstChild).toBeNull();
+    // The component should not render any content, only the Mantine style element
+    expect(container.children.length).toBe(1);
+    expect(container.firstChild).toHaveAttribute('data-mantine-styles', 'classes');
   });
 
   test('renders My Collections header and create button', () => {
