@@ -51,6 +51,11 @@ jest.mock('../../../contexts/UserCollectionsContext', () => {
   };
 });
 
+// Mock the CollectionItemsContext
+jest.mock('../../../contexts/CollectionItemsContext', () => ({
+  CollectionItemsContextProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>
+}));
+
 describe('MyCollections', () => {
   const testUser = mockUser();
 
@@ -67,22 +72,27 @@ describe('MyCollections', () => {
   });
 
   it('renders nothing when user has no id', () => {
+    const userWithoutId = { ...testUser, id: undefined };
     const { container } = renderWithProviders(
-      <MyCollections user={{ ...testUser, id: undefined }} />
+      <MyCollections user={userWithoutId} />
     );
 
     expect(container.firstChild).toBeNull();
   });
 
   test('renders My Collections header and create button', () => {
-    render(<MyCollections user={testUser} />);
+    renderWithProviders(
+      <MyCollections user={testUser} />
+    );
     
     expect(screen.getByText('My Collections')).toBeInTheDocument();
     expect(screen.getByText('Create Collection')).toBeInTheDocument();
   });
 
   test('opens modal when create button is clicked', () => {
-    render(<MyCollections user={testUser} />);
+    renderWithProviders(
+      <MyCollections user={testUser} />
+    );
     
     const createButton = screen.getByText('Create Collection');
     fireEvent.click(createButton);
@@ -91,7 +101,9 @@ describe('MyCollections', () => {
   });
 
   test('closes modal when cancel button is clicked', async () => {
-    render(<MyCollections user={testUser} />);
+    renderWithProviders(
+      <MyCollections user={testUser} />
+    );
     
     // Open modal
     const createButton = screen.getByText('Create Collection');
@@ -156,7 +168,9 @@ describe('MyCollections', () => {
       )
     );
     
-    render(<MyCollections user={testUser} />);
+    renderWithProviders(
+      <MyCollections user={testUser} />
+    );
     
     // Open modal
     const createButton = screen.getByText('Create Collection');
@@ -191,7 +205,9 @@ describe('MyCollections', () => {
     // Mock the createCollection function to throw an error
     (CollectionManagementRequests.createCollection as jest.Mock).mockRejectedValue(new Error('Failed to create collection'));
     
-    render(<MyCollections user={testUser} />);
+    renderWithProviders(
+      <MyCollections user={testUser} />
+    );
     
     // Open modal
     const createButton = screen.getByText('Create Collection');
