@@ -7,6 +7,7 @@ import CollectionManagementRequests from '../../../services/requests/CollectionM
 import { mockUser } from '../../../test-utils/mocks/models';
 import { mockPagination } from '../../../test-utils/mocks';
 import { renderWithProviders } from '../../../test-utils';
+import Collection from '../../../models/user/collection';
 
 // Mock the CollectionManagementRequests
 jest.mock('../../../services/requests/CollectionManagementRequests', () => ({
@@ -22,9 +23,8 @@ jest.mock('../../../contexts/UserCollectionsContext', () => {
     UserCollectionsContext: {
       Consumer: ({ children }: { children: (value: UserCollectionsContextState) => React.ReactNode }) => (
         <div data-testid="mock-consumer">
-          {children({
+          {children(mockPagination<Collection>({
             loadedData: [],
-            refreshing: false,
             hasAnotherPage: false,
             initialLoadComplete: true,
             initiated: true,
@@ -44,7 +44,7 @@ jest.mock('../../../contexts/UserCollectionsContext', () => {
             removeModel: jest.fn(),
             getModel: jest.fn(),
             params: {}
-          })}
+          }))}
         </div>
       )
     }
@@ -130,9 +130,8 @@ describe('MyCollections', () => {
     jest.spyOn(UserCollectionsContext, 'Consumer').mockImplementation(
       ({ children }) => (
         <div data-testid="mock-consumer-spy">
-          {children({
+          {children(mockPagination<Collection>({
             loadedData: [],
-            refreshing: false,
             hasAnotherPage: false,
             initialLoadComplete: true,
             initiated: true,
@@ -152,7 +151,7 @@ describe('MyCollections', () => {
             removeModel: jest.fn(),
             getModel: jest.fn(),
             params: {}
-          })}
+          }))}
         </div>
       )
     );
