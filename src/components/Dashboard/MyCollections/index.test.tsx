@@ -1,9 +1,12 @@
+import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import MyCollections from './index';
 import User from '../../../models/user/user';
 import { UserCollectionsContext, UserCollectionsContextState } from '../../../contexts/UserCollectionsContext';
 import CollectionManagementRequests from '../../../services/requests/CollectionManagementRequests';
 import { mockUser } from '../../../test-utils/mocks/models';
+import { mockPagination } from '../../../test-utils/mocks';
+import { renderWithProviders } from '../../../test-utils';
 
 // Mock the CollectionManagementRequests
 jest.mock('../../../services/requests/CollectionManagementRequests', () => ({
@@ -55,8 +58,19 @@ describe('MyCollections', () => {
     jest.clearAllMocks();
   });
 
-  test('renders nothing when user has no id', () => {
-    const { container } = render(<MyCollections user={{ ...testUser, id: undefined }} />);
+  it('renders collections when user has id', () => {
+    renderWithProviders(
+      <MyCollections user={testUser} />
+    );
+
+    expect(screen.getByText('My Collections')).toBeInTheDocument();
+  });
+
+  it('renders nothing when user has no id', () => {
+    const { container } = renderWithProviders(
+      <MyCollections user={{ ...testUser, id: undefined }} />
+    );
+
     expect(container.firstChild).toBeNull();
   });
 

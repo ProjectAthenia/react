@@ -9,6 +9,7 @@ import { CollectionItemsContext } from '../../../../contexts/CollectionItemsCont
 import { mockCollection } from '../../../../test-utils/mocks/models/collection';
 import { mockCategoriesContextValue } from '../../../../test-utils/mocks/contexts';
 import { renderWithProviders } from '../../../../test-utils';
+import { mockPagination } from '../../../../test-utils/mocks';
 
 // Mock the UserCollectionsContextState type
 const mockCollections = [
@@ -107,15 +108,21 @@ jest.mock('../../../../contexts/CollectionItemsContext', () => ({
 }));
 
 describe('MyCollectionsContent', () => {
-    const mockContextState: UserCollectionsContextState = {
-        loadedData: mockCollections,
-        refreshing: false,
+    const mockContextState = mockPagination<Collection>({
+        loadedData: [
+            mockCollection({ id: 1, name: 'Collection 1' }),
+            mockCollection({ id: 2, name: 'Collection 2' })
+        ],
         hasAnotherPage: false,
+        initialLoadComplete: true,
         initiated: true,
         noResults: false,
-        initialLoadComplete: true,
-        limit: 20,
-        loadAll: false,
+        expands: [],
+        order: {},
+        filter: {},
+        search: {},
+        limit: 50,
+        loadAll: true,
         loadNext: jest.fn(),
         refreshData: jest.fn(),
         setFilter: jest.fn(),
@@ -124,12 +131,8 @@ describe('MyCollectionsContent', () => {
         addModel: jest.fn(),
         removeModel: jest.fn(),
         getModel: jest.fn(),
-        expands: [],
-        order: {},
-        filter: {},
-        search: {},
         params: {}
-    };
+    });
 
     const mockOnEditCollection = jest.fn();
 
@@ -197,7 +200,7 @@ describe('MyCollectionsContent', () => {
         const collection1Card = screen.getByTestId('collection-card-1');
         const collection2Card = screen.getByTestId('collection-card-2');
         
-        expect(collection1Card).toHaveTextContent('Test Collection 1');
-        expect(collection2Card).toHaveTextContent('Test Collection 2');
+        expect(collection1Card).toHaveTextContent('Collection 1');
+        expect(collection2Card).toHaveTextContent('Collection 2');
     });
 }); 
