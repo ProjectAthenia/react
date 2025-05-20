@@ -23,28 +23,7 @@ jest.mock('../../../contexts/UserCollectionsContext', () => {
     UserCollectionsContext: {
       Consumer: ({ children }: { children: (value: UserCollectionsContextState) => React.ReactNode }) => (
         <div data-testid="mock-consumer">
-          {children(mockPagination<Collection>({
-            loadedData: [],
-            hasAnotherPage: false,
-            initialLoadComplete: true,
-            initiated: true,
-            noResults: false,
-            expands: [],
-            order: {},
-            filter: {},
-            search: {},
-            limit: 50,
-            loadAll: true,
-            loadNext: jest.fn(),
-            refreshData: jest.fn(),
-            setFilter: jest.fn(),
-            setSearch: jest.fn(),
-            setOrder: jest.fn(),
-            addModel: jest.fn(),
-            removeModel: jest.fn(),
-            getModel: jest.fn(),
-            params: {}
-          }))}
+          {children(mockPagination<Collection>())}
         </div>
       )
     }
@@ -143,26 +122,7 @@ describe('MyCollections', () => {
       ({ children }) => (
         <div data-testid="mock-consumer-spy">
           {children(mockPagination<Collection>({
-            loadedData: [],
-            hasAnotherPage: false,
-            initialLoadComplete: true,
-            initiated: true,
-            noResults: false,
-            expands: [],
-            order: {},
-            filter: {},
-            search: {},
-            limit: 50,
-            loadAll: true,
-            loadNext: jest.fn(),
-            refreshData: jest.fn(),
-            setFilter: jest.fn(),
-            setSearch: jest.fn(),
-            setOrder: jest.fn(),
-            addModel: mockAddModel,
-            removeModel: jest.fn(),
-            getModel: jest.fn(),
-            params: {}
+            addModel: mockAddModel
           }))}
         </div>
       )
