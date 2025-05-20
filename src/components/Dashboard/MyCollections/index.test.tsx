@@ -8,6 +8,7 @@ import { mockUser } from '../../../test-utils/mocks/models';
 import { mockPagination } from '../../../test-utils/mocks';
 import { renderWithProviders } from '../../../test-utils';
 import Collection from '../../../models/user/collection';
+import CollectionItem from '../../../models/user/collection-items';
 
 // Mock the CollectionManagementRequests
 jest.mock('../../../services/requests/CollectionManagementRequests', () => ({
@@ -31,9 +32,20 @@ jest.mock('../../../contexts/UserCollectionsContext', () => {
 });
 
 // Mock the CollectionItemsContext
-jest.mock('../../../contexts/CollectionItemsContext', () => ({
-  CollectionItemsContextProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>
-}));
+jest.mock('../../../contexts/CollectionItemsContext', () => {
+  const originalModule = jest.requireActual('../../../contexts/CollectionItemsContext');
+  return {
+    ...originalModule,
+    CollectionItemsContextProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    CollectionItemsContext: {
+      Consumer: ({ children }: { children: (value: any) => React.ReactNode }) => (
+        <div data-testid="mock-collection-items-consumer">
+          {children(mockPagination<CollectionItem>())}
+        </div>
+      )
+    }
+  };
+});
 
 describe('MyCollections', () => {
   const testUser = mockUser();
