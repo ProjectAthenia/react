@@ -7,6 +7,7 @@ import Category from '../../models/category';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { mockCategory } from './models/category';
+import { mockPagination } from './pagination';
 
 // Mock appState
 (global as any).appState = {
@@ -25,7 +26,7 @@ import { mockCategory } from './models/category';
 export const mockSetFilter = jest.fn();
 
 // Base mock context state creator
-export const createBaseMockContextState = <T extends { id: number }>(data: T[]) => ({
+export const createBaseMockContextState = <T extends Category>(data: T[]) => mockPagination<T>({
     loadedData: data,
     initialLoadComplete: true,
     refreshing: false,
@@ -38,21 +39,21 @@ export const createBaseMockContextState = <T extends { id: number }>(data: T[]) 
     search: {},
     limit: 20,
     loadAll: false,
-    loadNext: jest.fn(),
-    refreshData: jest.fn(),
-    setFilter: mockSetFilter,
+    setFilter: jest.fn(),
     setSearch: jest.fn(),
     setOrder: jest.fn(),
     addModel: jest.fn(),
     removeModel: jest.fn(),
     getModel: jest.fn(),
-    params: {}
+    params: {},
+    loadNext: jest.fn(),
+    refreshData: jest.fn()
 });
 
 // Mock CategoriesContext
 export const mockCategoriesContextValue = {
     ...createBaseMockContextState([
-        { id: 1, name: 'Test Category', can_be_primary: true }
+        mockCategory({ id: 1, name: 'Test Category', can_be_primary: true })
     ])
 };
 
