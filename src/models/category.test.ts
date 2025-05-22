@@ -1,10 +1,11 @@
 import { findCategory, removeCategoryFromList, isCategoryEligibleForProPlan, generateEmptyCategory } from '../util/category-utils';
+import { mockCategory } from '../test-utils/mocks/models/category';
 
 describe('Category Model', () => {
   const mockCategories = [
-    { id: 1, name: 'Action', description: 'Action games', can_be_primary: true },
-    { id: 2, name: 'RPG', description: 'Role-playing games', can_be_primary: true },
-    { id: 3, name: 'Strategy', description: 'Strategy games', can_be_primary: false },
+    mockCategory({ id: 1, name: 'Action', description: 'Action games', can_be_primary: true }),
+    mockCategory({ id: 2, name: 'RPG', description: 'Role-playing games', can_be_primary: true }),
+    mockCategory({ id: 3, name: 'Strategy', description: 'Strategy games', can_be_primary: false })
   ];
 
   describe('findCategory', () => {

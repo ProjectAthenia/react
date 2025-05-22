@@ -6,6 +6,7 @@ import { CategoriesContextState, CategoriesContext } from '../../contexts/Catego
 import Category from '../../models/category';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
+import { mockCategory } from './models/category';
 
 // Mock appState
 (global as any).appState = {
@@ -24,7 +25,7 @@ import configureStore from 'redux-mock-store';
 export const mockSetFilter = jest.fn();
 
 // Base mock context state creator
-export const createBaseMockContextState = <T extends { id: number }>(data: T[]) => ({
+export const createBaseMockContextState = <T>(data: T[]) => ({
     loadedData: data,
     initialLoadComplete: true,
     refreshing: false,
@@ -50,8 +51,8 @@ export const createBaseMockContextState = <T extends { id: number }>(data: T[]) 
 
 // Mock CategoriesContext
 export const mockCategoriesContextValue = {
-    ...createBaseMockContextState([
-        { id: 1, name: 'Test Category', can_be_primary: true }
+    ...createBaseMockContextState<Category>([
+        mockCategory({ id: 1, name: 'Test Category', can_be_primary: true, description: 'Test category description' })
     ])
 };
 
