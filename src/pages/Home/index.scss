@@ -1,4 +1,40 @@
-#home-page {
+.home-splitpane {
+  max-width: 1024px;
+  margin: 0 auto;
+  .home-tabs-content {
+    .home-tabs {
+      --border: 0;
+      padding: 1vw;
+      margin-bottom: 15px;
+      .profile-image {
+        width: 8vw;
+        height: 8vw;
+      }
+      .icon {
+        font-size: 7.5vw;
+        &.primary-tab{
+          --color: var(--color-primary);
+        }
+      }
+    }
+  }
 }
 
 @import "./responsive";
+
+.home-tabs-content {
+  --safe-area-bottom: 15px;
+  
+  &.hidden {
+    display: none;
+  }
+  
+  .content {
+    margin-bottom: var(--safe-area-bottom);
+  }
+  
+  .icon {
+    font-size: 24px;
+    color: var(--primary-color);
+  }
+}

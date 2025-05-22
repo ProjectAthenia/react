@@ -1,6 +1,5 @@
-import {api} from '../api'
+import api from '../api'
 import User from '../../models/user/user';
-import {SignUpData} from '../../contexts/signin/SignUpContext';
 import {storeReceivedToken} from '../AuthManager';
 
 export interface LoginReq {
@@ -8,6 +7,13 @@ export interface LoginReq {
 	email?: string
 	phone?: string
 	password?: string
+}
+
+export interface SignUpData {
+	email: string;
+	password: string;
+	first_name: string;
+	last_name: string;
 }
 
 export default class AuthRequests {
@@ -31,16 +37,9 @@ export default class AuthRequests {
 	 * @param submissionData
 	 */
 	static async signUp(submissionData: SignUpData): Promise<true> {
-
-		const {invitation_token, age, ...data} = submissionData;
-
-		if (invitation_token) {
-			(data as any)['invitation_token'] = invitation_token
-		}
-
 		const {
 			data: { token }
-		} = await api.post('/auth/sign-up', data);
+		} = await api.post('/auth/sign-up', submissionData);
 
 		storeReceivedToken(token);
 
@@ -53,12 +52,6 @@ export default class AuthRequests {
 	static async getMe() : Promise<User> {
 		const { data } = await api.get('/users/me', {
 			params: {
-				'expand[invitationToken]': '*',
-				'expand[organizationManagers]': '*',
-				'expand[organizationManagers.organization]': '*',
-				'expand[organizationManagers.organization.businesses]': '*',
-				'expand[organizationManagers.organization.businesses.mainCategory]': '*',
-				'expand[followedCategories]': '*',
 				'expand[roles]': '*',
 			}
 		});

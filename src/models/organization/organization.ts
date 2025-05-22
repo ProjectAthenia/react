@@ -1,4 +1,3 @@
-import Business from './business';
 import BaseEntityModel from '../entities';
 
 /**
@@ -20,11 +19,6 @@ export default interface Organization extends BaseEntityModel {
      * The profile image for this organization if set
      */
     profile_image_url?: string;
-
-    /**
-     * All businesses for this organization
-     */
-    businesses?: Business[];
 }
 
 /**

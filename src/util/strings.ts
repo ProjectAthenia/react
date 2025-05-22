@@ -5,7 +5,7 @@
  * @param length
  * @param ellipsisSign
  */
-export function ellipsisText(text: string, length: number, ellipsisSign?: string): string
+export function ellipsisText(text: string, length: number, ellipsisSign: string = '...'): string
 {
     if (!text) {
         return '';
@@ -16,13 +16,7 @@ export function ellipsisText(text: string, length: number, ellipsisSign?: string
     }
 
     const stripped = text.replace(/(<([^>]+)>)/gi, "");
-
-    const cutString = stripped.substring(0, length);
-    const reversed = cutString.split("").reverse().join("")
-    const lastSpaceIndex = length - reversed.indexOf(' ') - 1;
-
-    const returningString = stripped.substring(0, lastSpaceIndex);
-    return returningString.replace(/([.,\/#!$%\^&\*;:{}=\-_`~()\]\[])+$/g, "") + (ellipsisSign ? ellipsisSign : '');
+    return stripped.substring(0, length) + ellipsisSign;
 }
 
 /**
@@ -32,15 +26,18 @@ export function ellipsisText(text: string, length: number, ellipsisSign?: string
  */
 export function grammaticalList(listItems: string[]): string
 {
-    let list = ''
-    if( listItems.length < 3 ) {
-        list = listItems.join(' and ')
+    if (listItems.length === 0) {
+        return '';
     }
-    else {
-        let lastItem = listItems.splice(listItems.length-1)
-        list = listItems.join( ', ' ) + ', and ' + lastItem
+    if (listItems.length === 1) {
+        return listItems[0];
     }
-    return list
+    if (listItems.length === 2) {
+        return `${listItems[0]} and ${listItems[1]}`;
+    }
+    const lastItem = listItems[listItems.length - 1];
+    const otherItems = listItems.slice(0, -1);
+    return `${otherItems.join(', ')} and ${lastItem}`;
 }
 
 /**
@@ -48,23 +45,26 @@ export function grammaticalList(listItems: string[]): string
  * if the http header is missing from the string
  * @param url
  */
-export function addHttpPrefix(url: string): string
+export function addHttpPrefix(url: string | null): string
 {
-    const trimmedURL = url.trim()
-    if (trimmedURL.length == 0) {
+    if (!url) {
         return '';
     }
-    const validHttp = trimmedURL.startsWith('http')
+    const trimmedURL = url.trim();
+    if (trimmedURL.length === 0) {
+        return '';
+    }
+    const validHttp = trimmedURL.startsWith('http');
 
     if(!validHttp && trimmedURL.indexOf('://') > -1 ) {
-        let replacer = 'http://'
+        let replacer = 'http://';
         if( trimmedURL.indexOf('s://') > -1 ) {
-            replacer = 'https://'
+            replacer = 'https://';
         }
-        return trimmedURL.replace( /((.|[\n\r])*):\/\//g, replacer )
+        return trimmedURL.replace( /((.|[\n\r])*):\/\//g, replacer );
     }
 
-    return (!validHttp ? 'http://' : '') + trimmedURL
+    return (!validHttp ? 'http://' : '') + trimmedURL;
 }
 
 /**
@@ -76,26 +76,31 @@ export function addHttpPrefix(url: string): string
  */
 export function convertHexColorToBrightness(color: string): number
 {
-    const RBGColor = parseInt(color.substring(1), 16)
-    const r = (RBGColor >> 16) & 0xff
-    const g = (RBGColor >>  8) & 0xff
-    const b = (RBGColor >>  0) & 0xff
+    const hex = color.startsWith('#') ? color.substring(1) : color;
+    const RBGColor = parseInt(hex, 16);
+    const r = (RBGColor >> 16) & 0xff;
+    const g = (RBGColor >>  8) & 0xff;
+    const b = (RBGColor >>  0) & 0xff;
 
-    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+    return Math.round(0.2126 * r + 0.7152 * g + 0.0722 * b);
 }
 
 /**
  * Passes back initials for whatever was passed in
  * @param name
  */
-export function initialize(name: string): string
+export function initialize(name: string | null): string
 {
-    const nameParts = name.split(' ');
-
-    if (nameParts.length > 0) {
-        const initials = nameParts.shift()!.charAt(0) + (nameParts.length > 1 ? nameParts.pop()!.charAt(0) : '');
-        return initials.toUpperCase();
+    if (!name) {
+        return '';
     }
+    const nameParts = name.trim().split(/\s+/);
 
-    return "";
+    if (nameParts.length === 0) {
+        return '';
+    }
+    if (nameParts.length === 1) {
+        return nameParts[0].charAt(0).toUpperCase();
+    }
+    return (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase();
 }

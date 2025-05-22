@@ -1,19 +1,57 @@
-import Category, {isCategoryEligibleForProPlan} from "./category";
+import { findCategory, removeCategoryFromList, isCategoryEligibleForProPlan, generateEmptyCategory } from '../util/category-utils';
+import { mockCategory } from '../test-utils/mocks/models/category';
 
-test('isCategoryEligibleForProPlan returns true if category is eligble', () => {
-    const category = {
-        name: 'art',
-        can_be_primary: true
-    } as Category;
-    const result = isCategoryEligibleForProPlan(category);
-    expect(result).toBeTruthy();
-})
+describe('Category Model', () => {
+  const mockCategories = [
+    mockCategory({ id: 1, name: 'Action', description: 'Action games', can_be_primary: true }),
+    mockCategory({ id: 2, name: 'RPG', description: 'Role-playing games', can_be_primary: true }),
+    mockCategory({ id: 3, name: 'Strategy', description: 'Strategy games', can_be_primary: false })
+  ];
 
-test('isCategoryEligibleForProPlan returns false if the can_be_primary is false', () => {
-    const category = {
-        name: 'art',
+  describe('findCategory', () => {
+    it('finds a category by name (case insensitive)', () => {
+      const foundCategory = findCategory(mockCategories, 'action');
+      expect(foundCategory).toEqual(mockCategories[0]);
+    });
+
+    it('returns undefined if category is not found', () => {
+      const foundCategory = findCategory(mockCategories, 'non-existent');
+      expect(foundCategory).toBeUndefined();
+    });
+  });
+
+  describe('removeCategoryFromList', () => {
+    it('removes a category by name (case insensitive)', () => {
+      const updatedCategories = removeCategoryFromList(mockCategories, 'action');
+      expect(updatedCategories).toHaveLength(2);
+      expect(updatedCategories).not.toContainEqual(mockCategories[0]);
+    });
+
+    it('returns the original list if category is not found', () => {
+      const updatedCategories = removeCategoryFromList(mockCategories, 'non-existent');
+      expect(updatedCategories).toEqual(mockCategories);
+    });
+  });
+
+  describe('isCategoryEligibleForProPlan', () => {
+    it('returns true if category can be primary', () => {
+      const isEligible = isCategoryEligibleForProPlan(mockCategories[0]);
+      expect(isEligible).toBe(true);
+    });
+
+    it('returns false if category cannot be primary', () => {
+      const isEligible = isCategoryEligibleForProPlan(mockCategories[2]);
+      expect(isEligible).toBe(false);
+    });
+  });
+
+  describe('generateEmptyCategory', () => {
+    it('generates an empty category with default values', () => {
+      const emptyCategory = generateEmptyCategory();
+      expect(emptyCategory).toEqual({
+        name: '',
         can_be_primary: false
-    } as Category;
-    const result = isCategoryEligibleForProPlan(category);
-    expect(result).toBeFalsy();
-})
+      });
+    });
+  });
+});

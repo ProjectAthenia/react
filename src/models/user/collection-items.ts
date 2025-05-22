@@ -1,8 +1,7 @@
 import BaseModel from '../base-model';
-import Post from "../post/post";
-
-export type CollectionItemType = 'post';
-export type CollectionItemTypes = Post;
+import { HasType } from '../has-type';
+import Category from '../category';
+import { CollectionItemCategory } from './collection-item-category';
 
 /**
  * The data interface for albums
@@ -17,7 +16,7 @@ export default interface CollectionItem extends BaseModel {
 	/**
 	 * The type of the collection item
 	 */
-	item_type?: CollectionItemType;
+	item_type: string;
 
 	/**
 	 * The collection id
@@ -32,5 +31,10 @@ export default interface CollectionItem extends BaseModel {
 	/**
 	 * The item object
 	 */
-	item?: CollectionItemTypes;
+	item?: HasType;
+
+	/**
+	 * The categories of the item
+	 */
+	collection_item_categories?: CollectionItemCategory[];
 }

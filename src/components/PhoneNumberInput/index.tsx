@@ -29,7 +29,7 @@ const PhoneNumberInput: React.FC<PhoneNumberInputProps> = ({name, value, placeho
             value={decoratePhoneNumber(value)}
             maxLength={14}
             placeholder={placeholder}
-            onChange={(event: any) => onDecoratedChange(event.detail.value!)}
+            onChange={(event) => onDecoratedChange(event.target.value)}
             autoComplete={"tel"}
             ref={phoneInputRef}
             {...rest}
@@ -38,7 +38,6 @@ const PhoneNumberInput: React.FC<PhoneNumberInputProps> = ({name, value, placeho
 }
 
 export function decoratePhoneNumber(phoneNumber: string): string {
-
     const numberParts = phoneNumber.match(/[0-9]{0,3}/g) ?? []
     const decoratedParts = numberParts.map((numberSet, index) => {
         if(index == 0 && numberSet.length) {

@@ -1,8 +1,8 @@
 import React from 'react';
-import { render } from '@testing-library/react';
 import Footnote from './index';
+import { renderWithRouter } from '../../test-utils';
 
 test('renders Footnote without crashing', () => {
-    const { baseElement } = render(<Footnote>A title</Footnote>);
+    const { baseElement } = renderWithRouter(<Footnote>A title</Footnote>);
     expect(baseElement).toBeDefined();
 });

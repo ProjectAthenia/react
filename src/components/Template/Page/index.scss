@@ -1,5 +1,25 @@
-.page {
-  margin: 0 auto;
-  padding: 20px 0;
-  max-width: 1080px;
+#wrapper {
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 250px;
+  transition: all 0.3s;
+}
+
+.sidebar.collapsed {
+  width: 0;
+  overflow: hidden;
+}
+
+#page-content-wrapper {
+  transition: margin 0.3s;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: absolute;
+    z-index: 1000;
+    height: 100%;
+  }
 }

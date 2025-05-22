@@ -1,17 +1,19 @@
+/**
+ * The base model interface that all models should extend
+ */
 export default interface BaseModel {
-
     /**
-     * auto incrementing id
+     * The id of the model
      */
     id?: number;
 
     /**
-     * Every model has a created at timestamp
+     * When the model was created
      */
     created_at?: string;
 
     /**
-     * Every model has an updated at timestamp
+     * When the model was last updated
      */
     updated_at?: string;
 }
@@ -22,5 +24,5 @@ export default interface BaseModel {
  */
 export function filterUnique<Type extends BaseModel>(models: Type[]) : Type[] {
     return models
-        .filter((value, index, self) => self.findIndex(v => v.id === value.id) === index)
+        .filter((value, index, self) => self.findIndex(v => v.id === value.id) === index);
 }

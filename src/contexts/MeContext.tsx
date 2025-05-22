@@ -6,10 +6,13 @@ import {connect} from '../data/connect';
 import LoadingScreen from '../components/LoadingScreen';
 import NetworkError from '../components/Errors/NetworkError';
 import {useHistory} from "react-router-dom";
+import { AppState } from '../data/state';
 
 interface MeContextState {
     me: User,
     networkError: boolean,
+    isLoggedIn: boolean,
+    isLoading: boolean,
 }
 
 export interface MeContextStateConsumer extends MeContextState {
@@ -19,6 +22,8 @@ export interface MeContextStateConsumer extends MeContextState {
 let persistedState = {
     me: placeholderUser(),
     networkError: false,
+    isLoggedIn: false,
+    isLoading: true,
 } as MeContextState;
 
 let meRequest: Promise<User>|null = null;
@@ -39,6 +44,8 @@ const setPersistedState = (me: User) => {
     persistedState = {
         me: {...me},
         networkError: false,
+        isLoggedIn: !!me.id,
+        isLoading: false,
     };
     Object.values(meSubscriptions).forEach(callback => callback(persistedState));
 }
@@ -46,7 +53,9 @@ const setPersistedState = (me: User) => {
 const setNetworkError = () => {
     persistedState = {
         ...persistedState,
-        networkError : true,
+        networkError: true,
+        isLoggedIn: false,
+        isLoading: false,
     }
     Object.values(meSubscriptions).forEach(callback => callback(persistedState));
 }
@@ -57,33 +66,38 @@ interface OwnProps {
     reset?: boolean
 }
 
+interface StateProps {
+    tokenData?: { token: string; receivedAt: number };
+}
+
 interface DispatchProps {
     logOut: typeof logOut,
 }
 
-interface MeContextProviderProps extends OwnProps, DispatchProps {
+interface MeContextProviderProps extends OwnProps, StateProps, DispatchProps {
 }
 
 /**
  * Allows child components the ability to easily use the information of the currently logged in user
  */
-const MeContextProvider: React.FC<PropsWithChildren<MeContextProviderProps>> = ({hideLoadingSpace, logOut, optional, reset, ...props}) => {
+const MeContextProvider: React.FC<PropsWithChildren<MeContextProviderProps>> = ({hideLoadingSpace, logOut, optional, reset, tokenData, ...props}) => {
     const [meContext, setMeContext] = useState(persistedState);
     const [instanceKey, _] = useState(Math.random() + "-" + Date.now());
     const history = useHistory();
 
-
     useEffect(() => {
         meSubscriptions[instanceKey] = setMeContext;
 
-        if (!meContext.me.id) {
+        if (!meContext.me.id && tokenData?.token) {
             loadInfo();
+        } else if (!tokenData?.token) {
+            setPersistedState(placeholderUser());
         }
 
         return () => {
             delete meSubscriptions[instanceKey];
         }
-    }, []);
+    }, [tokenData]);
 
     const goToSignIn = () => {
         if (!optional) {
@@ -95,14 +109,13 @@ const MeContextProvider: React.FC<PropsWithChildren<MeContextProviderProps>> = (
     }
 
     const loadInfo = async () => {
-        if (!meRequest && !meContext.me.id) {
+        if (!meRequest && !meContext.me.id && tokenData?.token) {
             try {
                 meRequest = AuthRequests.getMe();
                 const me = await meRequest;
 
                 setPersistedState(me);
             } catch(error: any)  {
-
                 if (error.status) {
                     const ignoredStatuses = [
                         429, 499,
@@ -131,7 +144,7 @@ const MeContextProvider: React.FC<PropsWithChildren<MeContextProviderProps>> = (
 
     return (
         <MeContext.Provider value={fullContext}>
-            {fullContext.me.id ? props.children :
+            {!meContext.isLoading ? props.children :
                 (hideLoadingSpace ? '' :
                     (meContext.networkError ?
                         <NetworkError/> :
@@ -143,7 +156,10 @@ const MeContextProvider: React.FC<PropsWithChildren<MeContextProviderProps>> = (
     )
 };
 
-export default connect<PropsWithChildren<OwnProps>, { }, DispatchProps>({
+export default connect<PropsWithChildren<OwnProps>, StateProps, DispatchProps>({
+    mapStateToProps: (state: AppState) => ({
+        tokenData: state.persistent.tokenData
+    }),
     mapDispatchToProps: ({
         logOut,
     }),

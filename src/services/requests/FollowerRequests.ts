@@ -1,4 +1,4 @@
-import {api} from '../api';
+import api from '../api';
 import Follower from '../../models/user/follower';
 import Location from '../../models/location/location';
 import User from '../../models/user/user';

@@ -1,20 +1,17 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import './index.scss';
+import Page from "../../components/Template/Page";
 
+const Home: React.FC = () => {
+  return (
+    <Page>
+      <div className="home-content" data-testid="home-content">
+      </div>
+    </Page>
+  );
+};
 
-interface HomeProps {
-}
-
-const Home: React.FC<HomeProps> = (props) => {
-
-    return (
-        <section id={"home-page"}>
-            <h1>Home Page</h1>
-        </section>
-    )
-}
-
-export default Home
+export default Home;
 
 
 

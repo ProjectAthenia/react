@@ -15,11 +15,16 @@ interface AuthenticatedRouteProps extends OwnProps, StateProps {
 }
 
 const AuthenticatedRoute: React.FC<AuthenticatedRouteProps> = ({ children, tokenData, ...rest }) => {
-
     return (
-        <Route {...rest}>
-            {tokenData ? children :  <Redirect to="/splash" />}
-        </Route>
+        <>
+            {tokenData ? (
+                <Route {...rest} >
+                    {children}
+                </Route>
+            ) : (
+                <Redirect to="/splash" />
+            )}
+        </>
     )
 }
 
