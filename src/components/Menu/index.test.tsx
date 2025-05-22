@@ -35,7 +35,6 @@ describe('Menu', () => {
         );
 
         expect(screen.getByText('Browse')).toBeInTheDocument();
-        expect(screen.getByText('Data View')).toBeInTheDocument();
         expect(screen.getByText('Sign In')).toBeInTheDocument();
         expect(screen.getByText('Sign Up')).toBeInTheDocument();
         expect(screen.queryByText('Settings')).not.toBeInTheDocument();
@@ -58,7 +57,6 @@ describe('Menu', () => {
         );
 
         expect(screen.getByText('Browse')).toBeInTheDocument();
-        expect(screen.getByText('Data View')).toBeInTheDocument();
         expect(screen.getByText('Settings')).toBeInTheDocument();
         expect(screen.queryByText('Sign In')).not.toBeInTheDocument();
         expect(screen.queryByText('Sign Up')).not.toBeInTheDocument();

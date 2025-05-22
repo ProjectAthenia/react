@@ -8,9 +8,6 @@ const Menu: React.FC = () => {
             <MenuLink to="/browse">
                 Browse
             </MenuLink>
-            <MenuLink to="/data-view">
-                Data View
-            </MenuLink>
             <MeContextProvider optional hideLoadingSpace>
                 <MeContext.Consumer>
                     {context => (
