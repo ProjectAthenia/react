@@ -10,7 +10,7 @@ import {
     CollectionItemsContextProvider
 } from '../../../contexts/CollectionItemsContext';
 import MyCollectionsContent from './MyCollectionsContent';
-import GameMuseumModal from '../../GeneralUIElements/Modal';
+import ContentModal from '../../GeneralUIElements/Modal';
 import CollectionForm from '../../Forms/CollectionForm';
 import CollectionManagementRequests from '../../../services/requests/CollectionManagementRequests';
 import Collection from '../../../models/user/collection';
@@ -122,7 +122,7 @@ const MyCollections: React.FC<MyCollectionsProps> = ({user}) => {
                             />
                         </CollectionItemsContextProvider>
 
-                        <GameMuseumModal
+                        <ContentModal
                             isOpen={isModalOpen}
                             onRequestClose={handleModalClose}
                             title={editingCollection ? "Edit Collection" : "Create New Collection"}
@@ -138,7 +138,7 @@ const MyCollections: React.FC<MyCollectionsProps> = ({user}) => {
                                 initialValues={editingCollection || undefined}
                                 isEditing={!!editingCollection}
                             />
-                        </GameMuseumModal>
+                        </ContentModal>
                     </div>
                 )}
             </UserCollectionsContext.Consumer>

@@ -6,18 +6,22 @@ export interface ModalProps {
   onRequestClose: () => void;
   title?: string;
   className?: string;
+  overlayClassName?: string;
+  contentLabel?: string;
 }
 
-interface GameMuseumModalProps extends ModalProps {
+interface ContentModalProps extends ModalProps {
   children: React.ReactNode;
 }
 
-const GameMuseumModal: React.FC<GameMuseumModalProps> = ({
+const ContentModal: React.FC<ContentModalProps> = ({
   isOpen,
   onRequestClose,
   title,
   children,
   className = '',
+  overlayClassName = '',
+  contentLabel,
 }) => {
   // Prevent scrolling when modal is open
   useEffect(() => {
@@ -36,11 +40,16 @@ const GameMuseumModal: React.FC<GameMuseumModalProps> = ({
 
   return (
     <div className="game-museum-modal">
-      <div className="modal-overlay" onClick={onRequestClose} data-testid="modal-overlay">
+      <div 
+        className={`modal-overlay ${overlayClassName}`} 
+        onClick={onRequestClose} 
+        data-testid="modal-overlay"
+      >
         <div 
           className={`modal-content ${className}`}
           onClick={e => e.stopPropagation()}
           data-testid="modal-content"
+          aria-label={contentLabel}
         >
           <div className="modal-header">
             {title && <h2 className="modal-title">{title}</h2>}
@@ -61,4 +70,4 @@ const GameMuseumModal: React.FC<GameMuseumModalProps> = ({
   );
 };
 
-export default GameMuseumModal; 
+export default ContentModal; 

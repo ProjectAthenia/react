@@ -11,7 +11,7 @@ import CollectionManagementRequests from '../../../services/requests/CollectionM
 import { CollectionItemsContextState } from '../../../contexts/CollectionItemsContext';
 import './index.scss';
 import { HasType } from '../../../models/has-type';
-import GameMuseumModal, { ModalProps } from '../../GeneralUIElements/Modal';
+import ContentModal, { ModalProps } from '../../GeneralUIElements/Modal';
 import CollectionItemComponent from './CollectionItem';
 
 interface CollectionsModalProps extends ModalProps {
@@ -50,8 +50,13 @@ const CollectionsModal: React.FC<CollectionsModalProps> = ({
             : { id: 0, type: 'unknown' } as HasType
         : items as HasType;
 
+    // If we don't have a valid item, don't render the modal content
+    if (!firstItem) {
+        return null;
+    }
+
     return (
-        <GameMuseumModal
+        <ContentModal
             isOpen={isOpen}
             onRequestClose={onRequestClose}
             title={isBulkOperation 
@@ -86,7 +91,7 @@ const CollectionsModal: React.FC<CollectionsModalProps> = ({
                     </div>
                 )}
             </CollectionItemsContext.Consumer>
-        </GameMuseumModal>
+        </ContentModal>
     );
 };
 

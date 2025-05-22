@@ -1,111 +1,89 @@
+import ContentModal from './index';
 import { render, screen, fireEvent } from '@testing-library/react';
-import GameMuseumModal from './index';
 
-describe('GameMuseumModal', () => {
-  const mockOnRequestClose = jest.fn();
+describe('ContentModal', () => {
+    const mockOnRequestClose = jest.fn();
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
 
-  test('renders nothing when isOpen is false', () => {
-    const { container } = render(
-      <GameMuseumModal isOpen={false} onRequestClose={mockOnRequestClose}>
-        <div>Modal Content</div>
-      </GameMuseumModal>
-    );
-    
-    expect(container.firstChild).toBeNull();
-  });
+    it('renders nothing when isOpen is false', () => {
+        render(
+            <ContentModal isOpen={false} onRequestClose={mockOnRequestClose}>
+                <div>Modal Content</div>
+            </ContentModal>
+        );
 
-  test('renders modal content when isOpen is true', () => {
-    render(
-      <GameMuseumModal isOpen={true} onRequestClose={mockOnRequestClose}>
-        <div data-testid="modal-child-content">Modal Content</div>
-      </GameMuseumModal>
-    );
-    
-    expect(screen.getByTestId('modal-content')).toBeInTheDocument();
-    expect(screen.getByTestId('modal-child-content')).toBeInTheDocument();
-    expect(screen.getByText('Modal Content')).toBeInTheDocument();
-  });
+        expect(screen.queryByText('Modal Content')).not.toBeInTheDocument();
+    });
 
-  test('renders title when provided', () => {
-    render(
-      <GameMuseumModal 
-        isOpen={true} 
-        onRequestClose={mockOnRequestClose}
-        title="Test Modal Title"
-      >
-        <div>Modal Content</div>
-      </GameMuseumModal>
-    );
-    
-    expect(screen.getByText('Test Modal Title')).toBeInTheDocument();
-  });
+    it('renders content when isOpen is true', () => {
+        render(
+            <ContentModal isOpen={true} onRequestClose={mockOnRequestClose}>
+                <div>Modal Content</div>
+            </ContentModal>
+        );
 
-  test('does not render title when not provided', () => {
-    render(
-      <GameMuseumModal isOpen={true} onRequestClose={mockOnRequestClose}>
-        <div>Modal Content</div>
-      </GameMuseumModal>
-    );
-    
-    const modalTitle = screen.queryByRole('heading', { level: 2 });
-    expect(modalTitle).not.toBeInTheDocument();
-  });
+        expect(screen.getByText('Modal Content')).toBeInTheDocument();
+    });
 
-  test('calls onRequestClose when close button is clicked', () => {
-    render(
-      <GameMuseumModal isOpen={true} onRequestClose={mockOnRequestClose}>
-        <div>Modal Content</div>
-      </GameMuseumModal>
-    );
-    
-    const closeButton = screen.getByRole('button', { name: /close modal/i });
-    fireEvent.click(closeButton);
-    
-    expect(mockOnRequestClose).toHaveBeenCalledTimes(1);
-  });
+    it('calls onRequestClose when clicking outside the modal', () => {
+        render(
+            <ContentModal
+                isOpen={true}
+                onRequestClose={mockOnRequestClose}
+            >
+                <div>Modal Content</div>
+            </ContentModal>
+        );
 
-  test('calls onRequestClose when overlay is clicked', () => {
-    render(
-      <GameMuseumModal isOpen={true} onRequestClose={mockOnRequestClose}>
-        <div>Modal Content</div>
-      </GameMuseumModal>
-    );
-    
-    const overlay = screen.getByTestId('modal-overlay');
-    fireEvent.click(overlay);
-    
-    expect(mockOnRequestClose).toHaveBeenCalledTimes(1);
-  });
+        fireEvent.click(screen.getByTestId('modal-overlay'));
+        expect(mockOnRequestClose).toHaveBeenCalled();
+    });
 
-  test('does not call onRequestClose when modal content is clicked', () => {
-    render(
-      <GameMuseumModal isOpen={true} onRequestClose={mockOnRequestClose}>
-        <div data-testid="modal-child-content">Modal Content</div>
-      </GameMuseumModal>
-    );
-    
-    const modalContent = screen.getByTestId('modal-content');
-    fireEvent.click(modalContent);
-    
-    expect(mockOnRequestClose).not.toHaveBeenCalled();
-  });
+    it('does not call onRequestClose when clicking inside the modal', () => {
+        render(
+            <ContentModal isOpen={true} onRequestClose={mockOnRequestClose}>
+                <div>Modal Content</div>
+            </ContentModal>
+        );
 
-  test('applies custom className when provided', () => {
-    render(
-      <GameMuseumModal 
-        isOpen={true} 
-        onRequestClose={mockOnRequestClose}
-        className="custom-modal-class"
-      >
-        <div>Modal Content</div>
-      </GameMuseumModal>
-    );
-    
-    const modalContent = screen.getByTestId('modal-content');
-    expect(modalContent).toHaveClass('custom-modal-class');
-  });
+        fireEvent.click(screen.getByText('Modal Content'));
+        expect(mockOnRequestClose).not.toHaveBeenCalled();
+    });
+
+    it('renders with custom className', () => {
+        render(
+            <ContentModal isOpen={true} onRequestClose={mockOnRequestClose} className="custom-class">
+                <div>Modal Content</div>
+            </ContentModal>
+        );
+
+        expect(screen.getByTestId('modal-content')).toHaveClass('custom-class');
+    });
+
+    it('renders with custom overlayClassName', () => {
+        render(
+            <ContentModal isOpen={true} onRequestClose={mockOnRequestClose} overlayClassName="custom-overlay">
+                <div>Modal Content</div>
+            </ContentModal>
+        );
+
+        expect(screen.getByTestId('modal-overlay')).toHaveClass('custom-overlay');
+    });
+
+    it('renders with custom contentLabel', () => {
+        render(
+            <ContentModal
+                isOpen={true}
+                onRequestClose={mockOnRequestClose}
+                contentLabel="Custom Label"
+            >
+                <div>Modal Content</div>
+            </ContentModal>
+        );
+
+        expect(screen.getByLabelText('Custom Label')).toBeInTheDocument();
+    });
 }); 

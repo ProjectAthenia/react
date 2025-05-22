@@ -105,7 +105,7 @@ describe('CategoryAutocomplete', () => {
     fireEvent.click(screen.getByText('Action'));
     
     // Verify onSelect was called with the correct category
-    expect(mockOnSelect).toHaveBeenCalledWith({ id: 1, name: 'Action', can_be_primary: true });
+    expect(mockOnSelect).toHaveBeenCalledWith({ id: 1, name: 'Action', can_be_primary: true, description: '' });
   });
 
   it('creates a new category when selecting a non-existent one', async () => {
