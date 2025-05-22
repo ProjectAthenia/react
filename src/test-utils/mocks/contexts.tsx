@@ -25,7 +25,7 @@ import { mockCategory } from './models/category';
 export const mockSetFilter = jest.fn();
 
 // Base mock context state creator
-export const createBaseMockContextState = <T>(data: T[]) => ({
+export const createBaseMockContextState = <T extends { id: number }>(data: T[]) => ({
     loadedData: data,
     initialLoadComplete: true,
     refreshing: false,
@@ -51,8 +51,8 @@ export const createBaseMockContextState = <T>(data: T[]) => ({
 
 // Mock CategoriesContext
 export const mockCategoriesContextValue = {
-    ...createBaseMockContextState<Category>([
-        mockCategory({ id: 1, name: 'Test Category', can_be_primary: true, description: 'Test category description' })
+    ...createBaseMockContextState([
+        { id: 1, name: 'Test Category', can_be_primary: true }
     ])
 };
 
