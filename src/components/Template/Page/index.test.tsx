@@ -18,7 +18,7 @@ describe('Page', () => {
         renderWithRouter(<Page />);
 
         // Check for sidebar
-        expect(screen.getByText('High Scores Center')).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: /home/i })).toBeInTheDocument();
         
         // Check for navigation
         expect(screen.getByText('Header Title')).toBeInTheDocument();

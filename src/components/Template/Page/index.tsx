@@ -16,7 +16,7 @@ const Page: React.FC<PageProps> = ({children}) => {
             <div className={`border-end bg-light sidebar ${sidebarOpen ? 'open' : 'collapsed'}`} id="sidebar-wrapper" data-testid="sidebar">
                 <div className="sidebar-heading border-bottom bg-white">
                     <Link to="/" className="list-group-item list-group-item-action list-group-item-light p-3 text-decoration-none">
-                        High Scores Center
+                        Home
                     </Link>
                 </div>
                 <Menu/>
