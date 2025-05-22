@@ -39,7 +39,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="game-museum-modal">
+    <div className="content-modal">
       <div 
         className={`modal-overlay ${overlayClassName}`} 
         onClick={onRequestClose} 
