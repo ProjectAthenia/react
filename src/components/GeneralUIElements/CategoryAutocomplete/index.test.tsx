@@ -4,6 +4,8 @@ import CategoryAutocomplete from './index';
 import { renderWithRouter } from '../../../test-utils';
 import { CategoriesContext, CategoriesContextState } from '../../../contexts/CategoriesContext';
 import CategoryRequests from '../../../services/requests/CategoryRequests';
+import { mockPagination } from '../../../test-utils/mocks/pagination';
+import { mockCategory } from '../../../test-utils/mocks/models/category';
 
 // Mock ResizeObserver
 class ResizeObserverMock {
@@ -25,33 +27,14 @@ jest.mock('../../../contexts/CategoriesContext', () => {
   return {
     ...originalModule,
     CategoriesContextProvider: ({ children }: { children: React.ReactNode }) => (
-      <CategoriesContext.Provider value={{
+      <CategoriesContext.Provider value={mockPagination({
         loadedData: [
-          { id: 1, name: 'Action', can_be_primary: true },
-          { id: 2, name: 'Adventure', can_be_primary: true },
-          { id: 3, name: 'RPG', can_be_primary: true }
+          mockCategory({ id: 1, name: 'Action' }),
+          mockCategory({ id: 2, name: 'Adventure' }),
+          mockCategory({ id: 3, name: 'RPG' })
         ],
-        hasAnotherPage: false,
-        initialLoadComplete: true,
-        initiated: true,
-        noResults: false,
-        refreshing: false,
-        expands: [],
-        order: {},
-        filter: {},
-        search: {},
-        limit: 100,
-        loadAll: true,
-        params: {},
-        loadNext: jest.fn(),
-        refreshData: jest.fn(),
-        setFilter: jest.fn(),
-        setSearch: jest.fn(),
-        setOrder: jest.fn(),
-        addModel: jest.fn(),
-        removeModel: jest.fn(),
-        getModel: jest.fn()
-      } as CategoriesContextState}>
+        limit: 100
+      })}>
         {children}
       </CategoriesContext.Provider>
     )
