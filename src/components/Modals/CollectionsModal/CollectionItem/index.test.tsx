@@ -9,6 +9,7 @@ import { HasType } from '../../../../models/has-type';
 import { mockCollection } from '../../../../test-utils/mocks/models/collection';
 import { mockCollectionItem } from '../../../../test-utils/mocks/models/collection-items';
 import { mockCollectionItemCategory } from '../../../../test-utils/mocks/models/collection-item-category';
+import { mockCategory } from '../../../../test-utils/mocks/models/category';
 import { mockPagination } from '../../../../test-utils/mocks/pagination';
 
 // Mock dependencies
@@ -32,7 +33,7 @@ jest.mock('../../../GeneralUIElements/CategoryAutocomplete', () => {
                 />
                 <button 
                     data-testid="mock-select-category"
-                    onClick={() => props.onSelect({ id: 1, name: 'Test Category' })}
+                    onClick={() => props.onSelect(mockCategory({ id: 1, name: 'Test Category' }))}
                 >
                     Select Category
                 </button>
@@ -168,13 +169,7 @@ describe('CollectionItemComponent', () => {
     it('handles adding a category', async () => {
         const newCategory = mockCollectionItemCategory({
             id: 51,
-            category: {
-                id: 1,
-                name: 'Test Category',
-                can_be_primary: true,
-                created_at: '2024-03-20T00:00:00Z',
-                updated_at: '2024-03-20T00:00:00Z'
-            }
+            category: mockCategory({ id: 1, name: 'Test Category' })
         });
         (CollectionManagementRequests.createCollectionItemCategory as jest.Mock).mockResolvedValue(newCategory);
         mockCollectionContextState.loadedData = [testCollectionItem];
