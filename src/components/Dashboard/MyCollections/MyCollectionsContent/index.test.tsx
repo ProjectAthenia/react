@@ -38,48 +38,10 @@ const mockCollections = [
 // Mock the CollectionItemsContext
 const mockCollectionItemsContext = {
   1: mockPagination({
-    loadedData: Array(5).fill({}),
-    hasAnotherPage: false,
-    initialLoadComplete: true,
-    initiated: true,
-    noResults: false,
-    expands: [],
-    order: {},
-    filter: {},
-    search: {},
-    limit: 50,
-    loadAll: true,
-    loadNext: jest.fn(),
-    refreshData: jest.fn(),
-    setFilter: jest.fn(),
-    setSearch: jest.fn(),
-    setOrder: jest.fn(),
-    addModel: jest.fn(),
-    removeModel: jest.fn(),
-    getModel: jest.fn(),
-    params: {}
+    loadedData: Array(5).fill({})
   }),
   2: mockPagination({
-    loadedData: Array(10).fill({}),
-    hasAnotherPage: false,
-    initialLoadComplete: true,
-    initiated: true,
-    noResults: false,
-    expands: [],
-    order: {},
-    filter: {},
-    search: {},
-    limit: 50,
-    loadAll: true,
-    loadNext: jest.fn(),
-    refreshData: jest.fn(),
-    setFilter: jest.fn(),
-    setSearch: jest.fn(),
-    setOrder: jest.fn(),
-    addModel: jest.fn(),
-    removeModel: jest.fn(),
-    getModel: jest.fn(),
-    params: {}
+    loadedData: Array(10).fill({})
   })
 };
 
@@ -110,26 +72,7 @@ describe('MyCollectionsContent', () => {
         loadedData: [
             mockCollection({ id: 1, name: 'Collection 1' }),
             mockCollection({ id: 2, name: 'Collection 2' })
-        ],
-        hasAnotherPage: false,
-        initialLoadComplete: true,
-        initiated: true,
-        noResults: false,
-        expands: [],
-        order: {},
-        filter: {},
-        search: {},
-        limit: 50,
-        loadAll: true,
-        loadNext: jest.fn(),
-        refreshData: jest.fn(),
-        setFilter: jest.fn(),
-        setSearch: jest.fn(),
-        setOrder: jest.fn(),
-        addModel: jest.fn(),
-        removeModel: jest.fn(),
-        getModel: jest.fn(),
-        params: {}
+        ]
     });
 
     const mockOnEditCollection = jest.fn();
