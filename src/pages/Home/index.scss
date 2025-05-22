@@ -1,22 +1,20 @@
 .home-splitpane {
   max-width: 1024px;
   margin: 0 auto;
-  --ion-safe-area-bottom: 15px;
-  .home-tabs-content.ion-page-hidden {
-    display: flex !important;
-  }
-  .home-tabs {
-    --border: 0;
-    padding: 1vw;
-    margin-bottom: var(--ion-safe-area-bottom);
-    .profile-image {
-      width: 8vw;
-      height: 8vw;
-    }
-    ion-icon {
-      font-size: 7.5vw;
-      &.primary-tab{
-        --color: var(--ion-color-primary);
+  .home-tabs-content {
+    .home-tabs {
+      --border: 0;
+      padding: 1vw;
+      margin-bottom: 15px;
+      .profile-image {
+        width: 8vw;
+        height: 8vw;
+      }
+      .icon {
+        font-size: 7.5vw;
+        &.primary-tab{
+          --color: var(--color-primary);
+        }
       }
     }
   }
