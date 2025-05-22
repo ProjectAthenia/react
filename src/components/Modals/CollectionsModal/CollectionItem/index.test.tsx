@@ -7,6 +7,9 @@ import { CollectionItemContextState } from '../../../../contexts/CollectionItems
 import CollectionItem from '../../../../models/user/collection-items';
 import { HasType } from '../../../../models/has-type';
 import { mockCollection } from '../../../../test-utils/mocks/models/collection';
+import { mockCollectionItem } from '../../../../test-utils/mocks/models/collection-items';
+import { mockCollectionItemCategory } from '../../../../test-utils/mocks/models/collection-item-category';
+import { mockPagination } from '../../../../test-utils/mocks/pagination';
 
 // Mock dependencies
 jest.mock('../../../../services/requests/CollectionManagementRequests', () => ({
@@ -55,64 +58,20 @@ describe('CollectionItemComponent', () => {
         updated_at: '2024-03-20T00:00:00Z'
     };
 
-    const mockCollectionItem: CollectionItem = {
-        id: 100,
-        item_id: 1,
-        item_type: 'release',
-        collection_id: 1,
-        order: 0,
-        created_at: '2024-03-20T00:00:00Z',
-        updated_at: '2024-03-20T00:00:00Z',
-        collection_item_categories: [
-            {
-                id: 50,
-                category_id: 1,
-                collection_item_id: 100,
-                linked_at: '2024-03-20T00:00:00Z',
-                linked_at_format: 'Y-m-d',
-                category: {
-                    id: 1,
-                    name: 'Action',
-                    can_be_primary: true,
-                    created_at: '2024-03-20T00:00:00Z',
-                    updated_at: '2024-03-20T00:00:00Z'
-                },
-                created_at: '2024-03-20T00:00:00Z',
-                updated_at: '2024-03-20T00:00:00Z'
-            }
-        ]
-    };
+    const testCollectionItem = mockCollectionItem({
+        collection_item_categories: [mockCollectionItemCategory()]
+    });
 
     const testCollection = mockCollection({
         id: 1,
         name: 'Test Collection',
         collection_items_count: 5,
-        collectionItems: [mockCollectionItem]
+        collectionItems: [testCollectionItem]
     });
 
-    const mockCollectionContextState: CollectionItemContextState = {
-        hasAnotherPage: false,
-        initialLoadComplete: true,
-        initiated: true,
-        noResults: false,
-        refreshing: false,
-        expands: [],
-        order: {},
-        filter: {},
-        search: {},
-        limit: 50,
-        loadedData: [],
-        loadAll: true,
-        params: {},
-        loadNext: jest.fn(),
-        refreshData: jest.fn(),
-        setFilter: jest.fn(),
-        setSearch: jest.fn(),
-        setOrder: jest.fn(),
-        addModel: jest.fn(),
-        removeModel: jest.fn(),
-        getModel: jest.fn(),
-    };
+    const mockCollectionContextState = mockPagination<CollectionItem>({
+        loadedData: []
+    });
 
     const mockCollectionItemsContext = {
         1: mockCollectionContextState
@@ -140,7 +99,7 @@ describe('CollectionItemComponent', () => {
     });
 
     it('renders in in-collection state with categories', () => {
-        mockCollectionContextState.loadedData = [mockCollectionItem];
+        mockCollectionContextState.loadedData = [testCollectionItem];
 
         renderWithProviders(
             <CollectionItemComponent
@@ -159,7 +118,7 @@ describe('CollectionItemComponent', () => {
     });
 
     it('handles adding to collection', async () => {
-        (CollectionManagementRequests.createCollectionItem as jest.Mock).mockResolvedValue(mockCollectionItem);
+        (CollectionManagementRequests.createCollectionItem as jest.Mock).mockResolvedValue(testCollectionItem);
 
         renderWithProviders(
             <CollectionItemComponent
@@ -181,13 +140,13 @@ describe('CollectionItemComponent', () => {
                     order: 0
                 }
             );
-            expect(mockCollectionItemsContext[1].addModel).toHaveBeenCalledWith(mockCollectionItem);
+            expect(mockCollectionItemsContext[1].addModel).toHaveBeenCalledWith(testCollectionItem);
         });
     });
 
     it('handles removing from collection', async () => {
         (CollectionManagementRequests.removeCollectionItem as jest.Mock).mockResolvedValue({});
-        mockCollectionContextState.loadedData = [mockCollectionItem];
+        mockCollectionContextState.loadedData = [testCollectionItem];
 
         renderWithProviders(
             <CollectionItemComponent
@@ -201,29 +160,24 @@ describe('CollectionItemComponent', () => {
         fireEvent.click(removeButton);
 
         await waitFor(() => {
-            expect(CollectionManagementRequests.removeCollectionItem).toHaveBeenCalledWith(mockCollectionItem);
-            expect(mockCollectionItemsContext[1].removeModel).toHaveBeenCalledWith(mockCollectionItem);
+            expect(CollectionManagementRequests.removeCollectionItem).toHaveBeenCalledWith(testCollectionItem);
+            expect(mockCollectionItemsContext[1].removeModel).toHaveBeenCalledWith(testCollectionItem);
         });
     });
 
     it('handles adding a category', async () => {
-        (CollectionManagementRequests.createCollectionItemCategory as jest.Mock).mockResolvedValue({
+        const newCategory = mockCollectionItemCategory({
             id: 51,
-            category_id: 1,
-            collection_item_id: 100,
-            linked_at: '2024-03-20T00:00:00Z',
-            linked_at_format: 'Y-m-d',
             category: {
                 id: 1,
                 name: 'Test Category',
                 can_be_primary: true,
                 created_at: '2024-03-20T00:00:00Z',
                 updated_at: '2024-03-20T00:00:00Z'
-            },
-            created_at: '2024-03-20T00:00:00Z',
-            updated_at: '2024-03-20T00:00:00Z'
+            }
         });
-        mockCollectionContextState.loadedData = [mockCollectionItem];
+        (CollectionManagementRequests.createCollectionItemCategory as jest.Mock).mockResolvedValue(newCategory);
+        mockCollectionContextState.loadedData = [testCollectionItem];
 
         renderWithProviders(
             <CollectionItemComponent
@@ -250,7 +204,7 @@ describe('CollectionItemComponent', () => {
 
     it('handles removing a category', async () => {
         (CollectionManagementRequests.deleteCollectionItemCategory as jest.Mock).mockResolvedValue({});
-        mockCollectionContextState.loadedData = [mockCollectionItem];
+        mockCollectionContextState.loadedData = [testCollectionItem];
 
         renderWithProviders(
             <CollectionItemComponent
