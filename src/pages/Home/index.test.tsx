@@ -5,5 +5,5 @@ import { renderWithRouter } from '../../test-utils';
 
 test('renders without crashing', () => {
   renderWithRouter(<Home />);
-  expect(screen.getByText('Welcome to Game Museum')).toBeInTheDocument();
+  expect(screen.getByTestId('home-content')).toBeInTheDocument();
 });
