@@ -163,7 +163,7 @@ function runRequest(endpoint: string, page: number, expands: string[], limit: nu
                     }
                     params["search[" + searchKey + "]"].push(entry);
                 })
-            } else if (value == 'null') {
+            } else if (value === 'null') {
                 params["search[" + searchKey + "]"] = value;
             } else {
                 params["search[" + searchKey + "]"] = "like,*" + value + "*";
@@ -210,7 +210,7 @@ function loadPage(setContext: Dispatch<SetStateAction<BasePaginatedContextState<
         baseContext.lastLoadedPage = page;
         baseContext.initialLoadComplete = true;
         baseContext.refreshing = false;
-        baseContext.noResults = page.total == 0;
+        baseContext.noResults = page.total === 0;
         baseContext.hasAnotherPage = page.current_page < page.last_page;
         const newContext= {...baseContext};
         setContext(newContext);
