@@ -45,7 +45,7 @@ export const SearchContextProvider: React.FC<PropsWithChildren<SearchContextProv
             latitude,
             longitude,
         } as any;
-        if (!searchText || searchText.length == 0) {
+        if (!searchText || searchText.length === 0) {
             params.radius = 80.4672;
             params['filter[resource_type]'] = 'location';
         }

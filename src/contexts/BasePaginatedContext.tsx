@@ -1,6 +1,6 @@
 import Page, {createDummyPage, mergePageData} from '../models/page';
 import React, {Dispatch, SetStateAction} from 'react';
-import api from '../services/api';
+import {api} from '../services/api';
 import axios from 'axios';
 
 // Global cache for pending requests organized by route and page number
@@ -372,8 +372,8 @@ function createAddModelCallback(setContext: Dispatch<SetStateAction<BasePaginate
                                 baseContext: BasePaginatedContextState<any>)
                                 : (model: any) => void {
     return (model: any) => {
-        const index = baseContext.loadedData.findIndex(i => i.id == model.id);
-        if (index != -1) {
+        const index = baseContext.loadedData.findIndex(i => i.id === model.id);
+        if (index !== -1) {
             baseContext.loadedData[index] = model;
         } else {
             baseContext.total = baseContext.total ? baseContext.total + 1 : 1;
@@ -394,9 +394,9 @@ function createRemoveModelCallback(setContext: Dispatch<SetStateAction<BasePagin
                                    baseContext: BasePaginatedContextState<any>)
                                    : (model: any) => void {
     return (model: any) => {
-        baseContext.loadedData = [...baseContext.loadedData].filter(i => i.id != model.id);
+        baseContext.loadedData = [...baseContext.loadedData].filter(i => i.id !== model.id);
         baseContext.total = baseContext.total ? baseContext.total - 1 : 0;
-        baseContext.noResults = baseContext.total == 0;
+        baseContext.noResults = baseContext.total === 0;
         setContext({...baseContext});
     }
 }
@@ -408,7 +408,7 @@ function createRemoveModelCallback(setContext: Dispatch<SetStateAction<BasePagin
 function createGetModelCallback(baseContext: BasePaginatedContextState<any>)
                                 : (id: number) => any|null {
     return (id: number) => {
-        return baseContext.loadedData.find(i => i.id == id);
+        return baseContext.loadedData.find(i => i.id === id);
     }
 }
 

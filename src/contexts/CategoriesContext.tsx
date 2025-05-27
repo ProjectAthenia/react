@@ -1,12 +1,10 @@
 import {
-    BasePaginatedContextProviderProps,
-    BasePaginatedContextState, createCallbacks,
+    BasePaginatedContextState,
     defaultBaseContext,
     prepareContextState,
 } from './BasePaginatedContext';
-import React, {PropsWithChildren, useEffect, useState} from 'react';
+import React, {PropsWithChildren, useState} from 'react';
 import Category from "../models/category";
-import Page from "../models/page";
 
 /**
  * The state interface for our state
