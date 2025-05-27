@@ -1,5 +1,12 @@
 import React from 'react';
 
+// Import all request mocks for jest.mock
+import { mockAuthRequests } from './auth-requests';
+import { mockCategoryRequests } from './category-requests';
+import { mockCollectionManagementRequests } from './collection-management-requests';
+import { mockOrganizationRequests } from './organization-requests';
+import { mockUserRequests } from './user-requests';
+
 // Mock Page component
 jest.mock('../../../components/Template/Page', () => ({
     __esModule: true,
@@ -12,13 +19,6 @@ export { mockCategoryRequests } from './category-requests';
 export { mockCollectionManagementRequests } from './collection-management-requests';
 export { mockOrganizationRequests } from './organization-requests';
 export { mockUserRequests } from './user-requests';
-
-// Import all request mocks for jest.mock
-import { mockAuthRequests } from './auth-requests';
-import { mockCategoryRequests } from './category-requests';
-import { mockCollectionManagementRequests } from './collection-management-requests';
-import { mockOrganizationRequests } from './organization-requests';
-import { mockUserRequests } from './user-requests';
 
 // Mock all request services
 jest.mock('../../../services/requests/AuthRequests', () => ({

@@ -3,6 +3,9 @@ import { storeReceivedToken, tokenNeedsRefresh } from './AuthManager';
 import { appState } from '../data/AppContext';
 import { decrementLoadingCount, incrementLoadingCount } from '../data/session/session.actions';
 
+// Import the mocked api
+import api from './api';
+
 // Mock dependencies
 jest.mock('axios');
 jest.mock('./AuthManager');
@@ -51,9 +54,6 @@ jest.mock('./api', () => {
   
   return mockAxiosInstance;
 });
-
-// Import the mocked api
-import api from './api';
 
 describe('api service', () => {
   const mockTokenData = {

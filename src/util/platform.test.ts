@@ -1,4 +1,16 @@
 // Mock window and navigator before importing the module
+import { 
+  isIOS, 
+  isAndroid, 
+  isChrome, 
+  isSafari, 
+  isFirefox, 
+  isEdge, 
+  isTouchDevice, 
+  hasMouse, 
+  isBot 
+} from './platform';
+
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: jest.fn().mockImplementation(query => ({
@@ -21,18 +33,6 @@ Object.defineProperty(window, 'navigator', {
     msMaxTouchPoints: 0
   }
 });
-
-import { 
-  isIOS, 
-  isAndroid, 
-  isChrome, 
-  isSafari, 
-  isFirefox, 
-  isEdge, 
-  isTouchDevice, 
-  hasMouse, 
-  isBot 
-} from './platform';
 
 describe('platform utilities', () => {
   beforeEach(() => {
