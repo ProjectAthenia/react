@@ -4,16 +4,14 @@ import {
     defaultBaseContext, prepareContextState,
 } from './BasePaginatedContext';
 import React, {createContext, PropsWithChildren, useEffect, useState} from 'react';
-import Location from '../models/location/location';
 import User from "../models/user/user";
 import Resource from "../models/resource";
-import Post from '../models/post/post';
 import LoadingScreen from '../components/LoadingScreen';
 
 /**
  * The state interface for our state
  */
-export interface SearchContextState extends BasePaginatedContextState<Resource<Location|User|Post>> {
+export interface SearchContextState extends BasePaginatedContextState<Resource<User>> {
     lastSearch: string|null,
 }
 

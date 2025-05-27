@@ -1,4 +1,3 @@
-import Post from '../../models/post/post';
 import PostResponse from '../../models/post/post-response';
 import api from '../api';
 import Page from '../../models/page';
@@ -10,17 +9,14 @@ export default class UserPostRequests {
      * Gets a single post off the server
      * @param postId
      */
-    static async getPost(postId: number): Promise<Post> {
+    static async getPost(postId: number): Promise<any> {
         const {data} = await api.get('/posts/' + postId, {
             params: {
-                'expand[locations]': '*',
-                'expand[locations.business]': '*',
                 'expand[publisher]': '*',
-                'expand[postLocations]': '*',
             },
         });
 
-        return data as Post;
+        return data;
     }
 
     /**
@@ -28,8 +24,8 @@ export default class UserPostRequests {
      * @param post
      * @param postResponseData The response data
      */
-    static async reportPostResponse(post: Post|string, postResponseData: any): Promise<PostResponse> {
-        const postId = isNaN(+post) ? (post as Post).id! : post;
+    static async reportPostResponse(post: any|string, postResponseData: any): Promise<PostResponse> {
+        const postId = isNaN(+post) ? (post as any).id! : post;
         const {data} = await api.post('/posts/' + postId + '/responses', postResponseData);
 
         return data as PostResponse;
@@ -62,9 +58,9 @@ export default class UserPostRequests {
      *
      * @param userId
      */
-    static async getUserFollowingUnseenPosts(userId: number): Promise<Page<Post>> {
+    static async getUserFollowingUnseenPosts(userId: number): Promise<Page<any>> {
         const {data} = await api.get('/users/' + userId + '/followed-posts');
-        return data as Page<Post>;
+        return data as Page<any>;
     }
 
     /**
@@ -81,7 +77,6 @@ export default class UserPostRequests {
         if (includePostData) {
             expands.push(...[
                 'post',
-                'post.locations',
                 'post.publisher',
             ]);
         }

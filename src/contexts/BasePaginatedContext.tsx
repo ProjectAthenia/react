@@ -1,7 +1,7 @@
 import Page, {createDummyPage, mergePageData} from '../models/page';
 import React, {Dispatch, SetStateAction} from 'react';
-import {api} from '../services/api';
-import axios from 'axios';
+import api from '../services/api';
+import axios, { AxiosResponse, AxiosError } from 'axios';
 
 // Global cache for pending requests organized by route and page number
 let pendingRequests: { [route: string]: { [page: number]: AbortController } } = {};
@@ -174,12 +174,11 @@ function runRequest(endpoint: string, page: number, expands: string[], limit: nu
     return api.get(endpoint, { 
         params,
         signal: controller.signal
-    }).then(response => {
+    }).then((response: AxiosResponse) => {
         return Promise.resolve(response.data as Page<any>);
-    }).catch(error => {
+    }).catch((error: AxiosError) => {
         if (error.name === 'CanceledError') {
             delete pendingRequests[endpoint]?.[page];
-
             return Promise.resolve(createDummyPage());
         }
         throw error;

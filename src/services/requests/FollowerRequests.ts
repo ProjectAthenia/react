@@ -1,6 +1,5 @@
 import api from '../api';
 import Follower from '../../models/user/follower';
-import Location from '../../models/location/location';
 import User from '../../models/user/user';
 import Category from "../../models/category";
 
@@ -13,7 +12,7 @@ export default class FollowerRequests {
      * @param id
      * @param type
      */
-    static async follow(user: User, follows: User|Location|Category, id: number, type: string): Promise<Follower> {
+    static async follow(user: User, follows: User|Category, id: number, type: string): Promise<Follower> {
         const {data} = await api.post('/users/' + user.id + '/follows', {
             follows_id: id,
             follows_type: type,
