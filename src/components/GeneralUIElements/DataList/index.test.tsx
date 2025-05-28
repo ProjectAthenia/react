@@ -4,7 +4,6 @@ import DataList, { RangeFilterColumn } from '.';
 import { renderWithRouter } from '../../../test-utils';
 import { MantineProvider } from '@mantine/core';
 import { useHistory } from 'react-router-dom';
-import { RangeFilterValue } from './RangeFilter';
 import { BasePaginatedContextState } from '../../../contexts/BasePaginatedContext';
 import { defaultBaseContext } from '../../../contexts/BasePaginatedContext';
 
@@ -33,12 +32,12 @@ const columns = [
     {
         accessorKey: 'date',
         header: 'Date',
-        cell: (info: any) => new Date(info.getValue()).toLocaleDateString(),
+        cell: (info: { getValue: () => string }) => new Date(info.getValue()).toLocaleDateString(),
     },
     {
         accessorKey: 'score',
         header: 'Score',
-        cell: (info: any) => info.getValue().toFixed(1),
+        cell: (info: { getValue: () => number }) => info.getValue().toFixed(1),
         meta: {
             filterType: 'range'
         }
@@ -130,14 +129,12 @@ describe('DataList', () => {
             />
         );
         
-        // Check that the range filter inputs are rendered
         const minInput = screen.getByPlaceholderText('Min');
         const maxInput = screen.getByPlaceholderText('Max');
         
         expect(minInput).toBeInTheDocument();
         expect(maxInput).toBeInTheDocument();
 
-        // Test range filter functionality
         fireEvent.change(minInput, { target: { value: '8' } });
         expect(onFilterChanged).toHaveBeenCalledWith('score', 'between,8,100');
 
@@ -158,14 +155,11 @@ describe('DataList', () => {
             />
         );
 
-        // Check that checkboxes are rendered
         const checkboxes = screen.getAllByRole('checkbox');
         expect(checkboxes.length).toBe(mockData.length);
 
-        // Check that the first item is selected
         expect(checkboxes[0]).toBeChecked();
 
-        // Test selection functionality
         fireEvent.click(checkboxes[1]);
         expect(onBulkSelect).toHaveBeenCalledWith(2);
     });

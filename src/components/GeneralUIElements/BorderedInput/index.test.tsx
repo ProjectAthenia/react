@@ -14,12 +14,12 @@ describe('BorderedInput', () => {
     });
 
     it('applies correct styling class', () => {
-        const { container } = render(
+        render(
             <BorderedInput>
                 Test Content
             </BorderedInput>
         );
 
-        expect(container.firstChild).toHaveClass('bordered-input');
+        expect(screen.getByText('Test Content').parentElement).toHaveClass('bordered-input');
     });
 });

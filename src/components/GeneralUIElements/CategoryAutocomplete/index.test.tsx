@@ -1,8 +1,8 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 import CategoryAutocomplete from './index';
 import { renderWithRouter } from '../../../test-utils';
-import { CategoriesContext, CategoriesContextState } from '../../../contexts/CategoriesContext';
+import { CategoriesContext } from '../../../contexts/CategoriesContext';
 import CategoryRequests from '../../../services/requests/CategoryRequests';
 import { mockPagination } from '../../../test-utils/mocks/pagination';
 import { mockCategory } from '../../../test-utils/mocks/models/category';
@@ -72,7 +72,6 @@ describe('CategoryAutocomplete', () => {
     const input = screen.getByPlaceholderText('Search categories...');
     fireEvent.change(input, { target: { value: 'Action' } });
     
-    // Wait for the debounce to complete
     await waitFor(() => {
       expect(screen.getByText('Action')).toBeInTheDocument();
     });
@@ -84,7 +83,6 @@ describe('CategoryAutocomplete', () => {
     const input = screen.getByPlaceholderText('Search categories...');
     fireEvent.change(input, { target: { value: 'Action' } });
     
-    // Wait for the debounce to complete and results to appear
     await waitFor(() => {
       expect(screen.getByText('Action')).toBeInTheDocument();
     });
@@ -96,20 +94,16 @@ describe('CategoryAutocomplete', () => {
     const input = screen.getByPlaceholderText('Search categories...');
     fireEvent.change(input, { target: { value: 'Action' } });
     
-    // Wait for the debounce to complete and results to appear
     await waitFor(() => {
       expect(screen.getByText('Action')).toBeInTheDocument();
     });
     
-    // Select the category
     fireEvent.click(screen.getByText('Action'));
     
-    // Verify onSelect was called with the correct category
     expect(mockOnSelect).toHaveBeenCalledWith({ id: 1, name: 'Action', can_be_primary: true, description: '' });
   });
 
   it('creates a new category when selecting a non-existent one', async () => {
-    // Mock the createCategory function to return a new category
     (CategoryRequests.createCategory as jest.Mock).mockResolvedValueOnce({ id: 4, name: 'New Category', can_be_primary: true });
     
     renderWithRouter(<CategoryAutocomplete onSelect={mockOnSelect} />);
@@ -117,19 +111,14 @@ describe('CategoryAutocomplete', () => {
     const input = screen.getByPlaceholderText('Search categories...');
     fireEvent.change(input, { target: { value: 'New Category' } });
     
-    // Wait for the debounce to complete and results to appear
     await waitFor(() => {
       expect(screen.getByText('New Category')).toBeInTheDocument();
     });
     
-    // Select the new category
     fireEvent.click(screen.getByText('New Category'));
     
-    // Verify createCategory was called
-    await waitFor(() => {
-      expect(CategoryRequests.createCategory).toHaveBeenCalledWith('New Category');
-      expect(mockOnSelect).toHaveBeenCalledWith({ id: 4, name: 'New Category', can_be_primary: true });
-    });
+    expect(CategoryRequests.createCategory).toHaveBeenCalledWith('New Category');
+    expect(mockOnSelect).toHaveBeenCalledWith({ id: 4, name: 'New Category', can_be_primary: true });
   });
 
   it('clears input when ref.clearInput is called', async () => {
@@ -142,7 +131,6 @@ describe('CategoryAutocomplete', () => {
     
     expect(input.value).toBe('Test Category');
     
-    // Call clearInput through the ref
     ref.current?.clearInput();
     
     await waitFor(() => {
@@ -166,13 +154,12 @@ describe('CategoryAutocomplete', () => {
     const input = screen.getByPlaceholderText('Search categories...');
     fireEvent.change(input, { target: { value: 'S' } });
     
-    // Wait for the debounce to complete and results to appear
     await waitFor(() => {
       expect(screen.getByText('Strategy')).toBeInTheDocument();
-      expect(screen.getByText('Simulation')).toBeInTheDocument();
     });
     
-    // The prioritized categories should appear first in the dropdown
+    expect(screen.getByText('Simulation')).toBeInTheDocument();
+    
     const dropdownItems = screen.getAllByRole('option');
     expect(dropdownItems[0]).toHaveTextContent('Strategy');
     expect(dropdownItems[1]).toHaveTextContent('Simulation');

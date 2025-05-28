@@ -3,7 +3,6 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MantineProvider } from '@mantine/core';
 import CollectionItemComponent from './index';
 import CollectionManagementRequests from '../../../../services/requests/CollectionManagementRequests';
-import { CollectionItemContextState } from '../../../../contexts/CollectionItemsContext';
 import CollectionItem from '../../../../models/user/collection-items';
 import { HasType } from '../../../../models/has-type';
 import { mockCollection } from '../../../../test-utils/mocks/models/collection';
@@ -141,8 +140,8 @@ describe('CollectionItemComponent', () => {
                     order: 0
                 }
             );
-            expect(mockCollectionItemsContext[1].addModel).toHaveBeenCalledWith(testCollectionItem);
         });
+        expect(mockCollectionItemsContext[1].addModel).toHaveBeenCalledWith(testCollectionItem);
     });
 
     it('handles removing from collection', async () => {
@@ -162,8 +161,8 @@ describe('CollectionItemComponent', () => {
 
         await waitFor(() => {
             expect(CollectionManagementRequests.removeCollectionItem).toHaveBeenCalledWith(testCollectionItem);
-            expect(mockCollectionItemsContext[1].removeModel).toHaveBeenCalledWith(testCollectionItem);
         });
+        expect(mockCollectionItemsContext[1].removeModel).toHaveBeenCalledWith(testCollectionItem);
     });
 
     it('handles adding a category', async () => {
@@ -209,9 +208,7 @@ describe('CollectionItemComponent', () => {
             />
         );
 
-        // The ActionIcon trash button does not have an accessible name, so select the first button in the category list
         const categoryButtons = screen.getAllByRole('button');
-        // The first ActionIcon button in the category list is the remove category button
         const removeCategoryButton = categoryButtons.find(
             btn => btn.querySelector('svg') && btn.querySelector('svg')?.className.baseVal.includes('tabler-icon-trash')
         );

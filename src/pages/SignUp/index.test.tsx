@@ -1,6 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 import SignUp from './index';
 import { mockHistory, renderWithRouter } from '../../test-utils';
 import AuthRequests from '../../services/requests/AuthRequests';
@@ -39,9 +38,9 @@ describe('SignUp', () => {
         
         await waitFor(() => {
             expect(screen.getByText('Email is required')).toBeInTheDocument();
-            expect(screen.getByText('First name is required')).toBeInTheDocument();
-            expect(screen.getByText('Password is required')).toBeInTheDocument();
         });
+        expect(screen.getByText('First name is required')).toBeInTheDocument();
+        expect(screen.getByText('Password is required')).toBeInTheDocument();
     });
 
     it('shows validation error for invalid email', async () => {
@@ -79,15 +78,10 @@ describe('SignUp', () => {
         const firstNameInput = screen.getByLabelText(/first name/i);
         const form = screen.getByRole('form');
         
-        await act(async () => {
-            fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-            fireEvent.change(passwordInput, { target: { value: 'password123' } });
-            fireEvent.change(firstNameInput, { target: { value: 'John' } });
-        });
-
-        await act(async () => {
-            fireEvent.submit(form);
-        });
+        fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+        fireEvent.change(passwordInput, { target: { value: 'password123' } });
+        fireEvent.change(firstNameInput, { target: { value: 'John' } });
+        fireEvent.submit(form);
         
         await waitFor(() => {
             expect(AuthRequests.signUp).toHaveBeenCalledWith({
@@ -98,9 +92,7 @@ describe('SignUp', () => {
             });
         });
 
-        await waitFor(() => {
-            expect(mockHistory.push).toHaveBeenCalledWith('/browse');
-        });
+        expect(mockHistory.push).toHaveBeenCalledWith('/browse');
     });
 
     it('handles signup failure', async () => {
@@ -112,15 +104,10 @@ describe('SignUp', () => {
         const firstNameInput = screen.getByLabelText(/first name/i);
         const form = screen.getByRole('form');
         
-        await act(async () => {
-            fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-            fireEvent.change(passwordInput, { target: { value: 'password123' } });
-            fireEvent.change(firstNameInput, { target: { value: 'John' } });
-        });
-
-        await act(async () => {
-            fireEvent.submit(form);
-        });
+        fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+        fireEvent.change(passwordInput, { target: { value: 'password123' } });
+        fireEvent.change(firstNameInput, { target: { value: 'John' } });
+        fireEvent.submit(form);
         
         await waitFor(() => {
             expect(screen.getByText('Unknown Error')).toBeInTheDocument();
@@ -138,16 +125,11 @@ describe('SignUp', () => {
             const lastNameInput = screen.getByLabelText(/last name/i);
             const form = screen.getByRole('form');
             
-            await act(async () => {
-                fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-                fireEvent.change(passwordInput, { target: { value: 'password123' } });
-                fireEvent.change(firstNameInput, { target: { value: 'John' } });
-                fireEvent.change(lastNameInput, { target: { value: 'Doe' } });
-            });
-
-            await act(async () => {
-                fireEvent.submit(form);
-            });
+            fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+            fireEvent.change(passwordInput, { target: { value: 'password123' } });
+            fireEvent.change(firstNameInput, { target: { value: 'John' } });
+            fireEvent.change(lastNameInput, { target: { value: 'Doe' } });
+            fireEvent.submit(form);
             
             await waitFor(() => {
                 expect(AuthRequests.signUp).toHaveBeenCalledWith({
@@ -158,9 +140,7 @@ describe('SignUp', () => {
                 });
             });
 
-            await waitFor(() => {
-                expect(mockHistory.push).toHaveBeenCalledWith('/browse');
-            });
+            expect(mockHistory.push).toHaveBeenCalledWith('/browse');
         });
 
         it('handles sign up error', async () => {
@@ -174,16 +154,11 @@ describe('SignUp', () => {
             const passwordInput = screen.getByLabelText(/password/i);
             const form = screen.getByRole('form');
 
-            await act(async () => {
-                fireEvent.change(firstNameInput, { target: { value: 'John' } });
-                fireEvent.change(lastNameInput, { target: { value: 'Doe' } });
-                fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-                fireEvent.change(passwordInput, { target: { value: 'password123' } });
-            });
-
-            await act(async () => {
-                fireEvent.submit(form);
-            });
+            fireEvent.change(firstNameInput, { target: { value: 'John' } });
+            fireEvent.change(lastNameInput, { target: { value: 'Doe' } });
+            fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+            fireEvent.change(passwordInput, { target: { value: 'password123' } });
+            fireEvent.submit(form);
 
             await waitFor(() => {
                 expect(screen.getByText('Email already exists.')).toBeInTheDocument();

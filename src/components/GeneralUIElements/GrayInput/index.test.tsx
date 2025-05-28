@@ -14,12 +14,12 @@ describe('GrayInput', () => {
     });
 
     it('applies correct styling class', () => {
-        const { container } = render(
+        render(
             <GrayInput>
                 Test Content
             </GrayInput>
         );
 
-        expect(container.firstChild).toHaveClass('gray-input');
+        expect(screen.getByText('Test Content').parentElement).toHaveClass('gray-input');
     });
 });
