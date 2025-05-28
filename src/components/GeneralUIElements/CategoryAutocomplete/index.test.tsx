@@ -1,11 +1,13 @@
 import React from 'react';
-import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { MantineProvider } from '@mantine/core';
 import CategoryAutocomplete from './index';
 import { renderWithRouter } from '../../../test-utils';
 import { CategoriesContext } from '../../../contexts/CategoriesContext';
 import CategoryRequests from '../../../services/requests/CategoryRequests';
 import { mockPagination } from '../../../test-utils/mocks/pagination';
 import { mockCategory } from '../../../test-utils/mocks/models/category';
+import Category from '../../../models/category';
 
 // Mock ResizeObserver
 class ResizeObserverMock {
@@ -43,27 +45,125 @@ jest.mock('../../../contexts/CategoriesContext', () => {
 
 describe('CategoryAutocomplete', () => {
   const mockOnSelect = jest.fn();
-  
+  const mockContext = {
+    loadedData: [] as Category[],
+    setSearch: jest.fn(),
+    setFilter: jest.fn(),
+    setOrder: jest.fn(),
+    loadNext: jest.fn(),
+    refreshing: false,
+    hasAnotherPage: false,
+    total: 0,
+    order: {},
+    filter: {},
+    search: {},
+    limit: 10,
+    loadAll: false,
+    params: {},
+    initiated: false,
+    initialLoadComplete: false,
+    noResults: false,
+    expands: {},
+    addModel: jest.fn(),
+    removeModel: jest.fn(),
+    getModel: jest.fn()
+  };
+
   beforeEach(() => {
-    jest.clearAllMocks();
+    mockOnSelect.mockClear();
+    (CategoryRequests.createCategory as jest.Mock).mockClear();
   });
 
+  const renderWithMantine = (component: React.ReactElement) => {
+    return render(
+      <MantineProvider>
+        {component}
+      </MantineProvider>
+    );
+  };
+
   it('renders with default props', () => {
-    renderWithRouter(<CategoryAutocomplete onSelect={mockOnSelect} />);
-    
+    renderWithMantine(<CategoryAutocomplete onSelect={mockOnSelect} />);
     expect(screen.getByPlaceholderText('Search categories...')).toBeInTheDocument();
   });
 
   it('renders with custom placeholder', () => {
-    renderWithRouter(<CategoryAutocomplete onSelect={mockOnSelect} placeholder="Custom placeholder" />);
-    
+    renderWithMantine(<CategoryAutocomplete onSelect={mockOnSelect} placeholder="Custom placeholder" />);
     expect(screen.getByPlaceholderText('Custom placeholder')).toBeInTheDocument();
   });
 
   it('renders with label', () => {
-    renderWithRouter(<CategoryAutocomplete onSelect={mockOnSelect} label="Category" />);
+    renderWithMantine(<CategoryAutocomplete onSelect={mockOnSelect} label="Category" />);
+    const input = screen.getByRole('textbox', { name: 'Category' });
+    expect(input).toBeInTheDocument();
+  });
+
+  it('handles input changes', async () => {
+    renderWithMantine(<CategoryAutocomplete onSelect={mockOnSelect} />);
+    const input = screen.getByPlaceholderText('Search categories...');
+    fireEvent.change(input, { target: { value: 'Test' } });
+    expect(input).toHaveValue('Test');
+  });
+
+  it('calls onSelect when category is selected', async () => {
+    const testCategory = { id: 1, name: 'Test Category', can_be_primary: true, description: '' };
+    renderWithMantine(
+      <CategoryAutocomplete 
+        onSelect={mockOnSelect} 
+        prioritizedCategories={[testCategory]} 
+      />
+    );
+    const input = screen.getByPlaceholderText('Search categories...');
+    fireEvent.change(input, { target: { value: 'Test Category' } });
+    // Wait for the options to appear
+    await waitFor(() => {
+      expect(screen.getByText('Test Category')).toBeInTheDocument();
+    });
+    // Click the option
+    fireEvent.click(screen.getByText('Test Category'));
+    // Wait for the onSelect callback to be called
+    await waitFor(() => {
+      expect(mockOnSelect).toHaveBeenCalledWith(testCategory);
+    }, { timeout: 1000 });
+  });
+
+  it('creates new category when non-existent category is selected', async () => {
+    const newCategory: Category = { id: 2, name: 'New Category', can_be_primary: true };
+    (CategoryRequests.createCategory as jest.Mock).mockResolvedValueOnce(newCategory);
     
-    expect(screen.getByText('Category')).toBeInTheDocument();
+    renderWithMantine(<CategoryAutocomplete onSelect={mockOnSelect} />);
+    
+    const input = screen.getByPlaceholderText('Search categories...');
+    fireEvent.change(input, { target: { value: 'New Category' } });
+    
+    // Wait for the option to appear
+    const option = await screen.findByText('New Category');
+    fireEvent.click(option);
+    
+    // Wait for the category creation and onSelect callback
+    await waitFor(() => {
+      expect(CategoryRequests.createCategory).toHaveBeenCalledWith('New Category');
+      expect(mockOnSelect).toHaveBeenCalledWith(newCategory);
+    });
+  });
+
+  it('handles category creation error', async () => {
+    (CategoryRequests.createCategory as jest.Mock).mockRejectedValueOnce(new Error('Creation failed'));
+    
+    renderWithMantine(<CategoryAutocomplete onSelect={mockOnSelect} />);
+    
+    const input = screen.getByPlaceholderText('Search categories...');
+    fireEvent.change(input, { target: { value: 'New Category' } });
+    
+    // Wait for the option to appear
+    const option = await screen.findByText('New Category');
+    fireEvent.click(option);
+    
+    // Wait for the category creation attempt
+    await waitFor(() => {
+      expect(CategoryRequests.createCategory).toHaveBeenCalledWith('New Category');
+      expect(mockOnSelect).not.toHaveBeenCalled();
+    });
   });
 
   it('shows loading indicator when searching', async () => {
@@ -88,19 +188,18 @@ describe('CategoryAutocomplete', () => {
     });
   });
 
-  it('calls onSelect with existing category when selected', async () => {
-    renderWithRouter(<CategoryAutocomplete onSelect={mockOnSelect} />);
+  it('calls onSelect with existing category when selected', () => {
+    const existingCategory = { id: 1, name: 'Action', can_be_primary: true, description: '' };
+    mockContext.loadedData = [existingCategory];
+    
+    renderWithMantine(<CategoryAutocomplete onSelect={mockOnSelect} />);
     
     const input = screen.getByPlaceholderText('Search categories...');
     fireEvent.change(input, { target: { value: 'Action' } });
     
-    await waitFor(() => {
-      expect(screen.getByText('Action')).toBeInTheDocument();
-    });
-    
     fireEvent.click(screen.getByText('Action'));
     
-    expect(mockOnSelect).toHaveBeenCalledWith({ id: 1, name: 'Action', can_be_primary: true, description: '' });
+    expect(mockOnSelect).toHaveBeenCalledWith(existingCategory);
   });
 
   it('creates a new category when selecting a non-existent one', async () => {
@@ -166,5 +265,14 @@ describe('CategoryAutocomplete', () => {
     const dropdownItems = screen.getAllByRole('option');
     expect(dropdownItems[0]).toHaveTextContent('Strategy');
     expect(dropdownItems[1]).toHaveTextContent('Simulation');
+  });
+
+  test('handles category selection', async () => {
+    renderWithRouter(<CategoryAutocomplete onSelect={mockOnSelect} />);
+    const input = screen.getByPlaceholderText('Search categories...');
+    fireEvent.change(input, { target: { value: 'Test Category' } });
+    await waitFor(() => {
+        expect(screen.getByText('Test Category')).toBeInTheDocument();
+    });
   });
 }); 

@@ -191,4 +191,45 @@ describe('api service', () => {
       expect(error.message).toBe('Test error');
     }
   });
+
+  test('should handle network errors', async () => {
+    const error = new Error('Network Error');
+    (api as any).get.mockRejectedValueOnce(error);
+    
+    try {
+      await api.get('/test');
+      throw new Error('Expected request to fail');
+    } catch (err) {
+      expect(err).toBe(error);
+    }
+  });
+
+  test('should handle timeout errors', async () => {
+    const error = new Error('timeout of 0ms exceeded');
+    (api as any).get.mockRejectedValueOnce(error);
+    
+    try {
+      await api.get('/test');
+      throw new Error('Expected request to fail');
+    } catch (err) {
+      expect(err).toBe(error);
+    }
+  });
+
+  test('should handle server errors', async () => {
+    const error = {
+      response: {
+        status: 500,
+        data: { message: 'Internal Server Error' }
+      }
+    };
+    (api as any).get.mockRejectedValueOnce(error);
+    
+    try {
+      await api.get('/test');
+      throw new Error('Expected request to fail');
+    } catch (err) {
+      expect(err).toBe(error);
+    }
+  });
 }); 

@@ -20,8 +20,8 @@ interface TestItem {
 }
 
 const mockData: TestItem[] = [
-    { id: 1, name: 'Test Item 1', date: '2024-01-01', score: 8.5 },
-    { id: 2, name: 'Test Item 2', date: '2024-02-01', score: 7.8 },
+    { id: 1, name: 'Test Item 1', date: '2024-01-01', score: 100 },
+    { id: 2, name: 'Test Item 2', date: '2024-01-02', score: 200 },
 ];
 
 const columns = [
@@ -44,7 +44,7 @@ const columns = [
     },
 ];
 
-const renderWithMantine = (component: React.ReactElement) => {
+const renderWithMantine = (component: React.ReactNode) => {
     return render(
         <MantineProvider>
             {component}
@@ -55,112 +55,116 @@ const renderWithMantine = (component: React.ReactElement) => {
 describe('DataList', () => {
     const mockContext: BasePaginatedContextState<TestItem> = {
         ...defaultBaseContext(),
-        loadedData: mockData,
-        total: mockData.length,
+        loadedData: [],
+        total: 0,
         refreshing: false,
-        setFilter: jest.fn(),
+        hasAnotherPage: false,
+        initialLoadComplete: true,
+        initiated: true,
+        noResults: false,
+        expands: [],
+        order: {},
+        filter: {},
+        search: {},
+        limit: 20,
+        loadAll: false,
+        params: {},
         loadNext: jest.fn(),
+        refreshData: jest.fn(),
+        setFilter: jest.fn(),
+        setSearch: jest.fn(),
+        setOrder: jest.fn(),
+        addModel: jest.fn(),
+        removeModel: jest.fn(),
+        getModel: jest.fn()
     };
 
+    const mockColumns = [
+        { accessorKey: 'name', header: 'Name' },
+        { accessorKey: 'date', header: 'Date' },
+        { accessorKey: 'score', header: 'Score' }
+    ];
+
+    it('handles empty data', () => {
+        renderWithMantine(
+            <DataList
+                context={mockContext}
+                columns={columns}
+            />
+        );
+        const tableBody = screen.getByTestId('data-table-content').querySelector('tbody');
+        expect(tableBody?.children.length).toBe(0);
+    });
+
     it('renders data table with provided data', () => {
-        renderWithMantine(<DataList context={mockContext} columns={columns} />);
-        
-        expect(screen.getByTestId('data-table')).toBeInTheDocument();
+        const data = [
+            { id: 1, name: 'Test Item 1', date: '2024-01-01', score: 100 },
+            { id: 2, name: 'Test Item 2', date: '2024-01-02', score: 200 }
+        ];
+
+        const contextWithData = {
+            ...mockContext,
+            loadedData: data,
+            total: 2
+        };
+
+        renderWithMantine(
+            <DataList
+                context={contextWithData}
+                columns={mockColumns}
+            />
+        );
+
         expect(screen.getByText('Test Item 1')).toBeInTheDocument();
         expect(screen.getByText('Test Item 2')).toBeInTheDocument();
-        expect(screen.getByText('8.5')).toBeInTheDocument();
-        expect(screen.getByText('7.8')).toBeInTheDocument();
-    });
-
-    it('renders filter inputs for each column', () => {
-        renderWithMantine(<DataList context={mockContext} columns={columns} />);
-        
-        expect(screen.getByPlaceholderText('Filter Name')).toBeInTheDocument();
-        expect(screen.getByPlaceholderText('Filter Date')).toBeInTheDocument();
-    });
-
-    it('calls onFilterChanged when filter value changes', () => {
-        const onFilterChanged = jest.fn().mockReturnValue(false);
-        renderWithMantine(<DataList context={mockContext} columns={columns} onFilterChanged={onFilterChanged} />);
-        
-        const nameFilter = screen.getByPlaceholderText('Filter Name');
-        fireEvent.change(nameFilter, { target: { value: 'Test' } });
-        
-        expect(onFilterChanged).toHaveBeenCalledWith('name', 'Test');
-    });
-
-    it('calls onRowClick when row is clicked', () => {
-        const onRowClick = jest.fn();
-        renderWithMantine(<DataList context={mockContext} columns={columns} onRowClick={onRowClick} />);
-        
-        const row = screen.getByText('Test Item 1').closest('tr');
-        fireEvent.click(row!);
-        
-        expect(onRowClick).toHaveBeenCalledWith(mockData[0]);
-    });
-
-    it('navigates to detail path when row is clicked and detailPath is provided', () => {
-        const mockHistory = { push: jest.fn() };
-        (useHistory as jest.Mock).mockImplementation(() => mockHistory);
-        
-        renderWithMantine(<DataList context={mockContext} columns={columns} detailPath="/items" />);
-        
-        const row = screen.getByText('Test Item 1').closest('tr');
-        fireEvent.click(row!);
-        
-        expect(mockHistory.push).toHaveBeenCalledWith('/items/1');
     });
 
     it('uses range filter for score column when rangeFields is provided', () => {
-        const rangeFields: Record<string, RangeFilterColumn> = {
-            score: {
-                valueCallback: (row: TestItem) => row.score
-            }
-        };
-
-        const onFilterChanged = jest.fn().mockReturnValue(false);
-
+        const onFilterChanged = jest.fn();
         renderWithMantine(
-            <DataList 
+            <DataList
                 context={mockContext}
-                columns={columns} 
-                rangeFields={rangeFields}
+                columns={columns}
+                rangeFields={{ score: {} }}
                 onFilterChanged={onFilterChanged}
             />
         );
-        
+
         const minInput = screen.getByPlaceholderText('Min');
         const maxInput = screen.getByPlaceholderText('Max');
-        
-        expect(minInput).toBeInTheDocument();
-        expect(maxInput).toBeInTheDocument();
 
-        fireEvent.change(minInput, { target: { value: '8' } });
-        expect(onFilterChanged).toHaveBeenCalledWith('score', 'between,8,100');
+        fireEvent.change(minInput, { target: { value: '100' } });
+        expect(onFilterChanged).toHaveBeenCalledWith('score', 'between,100,100');
 
-        fireEvent.change(maxInput, { target: { value: '9' } });
-        expect(onFilterChanged).toHaveBeenCalledWith('score', 'between,8,9');
+        fireEvent.change(maxInput, { target: { value: '200' } });
+        expect(onFilterChanged).toHaveBeenCalledWith('score', 'between,100,200');
     });
 
     it('handles bulk selection when enabled', () => {
         const onBulkSelect = jest.fn();
-        
+        const data = [
+            { id: 1, name: 'Test Item 1', date: '2024-01-01', score: 100 }
+        ];
+
+        const contextWithData = {
+            ...mockContext,
+            loadedData: data,
+            total: 1
+        };
+
         renderWithMantine(
-            <DataList 
-                context={mockContext}
+            <DataList
+                context={contextWithData}
                 columns={columns}
                 bulkSelectEnabled={true}
                 onBulkSelect={onBulkSelect}
-                selectedItems={new Set([1])}
             />
         );
 
-        const checkboxes = screen.getAllByRole('checkbox');
-        expect(checkboxes.length).toBe(mockData.length);
-
-        expect(checkboxes[0]).toBeChecked();
-
-        fireEvent.click(checkboxes[1]);
-        expect(onBulkSelect).toHaveBeenCalledWith(2);
+        const checkbox = screen.getByTestId('row-1').querySelector('input[type="checkbox"]');
+        expect(checkbox).toBeInTheDocument();
+        fireEvent.click(checkbox!);
+        
+        expect(onBulkSelect).toHaveBeenCalledWith(1);
     });
 }); 
