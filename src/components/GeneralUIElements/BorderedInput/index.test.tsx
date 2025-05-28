@@ -20,6 +20,6 @@ describe('BorderedInput', () => {
             </BorderedInput>
         );
 
-        expect(screen.getByText('Test Content').parentElement).toHaveClass('bordered-input');
+        expect(screen.getByText('Test Content').closest('div')).toHaveClass('bordered-input');
     });
 });

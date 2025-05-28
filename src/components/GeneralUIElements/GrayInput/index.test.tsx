@@ -20,6 +20,6 @@ describe('GrayInput', () => {
             </GrayInput>
         );
 
-        expect(screen.getByText('Test Content').parentElement).toHaveClass('gray-input');
+        expect(screen.getByText('Test Content').closest('div')).toHaveClass('gray-input');
     });
 });

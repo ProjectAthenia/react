@@ -104,7 +104,8 @@ describe('CategoryAutocomplete', () => {
   });
 
   it('creates a new category when selecting a non-existent one', async () => {
-    (CategoryRequests.createCategory as jest.Mock).mockResolvedValueOnce({ id: 4, name: 'New Category', can_be_primary: true });
+    const newCategory = { id: 4, name: 'New Category', can_be_primary: true };
+    (CategoryRequests.createCategory as jest.Mock).mockResolvedValueOnce(newCategory);
     
     renderWithRouter(<CategoryAutocomplete onSelect={mockOnSelect} />);
     
@@ -117,8 +118,10 @@ describe('CategoryAutocomplete', () => {
     
     fireEvent.click(screen.getByText('New Category'));
     
-    expect(CategoryRequests.createCategory).toHaveBeenCalledWith('New Category');
-    expect(mockOnSelect).toHaveBeenCalledWith({ id: 4, name: 'New Category', can_be_primary: true });
+    await waitFor(() => {
+      expect(CategoryRequests.createCategory).toHaveBeenCalledWith('New Category');
+      expect(mockOnSelect).toHaveBeenCalledWith(newCategory);
+    });
   });
 
   it('clears input when ref.clearInput is called', async () => {
