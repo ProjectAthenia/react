@@ -17,7 +17,7 @@ export interface CollectionContextConsumerState {
 let defaultContext: CollectionContextConsumerState = {
     hasLoaded: false,
     notFound: false,
-    collection: collectionPlaceholder(),
+    collection: collectionPlaceholder,
     setCollection: (collection: Collection) => {}
 };
 

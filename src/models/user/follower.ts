@@ -1,9 +1,8 @@
 import BaseModel from '../base-model';
-import Location from '../location/location';
 import User from './user';
 import Category from "../category";
 
-export type FollowerType = 'location' | 'user' | 'category';
+export type FollowerType = 'user' | 'category';
 
 /**
  * The data interface for the follows location
@@ -40,7 +39,7 @@ export default interface Follower extends BaseModel {
     /**
      * The business the user is following
      */
-    follows?: Location | User | Category;
+    follows?: User | Category;
 
     /**
      * The user that is doing the following

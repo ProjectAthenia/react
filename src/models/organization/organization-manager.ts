@@ -32,4 +32,24 @@ export default interface OrganizationManager extends BaseModel {
      * the id of the user
      */
     user_id: number;
+
+    /**
+     * The contact email of the organization manager
+     */
+    contact_email?: string;
+
+    /**
+     * The contact phone of the organization manager
+     */
+    contact_phone?: string;
 }
+
+export const placeholderOrganizationManager = (): OrganizationManager => ({
+    id: 0,
+    organization_id: 0,
+    role_id: 0,
+    user_id: 0,
+    organization: {} as Organization,
+    created_at: '',
+    updated_at: ''
+});

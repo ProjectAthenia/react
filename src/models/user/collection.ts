@@ -8,10 +8,13 @@ export const collectionDefaultData = {
 }
 
 export const collectionPlaceholder: Collection = {
+	id: 0,
 	type: 'collection',
 	owner_id: 0,
 	owner_type: '',
-	is_public: false
+	is_public: false,
+	created_at: '',
+	updated_at: ''
 };
 
 /**
@@ -49,3 +52,14 @@ export default interface Collection extends HasType {
 	 */
 	collectionItems?: CollectionItem[];
 }
+
+export const placeholderCollection = (): Collection => ({
+	id: 0,
+	type: 'collection',
+	owner_id: 0,
+	owner_type: 'user',
+	name: '',
+	is_public: false,
+	created_at: '',
+	updated_at: ''
+});

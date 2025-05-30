@@ -1,9 +1,9 @@
-import BaseEntityModel from '../entities';
+import BaseModel from '../base-model';
 
 /**
  * Our Organization details
  */
-export default interface Organization extends BaseEntityModel {
+export default interface Organization extends BaseModel {
 
     /**
      * the name of the merchant
@@ -11,25 +11,17 @@ export default interface Organization extends BaseEntityModel {
     name: string;
 
     /**
-     * Whether or not the merchant is inactive
+     * The description of the organization
      */
-    inactive: boolean;
-
-    /**
-     * The profile image for this organization if set
-     */
-    profile_image_url?: string;
+    description?: string;
 }
 
 /**
  * Gets an organization that we can use throughout the app if we need to load the organization
  */
-export function placeholderOrganization(): Organization {
-    return {
-        id: 0,
-        name: '',
-        inactive: false,
-        created_at: '',
-        updated_at: '',
-    };
-}
+export const placeholderOrganization = (): Organization => ({
+    id: 0,
+    name: '',
+    created_at: '',
+    updated_at: ''
+});

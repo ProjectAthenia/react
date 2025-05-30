@@ -1,3 +1,4 @@
+import BaseModel from '../base-model';
 import BaseEntityModel from '../entities';
 import Organization from '../organization/organization';
 import Role, {AvailableRoles} from '../role';
@@ -7,7 +8,10 @@ import OrganizationManager from "../organization/organization-manager";
 /**
  * Our user interface
  */
-export default interface User extends BaseEntityModel {
+export default interface User extends BaseModel {
+    name: string;
+    email: string;
+    profile_image_url?: string;
 
     /**
      * The full name of the user
@@ -23,11 +27,6 @@ export default interface User extends BaseEntityModel {
      * The last name the user entered upon sign up
      */
     last_name: string;
-
-    /**
-     * The email address of the user
-     */
-    email: string;
 
     /**
      * The phone number if set
@@ -152,19 +151,20 @@ export function formatUserPhoneNumber(user: User): string {
 /**
  * Creates a placeholder user to handle our default logged in user state
  */
-export function placeholderUser(): User {
-    return {
-        first_name: '',
-        last_name: '',
-        full_name: '',
-        email: '',
-        phone: '',
-        about_me: '',
-        allow_users_to_find_me: true,
-        allow_users_to_add_me: true,
-        accepted_invites: 0,
-    };
-}
+export const placeholderUser = (): User => ({
+    id: 0,
+    name: '',
+    email: '',
+    created_at: '',
+    updated_at: '',
+    first_name: '',
+    last_name: '',
+    full_name: '',
+    about_me: '',
+    allow_users_to_find_me: true,
+    allow_users_to_add_me: true,
+    accepted_invites: 0,
+});
 
 /**
  * The name of the user to display

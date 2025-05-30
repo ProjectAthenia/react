@@ -3,10 +3,17 @@ import { HasType } from '../has-type';
 import Category from '../category';
 import { CollectionItemCategory } from './collection-item-category';
 
+export enum CollectionItemTypes {
+	POST = 'post',
+	BUSINESS = 'business',
+	USER = 'user'
+}
+
 /**
  * The data interface for albums
  */
 export default interface CollectionItem extends BaseModel {
+	type: CollectionItemTypes;
 
 	/**
 	 * The primary id of item
@@ -37,4 +44,17 @@ export default interface CollectionItem extends BaseModel {
 	 * The categories of the item
 	 */
 	collection_item_categories?: CollectionItemCategory[];
+
+	categories?: Category[];
 }
+
+export const placeholderCollectionItem = (): CollectionItem => ({
+	id: 0,
+	type: CollectionItemTypes.POST,
+	item_id: 0,
+	item_type: 'post',
+	collection_id: 0,
+	order: 0,
+	created_at: '',
+	updated_at: ''
+});

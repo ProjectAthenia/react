@@ -1,4 +1,4 @@
-import Page, {createDummyPage, mergePageData} from '../models/page';
+import Page, {placeholderPage, mergePageData} from '../models/page';
 import React, {Dispatch, SetStateAction} from 'react';
 import api from '../services/api';
 import axios, { AxiosResponse, AxiosError } from 'axios';
@@ -105,11 +105,11 @@ export function defaultBaseContext(): BasePaginatedContextState<any> {
         loadedData: [],
         loadAll: false,
         params: {},
-        loadNext: () => Promise.resolve(createDummyPage()),
-        refreshData: () => Promise.resolve(createDummyPage()),
-        setFilter: () => Promise.resolve(createDummyPage()),
-        setSearch: () => Promise.resolve(createDummyPage()),
-        setOrder: () => Promise.resolve(createDummyPage()),
+        loadNext: () => Promise.resolve(placeholderPage()),
+        refreshData: () => Promise.resolve(placeholderPage()),
+        setFilter: () => Promise.resolve(placeholderPage()),
+        setSearch: () => Promise.resolve(placeholderPage()),
+        setOrder: () => Promise.resolve(placeholderPage()),
         addModel: () => {},
         removeModel: () => {},
         getModel: () => null,
@@ -179,7 +179,7 @@ function runRequest(endpoint: string, page: number, expands: string[], limit: nu
     }).catch((error: AxiosError) => {
         if (error.name === 'CanceledError') {
             delete pendingRequests[endpoint]?.[page];
-            return Promise.resolve(createDummyPage());
+            return Promise.resolve(placeholderPage());
         }
         throw error;
     });
@@ -236,7 +236,7 @@ function createLoadNextPageCallback(setContext: Dispatch<SetStateAction<BasePagi
                 page = page ?? lastPage.current_page + 1
                 return loadPage(setContext, baseContext, endpoint, page);
             }
-            return Promise.resolve(createDummyPage());
+            return Promise.resolve(placeholderPage());
         } else {
             return loadPage(setContext, baseContext, endpoint, 1);
         }

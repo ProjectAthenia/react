@@ -59,7 +59,13 @@ describe('CollectionItemComponent', () => {
     };
 
     const testCollectionItem = mockCollectionItem({
-        collection_item_categories: [mockCollectionItemCategory()]
+        id: 100,
+        item_id: mockItem.id,
+        item_type: mockItem.type,
+        collection_item_categories: [mockCollectionItemCategory({
+            id: 50,
+            category: mockCategory({ id: 2, name: 'Action' })
+        })]
     });
 
     const testCollection = mockCollection({

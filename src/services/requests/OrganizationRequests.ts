@@ -3,6 +3,7 @@ import Organization from '../../models/organization/organization';
 import Business from '../../models/organization/business';
 import OrganizationManager from '../../models/organization/organization-manager';
 import Page from '../../models/page';
+import Category from '../../models/category';
 
 export default class OrganizationRequests {
 
@@ -83,10 +84,10 @@ export default class OrganizationRequests {
     static async updateBusiness(business: Business, updateData: any = null): Promise<Business> {
         updateData = updateData ?? {
             name: business.name,
-            categories: business.categories?.filter(category => category.id).map(category => category.id),
-            featured_images: business.featured_images?.map((image, index) => (
+            categories: business.categories?.filter((category: Category) => category.id).map((category: Category) => category.id),
+            featured_images: business.featured_images?.map((image: string | { id: string }, index: number) => (
                 {
-                    asset_id: image.id,
+                    asset_id: typeof image === 'string' ? image : image.id,
                     order: index,
                 }
             ))
@@ -160,5 +161,10 @@ export default class OrganizationRequests {
      */
     static async deleteOrganizationManager(organizationManager: OrganizationManager) : Promise<any> {
         return api.delete('/organizations/' + organizationManager.organization_id +  '/organization-managers/' + organizationManager.id)
+    }
+
+    static async getBusinesses(organization: Organization): Promise<any[]> {
+        const {data} = await api.get('/organizations/' + organization.id + '/businesses');
+        return data;
     }
 }

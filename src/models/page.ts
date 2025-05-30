@@ -1,36 +1,23 @@
 import BaseModel from './base-model';
 
-export default interface Page<Model> {
-
-    /**
-     * The total amount of data
-     */
-    total: number;
-
-    /**
-     * What page we are currently on
-     */
+export default interface Page<T> extends BaseModel {
+    data: T[];
     current_page: number;
-
-    /**
-     * The last page of all results
-     */
     last_page: number;
-
-    /**
-     * All entries within this page
-     */
-    data: Model[];
+    per_page: number;
+    total: number;
 }
 
-export function createDummyPage<Model>() : Page<Model>{
-    return {
-        current_page: 0,
-        last_page: 0,
-        total: 0,
-        data: [],
-    }
-}
+export const placeholderPage = <T>(): Page<T> => ({
+    id: 0,
+    data: [],
+    current_page: 1,
+    last_page: 1,
+    per_page: 10,
+    total: 0,
+    created_at: '',
+    updated_at: ''
+});
 
 /**
  * Merges all of the data together

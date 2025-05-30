@@ -34,4 +34,30 @@ export function generateEmptyCategory(): Category {
         name: "",
         can_be_primary: false,
     }
+}
+
+/**
+ * Checks if a category can be used as a primary category
+ * @param category
+ */
+export function canBePrimaryCategory(category: Category): boolean {
+    return category.can_be_primary ?? false;
+}
+
+/**
+ * Creates a new category with default values
+ * @param name
+ */
+export function createNewCategory(name: string): Category {
+    return {
+        id: 0,
+        name,
+        can_be_primary: false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        description: undefined,
+        parent_id: undefined,
+        parent: undefined,
+        children: undefined
+    };
 } 

@@ -1,4 +1,3 @@
-import PostResponse from '../../models/post/post-response';
 import api from '../api';
 import Page from '../../models/page';
 import {isNaN} from 'formik';
@@ -24,11 +23,11 @@ export default class UserPostRequests {
      * @param post
      * @param postResponseData The response data
      */
-    static async reportPostResponse(post: any|string, postResponseData: any): Promise<PostResponse> {
+    static async reportPostResponse(post: any|string, postResponseData: any): Promise<any> {
         const postId = isNaN(+post) ? (post as any).id! : post;
         const {data} = await api.post('/posts/' + postId + '/responses', postResponseData);
 
-        return data as PostResponse;
+        return data;
     }
 
     /**
@@ -36,21 +35,21 @@ export default class UserPostRequests {
      * @param postResponse The existing response ID
      * @param postResponseData The response data
      */
-    static async updatePostResponse(postResponse: PostResponse, postResponseData: any): Promise<PostResponse> {
+    static async updatePostResponse(postResponse: any, postResponseData: any): Promise<any> {
         const {data} = await api.put('/users/' + postResponse.user_id + '/post-responses/' + postResponse.id!, postResponseData);
-        return data as PostResponse;
+        return data;
     }
 
     /**
      * Archives a post response for us
      * @param postResponse
      */
-    static async archivePostResponse(postResponse: PostResponse): Promise<PostResponse> {
+    static async archivePostResponse(postResponse: any): Promise<any> {
         const {data} = await api.put('/users/' + postResponse.user_id + '/post-responses/' + postResponse.id!, {
             archived: true,
         });
 
-        return data as PostResponse;
+        return data;
     }
 
     /**
@@ -69,7 +68,7 @@ export default class UserPostRequests {
      * @param postId
      * @param includePostData
      */
-    static async searchForPostResponse(userId: number, postId: number, includePostData = true): Promise<Page<PostResponse>> {
+    static async searchForPostResponse(userId: number, postId: number, includePostData = true): Promise<Page<any>> {
         const expands = [
             'follows',
             'follows.follows',
@@ -83,6 +82,6 @@ export default class UserPostRequests {
         const expand = "&expand[" + expands.join("]=*&expand[") + "]=*";
         const {data} = await api.get('/users/' + userId + '/post-responses?filter[post_id]=' + postId + expand + "&order[created_at]=DESC");
 
-        return data as Page<PostResponse>;
+        return data as Page<any>;
     }
 }

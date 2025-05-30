@@ -42,9 +42,9 @@ export const createBaseMockContextState = <T extends Category>(data: T[]) => moc
     setFilter: jest.fn(),
     setSearch: jest.fn(),
     setOrder: jest.fn(),
-    addModel: jest.fn(),
-    removeModel: jest.fn(),
-    getModel: jest.fn(),
+    addModel: jest.fn((model: T) => {}),
+    removeModel: jest.fn((model: T) => {}),
+    getModel: jest.fn((id: number) => data.find(item => item.id === id) || null),
     params: {},
     loadNext: jest.fn(),
     refreshData: jest.fn()
@@ -52,9 +52,20 @@ export const createBaseMockContextState = <T extends Category>(data: T[]) => moc
 
 // Mock CategoriesContext
 export const mockCategoriesContextValue = {
-    ...createBaseMockContextState([
+    ...createBaseMockContextState<Category>([
         mockCategory({ id: 1, name: 'Test Category', can_be_primary: true })
     ])
+};
+
+export const mockCategoriesContextValueLoading = {
+    ...createBaseMockContextState<Category>([]),
+    initialLoadComplete: false,
+    isLoading: true
+};
+
+export const mockCategoriesContextValueEmpty = {
+    ...createBaseMockContextState<Category>([]),
+    noResults: true
 };
 
 // Mock CategoriesContext
