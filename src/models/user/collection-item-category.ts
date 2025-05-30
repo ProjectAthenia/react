@@ -1,4 +1,4 @@
-import Category from 'models/category';
+import Category from '../../models/category';
 import BaseModel from '../base-model';
 import CollectionItem from './collection-items';
 
