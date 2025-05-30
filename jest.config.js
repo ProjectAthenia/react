@@ -2,6 +2,7 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '^@/(.*)$': '<rootDir>/src/$1',
@@ -9,11 +10,12 @@ module.exports = {
   },
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', {
+      useESM: true,
       tsconfig: {
         jsx: 'react-jsx',
         moduleResolution: 'node',
         target: 'ES2020',
-        module: 'CommonJS',
+        module: 'ESNext',
         esModuleInterop: true,
         allowSyntheticDefaultImports: true,
       }
@@ -32,6 +34,7 @@ module.exports = {
   ],
   globals: {
     'ts-jest': {
+      useESM: true,
       tsconfig: {
         jsx: 'react-jsx',
       }

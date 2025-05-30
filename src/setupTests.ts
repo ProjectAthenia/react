@@ -11,6 +11,20 @@ import api from './test-utils/mocks/api';
 // Make React available globally for tests
 global.React = React;
 
+// Mock environment variables for Vite
+Object.defineProperty(globalThis, 'import', {
+    value: {
+        meta: {
+            env: {
+                VITE_API_URL: 'http://localhost:3000',
+                MODE: 'test',
+                BASE_URL: '/',
+            }
+        }
+    },
+    writable: true
+});
+
 // Mock axios
 jest.mock('axios', () => ({
   create: jest.fn(() => ({
@@ -76,17 +90,4 @@ Object.defineProperty(window, 'IntersectionObserverEntry', {
         isIntersecting = false;
         constructor() {}
     },
-});
-
-// Mock environment variables for Vite
-Object.defineProperty(global, 'import', {
-    value: {
-        meta: {
-            env: {
-                VITE_API_URL: 'http://localhost:3000',
-                MODE: 'test',
-                BASE_URL: '/',
-            }
-        }
-    }
 });
