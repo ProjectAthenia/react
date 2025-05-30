@@ -45,8 +45,8 @@ describe('collection-utils', () => {
         it('should return true when item exists in collection with matching id and type', () => {
             const context: CollectionItemsContextState = {
                 [mockCollectionId]: createMockContextState([
-                    { item_id: 2, item_type: 'item' },
-                    { item_id: 1, item_type: 'item' }
+                    { item_id: 2, item_type: 'test' },
+                    { item_id: 1, item_type: 'test' }
                 ])
             };
             expect(isInCollection(mockItem, mockCollectionId, context)).toBe(true);
