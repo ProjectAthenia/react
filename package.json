@@ -24,17 +24,15 @@
     "react-helmet": "^6.1.0",
     "react-router": "^5.3.4",
     "react-router-dom": "^5.3.4",
-    "react-scripts": "^5.0.1",
     "sass": "^1.72.0",
-    "sass-loader": "^14.1.1",
     "web-vitals": "^2.1.4",
     "yup": "^1.4.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "jest",
-    "eject": "react-scripts eject"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "jest"
   },
   "eslintConfig": {
     "extends": [
@@ -67,7 +65,7 @@
     "@testing-library/user-event": "^13.5.0",
     "@types/enzyme": "^3.10.18",
     "@types/jest": "^27.5.2",
-    "@types/node": "^16.18.91",
+    "@types/node": "^20.11.30",
     "@types/react": "^18.2.70",
     "@types/react-dom": "^18.2.22",
     "@types/react-router": "^5.1.20",
@@ -78,6 +76,7 @@
     "@types/yup": "^0.32.0",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
+    "@vitejs/plugin-react": "^4.2.1",
     "babel-jest": "^29.7.0",
     "cheerio": "^1.0.0",
     "enzyme": "^3.11.0",
@@ -92,6 +91,7 @@
     "react-redux": "^9.2.0",
     "redux-mock-store": "^1.5.5",
     "ts-jest": "^29.1.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vite": "^5.1.4"
   }
 }

@@ -8,8 +8,17 @@ module.exports = {
     '^src/services/api$': '<rootDir>/src/test-utils/mocks/__mocks__/api.ts',
   },
   transform: {
-    '^.+\\.(ts|tsx)$': 'ts-jest',
-    '^.+\\.(js|jsx)$': ['babel-jest', { presets: ['@babel/preset-env'] }],
+    '^.+\\.(ts|tsx)$': ['ts-jest', {
+      tsconfig: {
+        jsx: 'react-jsx',
+        moduleResolution: 'node',
+        target: 'ES2020',
+        module: 'CommonJS',
+        esModuleInterop: true,
+        allowSyntheticDefaultImports: true,
+      }
+    }],
+    '^.+\\.(js|jsx)$': ['babel-jest', { presets: ['@babel/preset-env', '@babel/preset-react'] }],
   },
   transformIgnorePatterns: [
     '/node_modules/(?!(@mantine|@emotion|cheerio|parse5|entities|dom-serializer|htmlparser2|domelementtype|domhandler|domutils)/)',
@@ -21,4 +30,11 @@ module.exports = {
     '!src/reportWebVitals.ts',
     '!src/setupTests.ts',
   ],
+  globals: {
+    'ts-jest': {
+      tsconfig: {
+        jsx: 'react-jsx',
+      }
+    }
+  }
 }; 

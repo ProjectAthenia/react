@@ -5,7 +5,11 @@
 import '@testing-library/jest-dom/extend-expect';
 import '@testing-library/jest-dom';
 import { jest } from '@jest/globals';
+import * as React from 'react';
 import api from './test-utils/mocks/api';
+
+// Make React available globally for tests
+global.React = React;
 
 // Mock axios
 jest.mock('axios', () => ({
@@ -72,4 +76,17 @@ Object.defineProperty(window, 'IntersectionObserverEntry', {
         isIntersecting = false;
         constructor() {}
     },
+});
+
+// Mock environment variables for Vite
+Object.defineProperty(global, 'import', {
+    value: {
+        meta: {
+            env: {
+                VITE_API_URL: 'http://localhost:3000',
+                MODE: 'test',
+                BASE_URL: '/',
+            }
+        }
+    }
 });
