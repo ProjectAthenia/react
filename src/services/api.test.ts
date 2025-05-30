@@ -133,32 +133,17 @@ describe('api service', () => {
     const mockError = {
       response: { data: 'error data' }
     };
-    
-    // Call the error interceptor
-    try {
-      await (api as any).responseErrorInterceptor(mockError);
-      fail('Should have thrown an error');
-    } catch (error) {
-      // Verify
-      expect(appState.dispatch).toHaveBeenCalledWith(decrementLoadingCount());
-      expect(error).toBe(mockError.response);
-    }
+    await expect((api as typeof api & { responseErrorInterceptor: (err: unknown) => Promise<unknown> }).responseErrorInterceptor(mockError)).rejects.toBe(mockError.response);
+    expect(appState.dispatch).toHaveBeenCalledWith(decrementLoadingCount());
   });
 
-  it('handles cancellation errors in error interceptor', async () => {
-    const canceledError = {
-      name: 'CanceledError',
-    };
-    
-    // Call the error interceptor
-    try {
-      await (api as any).responseErrorInterceptor(canceledError);
-      fail('Should have thrown an error');
-    } catch (error) {
-      // Verify cancellation errors are rethrown without decrementLoadingCount
-      expect(error).toBe(canceledError);
-      expect(appState.dispatch).not.toHaveBeenCalled();
-    }
+  it('handles cancellation errors in error interceptor', () => {
+    const canceledError = new Error('CanceledError');
+    canceledError.name = 'CanceledError';
+    expect(() => {
+      (api as typeof api & { responseErrorInterceptor: (err: unknown) => Promise<unknown> }).responseErrorInterceptor(canceledError);
+    }).toThrowError(canceledError);
+    expect(appState.dispatch).not.toHaveBeenCalled();
   });
 
   it('handles case when tokenData is not available', async () => {
@@ -176,44 +161,23 @@ describe('api service', () => {
   });
 
   it('handles errors in the request interceptor', async () => {
-    // Set up the test to throw an error
     (tokenNeedsRefresh as jest.Mock).mockImplementation(() => {
       throw new Error('Test error');
     });
-    
     const mockConfig = { headers: {} };
-    
-    // Call the request interceptor and expect it to throw
-    try {
-      await (api as any).requestInterceptor(mockConfig);
-      fail('Should have thrown an error');
-    } catch (error: any) {
-      expect(error.message).toBe('Test error');
-    }
+    await expect((api as typeof api & { requestInterceptor: (cfg: unknown) => Promise<unknown> }).requestInterceptor(mockConfig)).rejects.toThrow('Test error');
   });
 
   test('should handle network errors', async () => {
     const error = new Error('Network Error');
-    (api as any).get.mockRejectedValueOnce(error);
-    
-    try {
-      await api.get('/test');
-      throw new Error('Expected request to fail');
-    } catch (err) {
-      expect(err).toBe(error);
-    }
+    (api as typeof api & { get: jest.Mock }).get.mockRejectedValueOnce(error);
+    await expect(api.get('/test')).rejects.toThrow('Network Error');
   });
 
   test('should handle timeout errors', async () => {
     const error = new Error('timeout of 0ms exceeded');
-    (api as any).get.mockRejectedValueOnce(error);
-    
-    try {
-      await api.get('/test');
-      throw new Error('Expected request to fail');
-    } catch (err) {
-      expect(err).toBe(error);
-    }
+    (api as typeof api & { get: jest.Mock }).get.mockRejectedValueOnce(error);
+    await expect(api.get('/test')).rejects.toThrow('timeout of 0ms exceeded');
   });
 
   test('should handle server errors', async () => {
@@ -223,13 +187,7 @@ describe('api service', () => {
         data: { message: 'Internal Server Error' }
       }
     };
-    (api as any).get.mockRejectedValueOnce(error);
-    
-    try {
-      await api.get('/test');
-      throw new Error('Expected request to fail');
-    } catch (err) {
-      expect(err).toBe(error);
-    }
+    (api as typeof api & { get: jest.Mock }).get.mockRejectedValueOnce(error);
+    await expect(api.get('/test')).rejects.toBe(error);
   });
 }); 
