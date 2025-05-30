@@ -60,4 +60,14 @@ export function createNewCategory(name: string): Category {
         parent: undefined,
         children: undefined
     };
+}
+
+export function createCategory(name: string): Category {
+    return {
+        id: 0, // Temporary ID that will be replaced by the server
+        name,
+        can_be_primary: false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+    };
 } 

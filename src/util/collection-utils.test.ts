@@ -6,7 +6,12 @@ import { mockPagination } from '../test-utils/mocks/pagination';
 
 describe('collection-utils', () => {
     describe('isInCollection', () => {
-        const mockItem: HasType = { id: 1, type: 'item' };
+        const mockItem = {
+            id: 1,
+            type: 'test',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
         const mockCollectionId = 123;
         
         const createMockContextState = (items: Array<{ item_id: number; item_type: string }>) => mockPagination<CollectionItem>({
