@@ -48,7 +48,20 @@ jest.mock('../../../contexts/CollectionItemsContext', () => {
 });
 
 describe('MyCollections', () => {
-  const testUser = mockUser();
+  const testUser: User = {
+    id: 1,
+    name: 'Test User',
+    email: 'test@example.com',
+    full_name: 'Test User',
+    first_name: 'Test',
+    last_name: 'User',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    about_me: '',
+    accepted_invites: 0,
+    allow_users_to_find_me: true,
+    allow_users_to_add_me: true
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -63,7 +76,10 @@ describe('MyCollections', () => {
   });
 
   it('renders nothing when user has no id', () => {
-    const userWithoutId = { ...testUser, id: undefined };
+    const userWithoutId: User = {
+      ...testUser,
+      id: 0 // Use 0 instead of undefined since id is required
+    };
     const { container } = renderWithProviders(
       <MyCollections user={userWithoutId} />
     );

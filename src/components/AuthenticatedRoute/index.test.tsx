@@ -1,7 +1,7 @@
-import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Switch } from 'react-router-dom';
 import AuthenticatedRoute from './index';
+import MeContextProvider from '../../contexts/MeContext';
 import { TokenState } from '../../data/persistent/persistent.state';
 import { connect } from '../../data/connect';
 import { Provider } from 'react-redux';
