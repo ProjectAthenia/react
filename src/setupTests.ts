@@ -6,6 +6,7 @@ import '@testing-library/jest-dom/extend-expect';
 import '@testing-library/jest-dom';
 import { jest } from '@jest/globals';
 import * as React from 'react';
+import api from './test-utils/mocks/api';
 
 // Make React available globally for tests
 global.React = React;
@@ -37,8 +38,6 @@ Object.defineProperty(window, 'import', {
     },
     writable: true
 });
-
-import api from './test-utils/mocks/api';
 
 // Mock axios
 jest.mock('axios', () => ({
