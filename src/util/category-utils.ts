@@ -23,7 +23,7 @@ export function removeCategoryFromList(categories: Category[], name: string): Ca
  * @param category
  */
 export function isCategoryEligibleForProPlan(category: Category): boolean {
-    return category.can_be_primary;
+    return category.can_be_primary ?? false;
 }
 
 /**
@@ -31,8 +31,11 @@ export function isCategoryEligibleForProPlan(category: Category): boolean {
  */
 export function generateEmptyCategory(): Category {
     return {
+        id: 0,
         name: "",
         can_be_primary: false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
     }
 }
 

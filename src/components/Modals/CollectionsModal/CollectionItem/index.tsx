@@ -162,7 +162,9 @@ const handleAddCategory = async (
                     category: {
                         id: category.id,
                         name: category.name,
-                        can_be_primary: category.can_be_primary
+                        can_be_primary: category.can_be_primary,
+                        created_at: category.created_at,
+                        updated_at: category.updated_at
                     }
                 };
                 
