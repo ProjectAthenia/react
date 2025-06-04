@@ -69,7 +69,7 @@ export const UserContextProvider: React.FC<PropsWithChildren<UserContextProvider
                 });
             })
         }
-    }, [userId]);
+    }, [userId, skipCache, userState, setUser]);
 
     return (
         <UserContext.Provider value={{...userState, setUser}}>

@@ -110,7 +110,7 @@ export const CollectionItemsContextProvider: React.FC<PropsWithChildren<Collecti
             
             isFirstRender.current = false;
         }
-    }, [collectionIds.join(',')]); // Re-run when collection IDs change
+    }, [collectionIds, collectionItemsState, skipCache]); // Re-run when dependencies change
 
     return (
         <CollectionItemsContext.Provider value={collectionItemsState}>

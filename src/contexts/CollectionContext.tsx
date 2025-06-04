@@ -71,7 +71,7 @@ export const CollectionContextProvider: React.FC<PropsWithChildren<CollectionCon
                 });
             })
         }
-    }, [collectionId, window.location.pathname]);
+    }, [collectionId, window.location.pathname, skipCache, collectionState, setCollection]);
 
 
     return (
