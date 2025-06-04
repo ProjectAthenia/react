@@ -1,11 +1,9 @@
 import React from 'react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import Home from './pages/Home';
-import AuthenticatedRoute from './components/AuthenticatedRoute';
 import {connect} from './data/connect';
 import {AppContextProvider} from './data/AppContext';
 import {TokenState} from './data/persistent/persistent.state';
-import {useHistory} from "react-router-dom";
 import { MantineProvider, createTheme } from '@mantine/core';
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
@@ -50,8 +48,7 @@ interface DispatchProps {
 interface AppProps extends StateProps, DispatchProps {
 }
 
-const ReactApp: React.FC<AppProps> = ({tokenData}) => {
-	const history = useHistory();
+const ReactApp: React.FC<AppProps> = () => {
 	return (
 		<BrowserRouter>
 			<main id={"main"}>
