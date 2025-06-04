@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useCallback, forwardRef } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 import { Autocomplete, Loader } from '@mantine/core';
-import { useDebouncedValue } from '@mantine/hooks';
 import { CategoriesContext, CategoriesContextProvider, CategoriesContextState } from '../../../contexts/CategoriesContext';
 import Category from '../../../models/category';
 import CategoryRequests from '../../../services/requests/CategoryRequests';
@@ -28,7 +27,6 @@ const CategoryAutocompleteContent = forwardRef<{ clearInput: () => void }, Categ
     context
 }, ref) => {
     const [searchValue, setSearchValue] = useState('');
-    const [debouncedSearch] = useDebouncedValue(searchValue, 300);
     const [loading, setLoading] = useState(false);
     const [options, setOptions] = useState<Category[]>([]);
 
