@@ -102,6 +102,5 @@ Object.defineProperty(window, 'IntersectionObserverEntry', {
     configurable: true,
     value: class IntersectionObserverEntry {
         isIntersecting = false;
-        constructor() {}
     },
 });

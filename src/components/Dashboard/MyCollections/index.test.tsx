@@ -215,6 +215,9 @@ describe('MyCollections', () => {
     await waitFor(() => {
       const errorMessage = screen.getByText('Failed to create collection');
       expect(errorMessage).toBeInTheDocument();
+    });
+    await waitFor(() => {
+      const errorMessage = screen.getByText('Failed to create collection');
       expect(errorMessage.closest('.error-message')).toBeInTheDocument();
     });
     
