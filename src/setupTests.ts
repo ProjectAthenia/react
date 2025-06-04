@@ -6,12 +6,11 @@ import '@testing-library/jest-dom/extend-expect';
 import '@testing-library/jest-dom';
 import { jest } from '@jest/globals';
 import * as React from 'react';
-import api from './test-utils/mocks/api';
 
 // Make React available globally for tests
 global.React = React;
 
-// Mock environment variables for Vite
+// Mock import.meta before any modules that use it are imported
 Object.defineProperty(globalThis, 'import', {
     value: {
         meta: {
@@ -24,6 +23,22 @@ Object.defineProperty(globalThis, 'import', {
     },
     writable: true
 });
+
+// Also add it to window object as backup
+Object.defineProperty(window, 'import', {
+    value: {
+        meta: {
+            env: {
+                VITE_API_URL: 'http://localhost:3000',
+                MODE: 'test',
+                BASE_URL: '/',
+            }
+        }
+    },
+    writable: true
+});
+
+import api from './test-utils/mocks/api';
 
 // Mock axios
 jest.mock('axios', () => ({

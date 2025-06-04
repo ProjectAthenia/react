@@ -9,6 +9,11 @@ interface SignInFormProps {
     defaultRedirect?: string,
 }
 
+interface ApiError {
+    status?: number;
+    message?: string;
+}
+
 const SignInForm: React.FC<SignInFormProps> = ({defaultRedirect}) => {
 
     const history = useHistory();
@@ -30,8 +35,9 @@ const SignInForm: React.FC<SignInFormProps> = ({defaultRedirect}) => {
             } else {
                 setError('Unknown Error')
             }
-        } catch (error: any)  {
-            if (error.status && error.status == 401) {
+        } catch (error: unknown)  {
+            const apiError = error as ApiError;
+            if (apiError.status && apiError.status === 401) {
                 setError('Invalid Login Credentials.');
             }
         }

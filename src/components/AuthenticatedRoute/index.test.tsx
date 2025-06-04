@@ -63,6 +63,8 @@ describe('AuthenticatedRoute', () => {
         renderWithRouter(undefined, '/protected');
         await waitFor(() => {
             expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
+        });
+        await waitFor(() => {
             expect(screen.getByText('Splash Page')).toBeInTheDocument();
         });
     });

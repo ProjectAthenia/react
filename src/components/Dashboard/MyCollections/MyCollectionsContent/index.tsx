@@ -2,7 +2,6 @@ import React from 'react';
 import {UserCollectionsContextState} from '../../../../contexts/UserCollectionsContext';
 import {
     CollectionItemsContext,
-    CollectionItemsContextProvider,
     CollectionItemsContextState
 } from '../../../../contexts/CollectionItemsContext';
 import Collection from '../../../../models/user/collection';
