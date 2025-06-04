@@ -43,5 +43,8 @@ module.exports = {
         'testing-library/no-node-access': 'off' // Allow direct node access in tests if needed
       }
     }
-  ]
+  ],
+  ignorePatterns: [
+    'vite.config.ts',
+  ],
 }; 
