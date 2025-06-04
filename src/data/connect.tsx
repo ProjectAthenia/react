@@ -36,14 +36,12 @@ export function connect<TOwnProps extends { }, TStateProps = any, TDispatchProps
                 dispatchFuncs[key] = newFunc
             });
             return dispatchFuncs;
-            // eslint-disable-next-line
-        }, [mapDispatchToProps])
+        }, [mapDispatchToProps, context])
 
 
         const props = useMemo(() => {
             return Object.assign({}, ownProps, mapStateToProps(context.state, ownProps), dispatchFuncs);
-            // eslint-disable-next-line
-        }, [ownProps, context.state]);
+        }, [ownProps, context.state, mapStateToProps, dispatchFuncs]);
 
         return React.createElement<TOwnProps>(component, props);
     }
