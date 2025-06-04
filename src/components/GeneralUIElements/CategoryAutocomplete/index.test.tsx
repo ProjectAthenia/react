@@ -45,29 +45,7 @@ jest.mock('../../../contexts/CategoriesContext', () => {
 
 describe('CategoryAutocomplete', () => {
   const mockOnSelect = jest.fn();
-  const mockContext = {
-    loadedData: [] as Category[],
-    setSearch: jest.fn(),
-    setFilter: jest.fn(),
-    setOrder: jest.fn(),
-    loadNext: jest.fn(),
-    refreshing: false,
-    hasAnotherPage: false,
-    total: 0,
-    order: {},
-    filter: {},
-    search: {},
-    limit: 10,
-    loadAll: false,
-    params: {},
-    initiated: false,
-    initialLoadComplete: false,
-    noResults: false,
-    expands: {},
-    addModel: jest.fn(),
-    removeModel: jest.fn(),
-    getModel: jest.fn()
-  };
+
 
   beforeEach(() => {
     mockOnSelect.mockClear();
