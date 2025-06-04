@@ -8,9 +8,8 @@ import {
     ColumnFiltersState,
     getSortedRowModel,
     SortingState,
-    ColumnDef,
     Row,
-    Column, AccessorColumnDef, AccessorKeyColumnDef
+    Column, AccessorKeyColumnDef
 } from '@tanstack/react-table';
 import { Table, Text, Paper, TextInput, Stack, ActionIcon, rem, Loader, Checkbox } from '@mantine/core';
 import { IconArrowUp, IconArrowDown, IconArrowsUpDown } from '@tabler/icons-react';
@@ -18,8 +17,8 @@ import { useHistory } from 'react-router-dom';
 import RangeFilter, { RangeFilterValue, rangeFilterFn } from './RangeFilter';
 import { BasePaginatedContextState } from '../../../contexts/BasePaginatedContext';
 
-export interface RangeFilterColumn {
-    valueCallback?: (row: any) => number | undefined | null;
+export interface RangeFilterColumn<T> {
+    valueCallback?: (row: T) => number | undefined | null;
     disableServerSearch?: boolean;
 }
 
@@ -31,18 +30,18 @@ export interface DataListProps<T> {
     onFilterChanged?: (columnId: string, value: unknown) => boolean;
     rowIdField?: keyof T;
     detailPath?: string;
-    rangeFields?: Record<string, RangeFilterColumn>;
+    rangeFields?: Record<string, RangeFilterColumn<T>>;
     dataTestId?: string;
     bulkSelectEnabled?: boolean;
     onBulkSelect?: (id: number) => void;
     selectedItems?: Set<number>;
 }
 
-const handleTableFilter = <T extends Record<string, any>>(
+const handleTableFilter = <T extends Record<string, unknown>>(
     row: Row<T>,
     columnId: string,
     value: unknown,
-    rangeFields: Record<string, RangeFilterColumn>
+    rangeFields: Record<string, RangeFilterColumn<T>>
 ): boolean => {
     if (!value) return true;
 
@@ -66,7 +65,7 @@ const handleTableFilter = <T extends Record<string, any>>(
     return String(cellValue).toLowerCase().includes(String(value).toLowerCase());
 };
 
-const DataList = <T extends Record<string, any>>({
+const DataList = <T extends Record<string, unknown>>({
     context,
     columns,
     onRowClick,
@@ -93,7 +92,7 @@ const DataList = <T extends Record<string, any>>({
         if (context.total && context.total > maxResults) {
             setMaxResults(context.total);
         }
-    }, [context.total]);
+    }, [context.total, maxResults]);
 
     // Sync input values with column filters
     useEffect(() => {
@@ -114,11 +113,22 @@ const DataList = <T extends Record<string, any>>({
         }
 
         // Otherwise update context filters
-        newFilters.forEach((filter: any) => {
+        newFilters.forEach((filter: { id: string; value: unknown }) => {
             if (onFilterChanged && onFilterChanged(filter.id, filter.value)) {
                 return;
             }
-            context.setFilter(filter.id, filter.value || null);
+            const val = filter.value;
+            let finalValue: string | number | null | undefined;
+
+            if (typeof val === 'string' || typeof val === 'number') {
+                finalValue = val || null; // Handles empty strings and 0 becoming null
+            } else if (val === null || val === undefined) {
+                finalValue = val; // val is already null or undefined
+            } else {
+                // For booleans, objects, and any other types, pass null.
+                finalValue = null;
+            }
+            context.setFilter(filter.id, finalValue);
         });
     };
 
@@ -126,7 +136,7 @@ const DataList = <T extends Record<string, any>>({
         // Update table filter state
         const newFilters = columnFilters.filter(f => f.id !== column.id);
         if (value) {
-            newFilters.push({ id: column.id, value: value as string } as any);
+            newFilters.push({ id: column.id, value: value });
         }
 
         setColumnFilters(newFilters);
@@ -138,7 +148,7 @@ const DataList = <T extends Record<string, any>>({
             return;
         }
 
-        const key = (column.columnDef as AccessorKeyColumnDef<any>).accessorKey as string
+        const key = (column.columnDef as AccessorKeyColumnDef<T, unknown>).accessorKey as string;
         if (key) {
             context.setFilter(key, value ? 'like,*' + value + '*' : null);
         }
@@ -192,7 +202,6 @@ const DataList = <T extends Record<string, any>>({
     };
 
     useEffect(() => {
-
         const observer = new IntersectionObserver(
             entries => {
                 if (entries[0].isIntersecting && !context.refreshing && context.hasAnotherPage) {
@@ -213,7 +222,7 @@ const DataList = <T extends Record<string, any>>({
                 observerRef.current.disconnect();
             }
         };
-    }, [lastRowRef.current, observerRef.current]);
+    }, [context.refreshing, context.hasAnotherPage, context.loadNext, context]);
 
     const tableData = useMemo(() => {
         return onArrangeData ? onArrangeData(context.loadedData) : context.loadedData;

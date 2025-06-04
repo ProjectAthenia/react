@@ -128,6 +128,8 @@ describe('CategoryAutocomplete', () => {
     // Wait for the category creation and onSelect callback
     await waitFor(() => {
       expect(CategoryRequests.createCategory).toHaveBeenCalledWith('New Category');
+    });
+    await waitFor(() => {
       expect(mockOnSelect).toHaveBeenCalledWith(newCategory);
     });
   });
@@ -151,6 +153,8 @@ describe('CategoryAutocomplete', () => {
     // Wait for the category creation attempt
     await waitFor(() => {
       expect(CategoryRequests.createCategory).toHaveBeenCalledWith('New Category');
+    });
+    await waitFor(() => {
       expect(mockOnSelect).not.toHaveBeenCalled();
     });
   });
@@ -213,6 +217,11 @@ describe('CategoryAutocomplete', () => {
     await waitFor(() => {
       const options = screen.getAllByRole('option');
       expect(options[0]).toHaveTextContent('Strategy');
+    });
+    await waitFor(() => {
+      // It's possible options might need to be fetched again if the DOM could change between waits.
+      // For this specific case, assuming options remain stable after the first waitFor.
+      const options = screen.getAllByRole('option'); 
       expect(options[1]).toHaveTextContent('Simulation');
     });
   });
