@@ -35,7 +35,7 @@ const CollectionsModal: React.FC<CollectionsModalProps> = ({
     useEffect(() => {
         if (searchQuery) {
             const filtered = collections.filter(collection => 
-                (collection as any).name?.toLowerCase().includes(searchQuery.toLowerCase())
+                collection.name?.toLowerCase().includes(searchQuery.toLowerCase())
             );
             setFilteredCollections(filtered);
         } else {
@@ -48,21 +48,22 @@ const CollectionsModal: React.FC<CollectionsModalProps> = ({
         ? (items as Set<HasType>).size > 0 
             ? (items as Set<HasType>).values().next().value 
             : { id: 0, type: 'unknown' } as HasType
-        : items as HasType;
+        : items;
 
     // If we don't have a valid item, don't render the modal content
     if (!firstItem) {
         return null;
     }
 
+    const modalTitle = isBulkOperation 
+        ? `Collections for ${(items as Set<HasType>).size} Items`
+        : `Collections for ${firstItem.type.charAt(0).toUpperCase() + firstItem.type.slice(1)}`;
+
     return (
         <ContentModal
             isOpen={isOpen}
             onRequestClose={onRequestClose}
-            title={isBulkOperation 
-                ? `Collections for ${(items as Set<HasType>).size} Items`
-                : `Collections for ${(items as HasType).type.charAt(0).toUpperCase() + (items as HasType).type.slice(1)}`
-            }
+            title={modalTitle}
         >
             <CollectionItemsContext.Consumer>
                 {(collectionItemsContext) => (
