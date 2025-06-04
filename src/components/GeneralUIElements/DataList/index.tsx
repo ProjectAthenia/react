@@ -25,10 +25,10 @@ export interface RangeFilterColumn {
 
 export interface DataListProps<T> {
     context: BasePaginatedContextState<T>;
-    columns: any[];
+    columns: AccessorKeyColumnDef<T>[];
     onRowClick?: (row: T) => void;
     onArrangeData?: (data: T[]) => T[];
-    onFilterChanged?: (columnId: string, value: any) => boolean;
+    onFilterChanged?: (columnId: string, value: unknown) => boolean;
     rowIdField?: keyof T;
     detailPath?: string;
     rangeFields?: Record<string, RangeFilterColumn>;
@@ -104,7 +104,7 @@ const DataList = <T extends Record<string, any>>({
         setInputValues(newInputValues);
     }, [columnFilters]);
 
-    const handleTableFilterChange = (updater: any) => {
+    const handleTableFilterChange = (updater: ColumnFiltersState | ((old: ColumnFiltersState) => ColumnFiltersState)) => {
         const newFilters = typeof updater === 'function' ? updater(columnFilters) : updater;
         setColumnFilters(newFilters);
 
@@ -167,7 +167,7 @@ const DataList = <T extends Record<string, any>>({
         }
     };
 
-    const handleSortingChange = (updater: any) => {
+    const handleSortingChange = (updater: SortingState | ((old: SortingState) => SortingState)) => {
         const newSorting = typeof updater === 'function' ? updater(sorting) : updater;
         setSorting(newSorting);
 
@@ -178,9 +178,9 @@ const DataList = <T extends Record<string, any>>({
 
         // Otherwise update context order
         if (newSorting.length > 0) {
-            const { columnId, desc } = newSorting[0];
+            const { id, desc } = newSorting[0];
             // Find the column definition
-            const key = columns.find(col => col.id === columnId)?.accessorKey as string;
+            const key = columns.find(col => col.id === id)?.accessorKey as string;
             
             context.setOrder(key, desc ? 'DESC' : 'ASC');
         } else {
