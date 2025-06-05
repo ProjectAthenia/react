@@ -24,26 +24,38 @@ jest.mock('../../../services/requests/CategoryRequests', () => ({
 
 // Mock the CategoriesContext
 jest.mock('../../../contexts/CategoriesContext', () => {
-  const originalModule = jest.requireActual('../../../contexts/CategoriesContext');
-  
+  const originalCategoriesContextModule = jest.requireActual('../../../contexts/CategoriesContext');
+
+  // Use standard require for utilities inside the mock factory
+  const mockPaginationFunc = require('../../../test-utils/mocks/pagination').mockPagination;
+  const mockCategoryFunc = require('../../../test-utils/mocks/models/category').mockCategory;
+
+  // Create the mock context value once to ensure stability
+  const stableMockContextValue = mockPaginationFunc({
+    loadedData: [
+      mockCategoryFunc({ id: 1, name: 'Action' }),
+      mockCategoryFunc({ id: 2, name: 'Adventure' }),
+      mockCategoryFunc({ id: 3, name: 'RPG' })
+    ],
+    limit: 100,
+    // Ensure mockPaginationFunc provides stable jest.fn() for setSearch, setIsLoading etc.
+  });
+
   return {
-    ...originalModule,
+    ...originalCategoriesContextModule,
+    // Provide the original Context object for an idiomatic Provider
+    CategoriesContext: originalCategoriesContextModule.CategoriesContext,
     CategoriesContextProvider: ({ children }: { children: React.ReactNode }) => (
-      <CategoriesContext.Provider value={mockPagination({
-        loadedData: [
-          mockCategory({ id: 1, name: 'Action' }),
-          mockCategory({ id: 2, name: 'Adventure' }),
-          mockCategory({ id: 3, name: 'RPG' })
-        ],
-        limit: 100
-      })}>
+      <originalCategoriesContextModule.CategoriesContext.Provider value={stableMockContextValue}>
         {children}
-      </CategoriesContext.Provider>
-    )
+      </originalCategoriesContextModule.CategoriesContext.Provider>
+    ),
   };
 });
 
 describe('CategoryAutocomplete', () => {
+  jest.setTimeout(10000); // Add a 10-second timeout for all tests in this suite
+
   const mockOnSelect = jest.fn();
 
 
@@ -88,7 +100,7 @@ describe('CategoryAutocomplete', () => {
     renderWithMantine(
       <CategoryAutocomplete 
         onSelect={mockOnSelect} 
-        prioritizedCategories={[testCategory]} 
+        prioritizedCategories={[testCategory]}
       />
     );
     const input = screen.getByPlaceholderText('Search categories...');

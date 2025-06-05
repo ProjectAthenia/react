@@ -1,6 +1,6 @@
 import React, { useState, useRef, useMemo } from 'react';
 import { Button, Stack, Text, ActionIcon } from '@mantine/core';
-import { IconX, IconPlus, IconTrash } from '@tabler/icons-react';
+import { IconTrash } from '@tabler/icons-react';
 import Collection from '../../../../models/user/collection';
 import CollectionItem from '../../../../models/user/collection-items';
 import CategoryAutocomplete from '../../../GeneralUIElements/CategoryAutocomplete';
@@ -9,7 +9,6 @@ import { CollectionItemCategory } from '../../../../models/user/collection-item-
 import CollectionManagementRequests from '../../../../services/requests/CollectionManagementRequests';
 import { CollectionItemsContextState } from '../../../../contexts/CollectionItemsContext';
 import './index.scss';
-import BaseModel from '../../../../models/base-model';
 import { HasType } from '../../../../models/has-type';
 import { isInCollection } from '../../../../util/collection-utils';
 
@@ -121,13 +120,10 @@ const handleRemoveFromCollection = async (
 const handleAddCategory = async (
     collectionItem: CollectionItem,
     category: Category,
-    setLoadingCategoryId: (id: number | null) => void,
     collectionItemsContext: CollectionItemsContextState
 ): Promise<void> => {
     if (!collectionItem || !category || !collectionItem.id || !category.id) return;
-    
-    setLoadingCategoryId(category.id);
-    
+
     try {
         const categoryData = {
             category_id: category.id,
@@ -177,7 +173,6 @@ const handleAddCategory = async (
     } catch (error) {
         console.error('Error adding category:', error);
     } finally {
-        setLoadingCategoryId(null);
     }
 };
 
@@ -185,13 +180,10 @@ const handleAddCategory = async (
 const handleRemoveCategory = async (
     collection: Collection,
     collectionItemCategory: CollectionItemCategory,
-    setLoadingCategoryId: (id: number | null) => void,
     collectionItemsContext: CollectionItemsContextState
 ): Promise<void> => {
     if (!collectionItemCategory || !collectionItemCategory.id) return;
-    
-    setLoadingCategoryId(collectionItemCategory.category_id);
-    
+
     try {
         await CollectionManagementRequests.deleteCollectionItemCategory(collectionItemCategory.id);
         
@@ -225,7 +217,6 @@ const handleRemoveCategory = async (
     } catch (error) {
         console.error('Error removing category:', error);
     } finally {
-        setLoadingCategoryId(null);
     }
 };
 
@@ -235,7 +226,6 @@ interface CollectionItemProps {
     collectionItemsContext: CollectionItemsContextState;
     isBulkOperation?: boolean;
     selectedItems?: Set<HasType>;
-    isCommonCollection?: boolean;
 }
 
 const CollectionItemComponent: React.FC<CollectionItemProps> = ({
@@ -243,12 +233,9 @@ const CollectionItemComponent: React.FC<CollectionItemProps> = ({
     item,
     collectionItemsContext,
     isBulkOperation = false,
-    selectedItems,
-    isCommonCollection = false
+    selectedItems
 }) => {
     const [loadingCollectionId, setLoadingCollectionId] = useState<number | null>(null);
-    const [loadingCategoryId, setLoadingCategoryId] = useState<number | null>(null);
-    const [selectedCategories, setSelectedCategories] = useState<{[key: number]: Category}>({});
     const categoryAutocompleteRef = useRef<{ clearInput: () => void } | null>(null);
 
     const itemIsInCollection = useMemo((): boolean => {
@@ -273,25 +260,33 @@ const CollectionItemComponent: React.FC<CollectionItemProps> = ({
 
     // Function to handle category selection
     const handleCategorySelect = async (category: Category) => {
-        if (!collection.id || !category || !collectionItem) return;
-        
-        setSelectedCategories(prev => ({
-            ...prev,
-            [collection.id!]: category
-        }));
-        
-        // Add the category to the collection item
-        await handleAddCategory(
-            collectionItem,
+        const collectionState = collectionItemsContext[collection.id];
+        if (!collectionState) return;
+
+        const collectionItem = collectionState.loadedData?.find(
+            (ci: CollectionItem) => ci.item_id === item.id && ci.item_type === item.type
+        );
+
+        if (collectionItem && category) {
+            await handleAddCategory(
+                collectionItem,
+                category,
+                collectionItemsContext
+            );
+            
+            // Clear the CategoryAutocomplete input after successful addition
+            if (categoryAutocompleteRef.current && typeof categoryAutocompleteRef.current.clearInput === 'function') {
+                categoryAutocompleteRef.current.clearInput();
+            }
+        }
+    };
+
+    const handleCategoryRemove = async (category: CollectionItemCategory) => {
+        await handleRemoveCategory(
+            collection,
             category,
-            setLoadingCategoryId,
             collectionItemsContext
         );
-        
-        // Clear the CategoryAutocomplete input after successful addition
-        if (categoryAutocompleteRef.current && typeof categoryAutocompleteRef.current.clearInput === 'function') {
-            categoryAutocompleteRef.current.clearInput();
-        }
     };
 
     return (
@@ -316,12 +311,7 @@ const CollectionItemComponent: React.FC<CollectionItemProps> = ({
                                                     variant="subtle"
                                                     color="red"
                                                     size="sm"
-                                                    onClick={() => handleRemoveCategory(
-                                                        collection,
-                                                        category,
-                                                        setLoadingCategoryId,
-                                                        collectionItemsContext
-                                                    )}
+                                                    onClick={() => handleCategoryRemove(category)}
                                                 >
                                                     <IconTrash size={14} />
                                                 </ActionIcon>
@@ -335,14 +325,10 @@ const CollectionItemComponent: React.FC<CollectionItemProps> = ({
                         </div>
                         
                         <CategoryAutocomplete
-                            onSelect={(category) => handleCategorySelect(category)}
+                            onSelect={handleCategorySelect}
+                            ref={categoryAutocompleteRef}
                             prioritizedCategories={collectionItem?.collection_item_categories?.map(cic => cic.category) || []}
                             placeholder="Add a category..."
-                            ref={(el) => {
-                                if (el) {
-                                    categoryAutocompleteRef.current = el;
-                                }
-                            }}
                         />
                         
                         <Button

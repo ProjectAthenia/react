@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Stack, Text, Group, ActionIcon, TextInput } from '@mantine/core';
-import { IconPlus, IconX, IconTrash } from '@tabler/icons-react';
+import { Stack, TextInput } from '@mantine/core';
 import { CollectionItemsContext } from '../../../contexts/CollectionItemsContext';
 import Collection from '../../../models/user/collection';
-import CollectionItem from '../../../models/user/collection-items';
-import CategoryAutocomplete from '../../GeneralUIElements/CategoryAutocomplete';
-import Category from '../../../models/category';
-import { CollectionItemCategory } from '../../../models/user/collection-item-category';
-import CollectionManagementRequests from '../../../services/requests/CollectionManagementRequests';
-import { CollectionItemsContextState } from '../../../contexts/CollectionItemsContext';
 import './index.scss';
 import { HasType } from '../../../models/has-type';
 import ContentModal, { ModalProps } from '../../GeneralUIElements/Modal';
@@ -18,7 +11,6 @@ interface CollectionsModalProps extends ModalProps {
     items: HasType | Set<HasType>;
     collections: Collection[];
     isLoading?: boolean;
-    commonCollections?: Set<number>;
 }
 
 const CollectionsModal: React.FC<CollectionsModalProps> = ({ 
@@ -26,7 +18,6 @@ const CollectionsModal: React.FC<CollectionsModalProps> = ({
     onRequestClose,
     items,
     collections,
-    commonCollections = new Set()
 }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredCollections, setFilteredCollections] = useState<Collection[]>(collections);
@@ -84,7 +75,6 @@ const CollectionsModal: React.FC<CollectionsModalProps> = ({
                                         collectionItemsContext={collectionItemsContext}
                                         isBulkOperation={isBulkOperation}
                                         selectedItems={isBulkOperation ? items as Set<HasType> : undefined}
-                                        isCommonCollection={commonCollections.has(collection.id!)}
                                     />
                                 ))}
                             </ul>

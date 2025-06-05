@@ -1,12 +1,13 @@
-import React, {PropsWithChildren} from 'react'
+import React, { ReactNode } from 'react'
 import './index.scss';
 
-interface Props extends PropsWithChildren<any> {
+interface Props {
 	label: string
 	subtext?: string
 	error?: string
 	color?: string
 	rounded?: boolean
+	children?: ReactNode
 }
 
 const InputWrapper: React.FC<Props> = ({  label, error, color, rounded, subtext, children }) => {

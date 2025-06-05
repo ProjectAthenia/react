@@ -1,12 +1,11 @@
-import React, {useEffect, useState} from 'react'
+import React from 'react'
 import {RequestError} from '../../models/request-error';
 
 interface ServerAlertProps {
-	onCloseAlert: (fix: boolean, field?: string) => void,
 	requestError: RequestError
 }
 
-const ServerAlert: React.FC<ServerAlertProps> = ({ onCloseAlert, requestError }) => {
+const ServerAlert: React.FC<ServerAlertProps> = ({ requestError }) => {
 
 	let message = undefined;
 	let field: string|undefined = undefined;
