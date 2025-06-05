@@ -2,6 +2,7 @@ import Page, {placeholderPage, mergePageData} from '../models/page';
 import React, {Dispatch, SetStateAction} from 'react';
 import api from '../services/api';
 import { type AxiosResponse, type AxiosError } from 'axios';
+import BaseModel from '../models/base-model';
 
 // Global cache for pending requests organized by route and page number
 let pendingRequests: { [route: string]: { [page: number]: AbortController } } = {};
@@ -90,7 +91,7 @@ export interface BasePaginatedContextState<Model> {
     params: Record<string, unknown>
 }
 
-export function defaultBaseContext(): BasePaginatedContextState<any> {
+export function defaultBaseContext(): BasePaginatedContextState<unknown> {
     return {
         hasAnotherPage: false,
         initialLoadComplete: false,
@@ -127,7 +128,7 @@ export function defaultBaseContext(): BasePaginatedContextState<any> {
  * @param search
  * @param params
  */
-function runRequest(endpoint: string, page: number, expands: string[], limit: number, order: OrderProps, filter: FilterProps, search: SearchProps, params: Record<string, unknown> = {}): Promise<Page<any>> {
+function runRequest<Model extends BaseModel>(endpoint: string, page: number, expands: string[], limit: number, order: OrderProps, filter: FilterProps, search: SearchProps, params: Record<string, unknown> = {}): Promise<Page<Model>> {
     if (!pendingRequests[endpoint]) {
         pendingRequests[endpoint] = {};
     }
@@ -158,10 +159,12 @@ function runRequest(endpoint: string, page: number, expands: string[], limit: nu
             const value = search[searchKey];
             if (Array.isArray(value)) {
                 (value as string[]).forEach(entry => {
-                    if (params["search[" + searchKey + "]"] === undefined) {
-                        params["search[" + searchKey + "]"] = [];
+                    let searchParamArray = params["search[" + searchKey + "]"] as string[] | undefined;
+                    if (!Array.isArray(searchParamArray)) {
+                        searchParamArray = [];
+                        params["search[" + searchKey + "]"] = searchParamArray;
                     }
-                    params["search[" + searchKey + "]"].push(entry);
+                    searchParamArray.push(entry);
                 })
             } else if (value === 'null') {
                 params["search[" + searchKey + "]"] = value;
@@ -175,11 +178,11 @@ function runRequest(endpoint: string, page: number, expands: string[], limit: nu
         params,
         signal: controller.signal
     }).then((response: AxiosResponse) => {
-        return Promise.resolve(response.data as Page<any>);
+        return Promise.resolve(response.data as Page<Model>);
     }).catch((error: AxiosError) => {
         if (error.name === 'CanceledError') {
             delete pendingRequests[endpoint]?.[page];
-            return Promise.resolve(placeholderPage());
+            return Promise.resolve(placeholderPage<Model>());
         }
         throw error;
     });
@@ -193,15 +196,16 @@ function runRequest(endpoint: string, page: number, expands: string[], limit: nu
  * @param pageNumber
  * @param replace
  */
-function loadPage(setContext: Dispatch<SetStateAction<BasePaginatedContextState<any>>>,
-                  baseContext: BasePaginatedContextState<any>,
+function loadPage<Model extends BaseModel>(setContext: Dispatch<SetStateAction<BasePaginatedContextState<Model>>>,
+                  baseContext: BasePaginatedContextState<Model>,
                   endpoint: string, pageNumber: number, replace: boolean = false)
-                  : Promise<Page<any[]>> {
-    return runRequest(endpoint, pageNumber, baseContext.expands, baseContext.limit, baseContext.order, baseContext.filter, baseContext.search, {...baseContext.params}).then(page => {
+                  : Promise<Page<Model>> {
+    return runRequest<Model>(endpoint, pageNumber, baseContext.expands, baseContext.limit, baseContext.order, baseContext.filter, baseContext.search, {...baseContext.params}).then((page: Page<Model>) => {
         const validResult = baseContext.validateResult ? baseContext.validateResult(baseContext, page) : true;
 
         if (!validResult) {
-            return Promise.resolve(baseContext.lastLoadedPage?.data as any);
+            // Ensure we return a Page<Model> consistent with the function's return type
+            return Promise.resolve(placeholderPage<Model>());
         }
 
         baseContext.loadedData = [...replace ? page.data : mergePageData(page, baseContext.loadedData)];
@@ -226,19 +230,19 @@ function loadPage(setContext: Dispatch<SetStateAction<BasePaginatedContextState<
  * @param baseContext
  * @param endpoint
  */
-function createLoadNextPageCallback(setContext: Dispatch<SetStateAction<BasePaginatedContextState<any>>>,
-                                    baseContext: BasePaginatedContextState<any>, endpoint: string)
-                                    : () => Promise<Page<any[]>> {
-    return (page?: number): Promise<Page<any[]>> => {
+function createLoadNextPageCallback<Model extends BaseModel>(setContext: Dispatch<SetStateAction<BasePaginatedContextState<Model>>>,
+                                    baseContext: BasePaginatedContextState<Model>, endpoint: string)
+                                    : () => Promise<Page<Model>> {
+    return (page?: number): Promise<Page<Model>> => {
         const lastPage = baseContext.lastLoadedPage;
         if (lastPage) {
             if (lastPage.last_page > lastPage.current_page) {
-                page = page ?? lastPage.current_page + 1
-                return loadPage(setContext, baseContext, endpoint, page);
+                page = page ?? lastPage.current_page + 1;
+                return loadPage<Model>(setContext, baseContext, endpoint, page);
             }
-            return Promise.resolve(placeholderPage());
+            return Promise.resolve(placeholderPage<Model>());
         } else {
-            return loadPage(setContext, baseContext, endpoint, 1);
+            return loadPage<Model>(setContext, baseContext, endpoint, 1);
         }
     }
 }
@@ -249,11 +253,11 @@ function createLoadNextPageCallback(setContext: Dispatch<SetStateAction<BasePagi
  * @param baseContext
  * @param endpoint
  */
-function createRefreshDataCallback(setContext: Dispatch<SetStateAction<BasePaginatedContextState<any>>>,
-                                   baseContext: BasePaginatedContextState<any>, endpoint: string)
-                                   : (persistData?: boolean) => Promise<Page<any[]>> {
-    return (persistData?: boolean): Promise<Page<any[]>> => {
-        const newContext = {
+function createRefreshDataCallback<Model extends BaseModel>(setContext: Dispatch<SetStateAction<BasePaginatedContextState<Model>>>,
+                                   baseContext: BasePaginatedContextState<Model>, endpoint: string)
+                                   : (persistData?: boolean) => Promise<Page<Model>> {
+    return (persistData?: boolean): Promise<Page<Model>> => {
+        const newContext: BasePaginatedContextState<Model> = {
             ...baseContext,
             loadedData: [...persistData ? baseContext.loadedData : []],
             lastLoadedPage: undefined,
@@ -262,7 +266,7 @@ function createRefreshDataCallback(setContext: Dispatch<SetStateAction<BasePagin
             initialLoadComplete: !!persistData,
         }
         setContext(newContext);
-        return loadPage(setContext, newContext, endpoint, 1);
+        return loadPage<Model>(setContext, newContext, endpoint, 1);
     }
 }
 
@@ -272,10 +276,10 @@ function createRefreshDataCallback(setContext: Dispatch<SetStateAction<BasePagin
  * @param baseContext
  * @param endpoint
  */
-function createSetFilterCallback(setContext: Dispatch<SetStateAction<BasePaginatedContextState<any>>>,
-                                 baseContext: BasePaginatedContextState<any>, endpoint: string)
-                                 : (key: string, value: number|string|null|undefined) => Promise<Page<any[]>> {
-    return (key: string, value: number|string|null|undefined) => {
+function createSetFilterCallback<Model extends BaseModel>(setContext: Dispatch<SetStateAction<BasePaginatedContextState<Model>>>,
+                                 baseContext: BasePaginatedContextState<Model>, endpoint: string)
+                                 : (key: string, value: number|string|null|undefined) => Promise<Page<Model>> {
+    return (key: string, value: number|string|null|undefined): Promise<Page<Model>> => {
         cancelAllPendingRequests(endpoint);
 
         const filter = baseContext.filter;
@@ -284,7 +288,7 @@ function createSetFilterCallback(setContext: Dispatch<SetStateAction<BasePaginat
         } else {
             delete filter[key];
         }
-        const newContext = {
+        const newContext: BasePaginatedContextState<Model> = {
             ...baseContext,
             total: 0,
             loadedData: [],
@@ -294,7 +298,7 @@ function createSetFilterCallback(setContext: Dispatch<SetStateAction<BasePaginat
             filter: {...filter},
         }
         setContext({...newContext});
-        return loadPage(setContext, newContext, endpoint, 1);
+        return loadPage<Model>(setContext, newContext, endpoint, 1);
     }
 }
 
@@ -304,10 +308,10 @@ function createSetFilterCallback(setContext: Dispatch<SetStateAction<BasePaginat
  * @param baseContext
  * @param endpoint
  */
-function createSetSearchCallback(setContext: Dispatch<SetStateAction<BasePaginatedContextState<any>>>,
-                                 baseContext: BasePaginatedContextState<any>, endpoint: string)
-    : (key: string, value: string|null|undefined) => Promise<Page<any[]>> {
-    return (key: string, value: string|null|undefined) => {
+function createSetSearchCallback<Model extends BaseModel>(setContext: Dispatch<SetStateAction<BasePaginatedContextState<Model>>>,
+                                 baseContext: BasePaginatedContextState<Model>, endpoint: string)
+    : (key: string, value: string|null|undefined) => Promise<Page<Model>> {
+    return (key: string, value: string|null|undefined): Promise<Page<Model>> => {
         cancelAllPendingRequests(endpoint);
 
         const search = baseContext.search;
@@ -316,7 +320,7 @@ function createSetSearchCallback(setContext: Dispatch<SetStateAction<BasePaginat
         } else {
             delete search[key];
         }
-        const newContext = {
+        const newContext: BasePaginatedContextState<Model> = {
             ...baseContext,
             total: 0,
             loadedData: [],
@@ -326,7 +330,7 @@ function createSetSearchCallback(setContext: Dispatch<SetStateAction<BasePaginat
             search: {...search},
         }
         setContext({...newContext});
-        return loadPage(setContext, newContext, endpoint, 1, true);
+        return loadPage<Model>(setContext, newContext, endpoint, 1, true);
     }
 }
 
@@ -336,10 +340,10 @@ function createSetSearchCallback(setContext: Dispatch<SetStateAction<BasePaginat
  * @param baseContext
  * @param endpoint
  */
-function createSetOrderCallback(setContext: Dispatch<SetStateAction<BasePaginatedContextState<any>>>,
-                                baseContext: BasePaginatedContextState<any>, endpoint: string)
-                                : (key: string, direction: 'ASC'|'DESC'|null|undefined) => Promise<Page<any[]>> {
-    return (key: string, direction: 'ASC'|'DESC'|null|undefined) => {
+function createSetOrderCallback<Model extends BaseModel>(setContext: Dispatch<SetStateAction<BasePaginatedContextState<Model>>>,
+                                baseContext: BasePaginatedContextState<Model>, endpoint: string)
+                                : (key: string, direction: 'ASC'|'DESC'|null|undefined) => Promise<Page<Model>> {
+    return (key: string, direction: 'ASC'|'DESC'|null|undefined): Promise<Page<Model>> => {
         cancelAllPendingRequests(endpoint);
 
         const order = {...baseContext.order};
@@ -348,7 +352,7 @@ function createSetOrderCallback(setContext: Dispatch<SetStateAction<BasePaginate
         } else {
             delete order[key];
         }
-        const newContext = {
+        const newContext: BasePaginatedContextState<Model> = {
             ...baseContext,
             total: 0,
             loadedData: [],
@@ -358,7 +362,7 @@ function createSetOrderCallback(setContext: Dispatch<SetStateAction<BasePaginate
             order: order,
         }
         setContext({...newContext});
-        return loadPage(setContext, newContext, endpoint, 1);
+        return loadPage<Model>(setContext, newContext, endpoint, 1);
     }
 }
 
@@ -367,10 +371,10 @@ function createSetOrderCallback(setContext: Dispatch<SetStateAction<BasePaginate
  * @param setContext
  * @param baseContext
  */
-function createAddModelCallback(setContext: Dispatch<SetStateAction<BasePaginatedContextState<any>>>,
-                                baseContext: BasePaginatedContextState<any>)
-                                : (model: any) => void {
-    return (model: any) => {
+function createAddModelCallback<Model extends BaseModel>(setContext: Dispatch<SetStateAction<BasePaginatedContextState<Model>>>,
+                                baseContext: BasePaginatedContextState<Model>)
+                                : (model: Model) => void {
+    return (model: Model) => {
         const index = baseContext.loadedData.findIndex(i => i.id === model.id);
         if (index !== -1) {
             baseContext.loadedData[index] = model;
@@ -389,10 +393,10 @@ function createAddModelCallback(setContext: Dispatch<SetStateAction<BasePaginate
  * @param setContext
  * @param baseContext
  */
-function createRemoveModelCallback(setContext: Dispatch<SetStateAction<BasePaginatedContextState<any>>>,
-                                   baseContext: BasePaginatedContextState<any>)
-                                   : (model: any) => void {
-    return (model: any) => {
+function createRemoveModelCallback<Model extends BaseModel>(setContext: Dispatch<SetStateAction<BasePaginatedContextState<Model>>>,
+                                   baseContext: BasePaginatedContextState<Model>)
+                                   : (model: Model) => void {
+    return (model: Model) => {
         baseContext.loadedData = [...baseContext.loadedData].filter(i => i.id !== model.id);
         baseContext.total = baseContext.total ? baseContext.total - 1 : 0;
         baseContext.noResults = baseContext.total === 0;
@@ -404,10 +408,11 @@ function createRemoveModelCallback(setContext: Dispatch<SetStateAction<BasePagin
  * Creates the get model callback with the current context
  * @param baseContext
  */
-function createGetModelCallback(baseContext: BasePaginatedContextState<any>)
-                                : (id: number) => any|null {
-    return (id: number) => {
-        return baseContext.loadedData.find(i => i.id === id);
+function createGetModelCallback<Model extends BaseModel>(baseContext: BasePaginatedContextState<Model>)
+                                : (id: number) => Model|null {
+    return (id: number): Model|null => {
+        const model = baseContext.loadedData.find(i => i.id === id);
+        return model || null;
     }
 }
 
@@ -418,16 +423,19 @@ function createGetModelCallback(baseContext: BasePaginatedContextState<any>)
  * @param endpoint
  * @param params
  */
-export function prepareContextState(setContext: Dispatch<SetStateAction<BasePaginatedContextState<any>>>,
-                                    baseContext: BasePaginatedContextState<any>, endpoint: string, params: any = {}): BasePaginatedContextState<any>
-{
+export function prepareContextState<Model extends BaseModel>(
+    setContext: Dispatch<SetStateAction<BasePaginatedContextState<Model>>>,
+    baseContext: BasePaginatedContextState<Model>,
+    endpoint: string, 
+    params: Record<string, unknown> = {}
+): BasePaginatedContextState<Model> {
     baseContext.params = params;
-    baseContext = createCallbacks(setContext, baseContext, endpoint);
+    baseContext = createCallbacks<Model>(setContext, baseContext, endpoint);
     if (!baseContext.initialLoadComplete && !baseContext.initiated) {
         baseContext.initiated = true;
         baseContext.loadNext().catch(console.error);
     }
-    return baseContext
+    return baseContext;
 }
 
 /**
@@ -436,17 +444,19 @@ export function prepareContextState(setContext: Dispatch<SetStateAction<BasePagi
  * @param baseContext
  * @param endpoint
  */
-export function createCallbacks(setContext: Dispatch<SetStateAction<BasePaginatedContextState<any>>>,
-                                baseContext: BasePaginatedContextState<any>, endpoint: string): BasePaginatedContextState<any>
-{
-    baseContext.loadNext = createLoadNextPageCallback(setContext, baseContext, endpoint);
-    baseContext.refreshData = createRefreshDataCallback(setContext, baseContext, endpoint);
-    baseContext.setFilter = createSetFilterCallback(setContext, baseContext, endpoint);
-    baseContext.setSearch = createSetSearchCallback(setContext, baseContext, endpoint);
-    baseContext.setOrder = createSetOrderCallback(setContext, baseContext, endpoint);
-    baseContext.addModel = createAddModelCallback(setContext, baseContext);
-    baseContext.removeModel = createRemoveModelCallback(setContext, baseContext);
-    baseContext.getModel = createGetModelCallback(baseContext);
+export function createCallbacks<Model extends BaseModel>(
+    setContext: Dispatch<SetStateAction<BasePaginatedContextState<Model>>>,
+    baseContext: BasePaginatedContextState<Model>,
+    endpoint: string
+): BasePaginatedContextState<Model> {
+    baseContext.loadNext = createLoadNextPageCallback<Model>(setContext, baseContext, endpoint);
+    baseContext.refreshData = createRefreshDataCallback<Model>(setContext, baseContext, endpoint);
+    baseContext.setFilter = createSetFilterCallback<Model>(setContext, baseContext, endpoint);
+    baseContext.setSearch = createSetSearchCallback<Model>(setContext, baseContext, endpoint);
+    baseContext.setOrder = createSetOrderCallback<Model>(setContext, baseContext, endpoint);
+    baseContext.addModel = createAddModelCallback<Model>(setContext, baseContext);
+    baseContext.removeModel = createRemoveModelCallback<Model>(setContext, baseContext);
+    baseContext.getModel = createGetModelCallback<Model>(baseContext);
 
     return baseContext;
 }

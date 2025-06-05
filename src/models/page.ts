@@ -24,9 +24,9 @@ export const placeholderPage = <T>(): Page<T> => ({
  * @param page
  * @param existingEntries
  */
-export function mergePageData(page: Page<BaseModel>, existingEntries: BaseModel[]): BaseModel[]
+export function mergePageData<M extends BaseModel>(page: Page<M>, existingEntries: M[]): M[]
 {
-    const data = (page.data as any[]) as BaseModel[];
+    const data = page.data;
     data.forEach(entry => {
         const index = existingEntries.findIndex(i => i.id === entry.id);
         if (index !== -1) {
@@ -35,5 +35,5 @@ export function mergePageData(page: Page<BaseModel>, existingEntries: BaseModel[
             existingEntries.push(entry);
         }
     });
-    return (existingEntries as any[]) as BaseModel[];
+    return existingEntries;
 }
