@@ -1,7 +1,6 @@
 import BaseModel from '../base-model';
 import Organization from './organization';
 import User from '../user/user';
-import {AvailableRoles} from '../role';
 
 /**
  * Our Organization Manager details

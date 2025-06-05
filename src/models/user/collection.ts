@@ -1,4 +1,3 @@
-import BaseModel from '../base-model';
 import { HasType } from '../has-type';
 import CollectionItem from "./collection-items";
 

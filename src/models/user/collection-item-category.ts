@@ -1,6 +1,5 @@
 import Category from '../../models/category';
 import BaseModel from '../base-model';
-import CollectionItem from './collection-items';
 
 /**
  * Represents the link between a collection item and a category,

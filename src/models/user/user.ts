@@ -1,5 +1,4 @@
 import BaseModel from '../base-model';
-import BaseEntityModel from '../entities';
 import Organization from '../organization/organization';
 import Role, {AvailableRoles} from '../role';
 import Category from "../category";
@@ -90,7 +89,7 @@ export default interface User extends BaseModel {
 }
 
 function canUserFillRole(user: User, role: AvailableRoles): boolean {
-    return user.roles ? user.roles.find(i => i.id == role) != null : false;
+    return user.roles ? user.roles.find(i => i.id === role) !== undefined : false;
 }
 
 /**
@@ -117,9 +116,9 @@ export function isSuperUser(user: User): boolean {
  */
 export function canFillRole(user: User, organization: Organization, roles: AvailableRoles[]) : boolean {
     roles.push(AvailableRoles.Administrator);
-    const relatedOrganizationManagers = user.organization_managers?.filter(i => i.organization_id == organization.id) ?? [];
+    const relatedOrganizationManagers = user.organization_managers?.filter(i => i.organization_id === organization.id) ?? [];
 
-    return isSuperUser(user) || relatedOrganizationManagers.find(i => roles.indexOf(i.role_id) != -1) != undefined;
+    return isSuperUser(user) || relatedOrganizationManagers.find(i => roles.indexOf(i.role_id) !== -1) !== undefined;
 }
 
 /**
