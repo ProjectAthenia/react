@@ -1,4 +1,4 @@
-import React, {PropsWithChildren, useEffect, useState} from 'react';
+import React, {PropsWithChildren, useCallback, useEffect, useState} from 'react';
 import Collection, {collectionPlaceholder} from "../models/user/collection";
 import CollectionManagementRequests from "../services/requests/CollectionManagementRequests";
 import LoadingScreen from "../components/LoadingScreen";
@@ -18,7 +18,8 @@ let defaultContext: CollectionContextConsumerState = {
     hasLoaded: false,
     notFound: false,
     collection: collectionPlaceholder,
-    setCollection: (collection: Collection) => {}
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    setCollection: (_collection: Collection) => {}
 };
 
 /**
@@ -34,13 +35,13 @@ export interface CollectionContextProviderProps {
 export const CollectionContextProvider: React.FC<PropsWithChildren<CollectionContextProviderProps>> = ({collectionId, skipCache, children}) => {
     const [collectionState, setCollectionState] = useState(defaultContext);
 
-    const setCollection = (collection: Collection): void => {
-        cachedCollections[collection.id!] = {...collection};
-        setCollectionState({
-            ...collectionState,
-            collection: collection,
-        })
-    }
+    const setCollection = useCallback((newCollection: Collection): void => {
+        cachedCollections[newCollection.id!] = {...newCollection};
+        setCollectionState(prevState => ({
+            ...prevState,
+            collection: newCollection,
+        }));
+    }, []);
 
     useEffect(() => {
         if (!skipCache && cachedCollections[collectionId]) {
@@ -51,27 +52,30 @@ export const CollectionContextProvider: React.FC<PropsWithChildren<CollectionCon
                 setCollection: setCollection,
             });
         } else {
-            setCollectionState({
-                ...collectionState,
+            setCollectionState(prevState => ({
+                ...prevState,
                 hasLoaded: false,
-            });
-            CollectionManagementRequests.getCollection(collectionId).then(collection => {
-                cachedCollections[collectionId] = collection;
-                setCollectionState({
+                setCollection: setCollection,
+            }));
+            CollectionManagementRequests.getCollection(collectionId).then(apiCollection => {
+                cachedCollections[collectionId] = apiCollection;
+                setCollectionState(prevState => ({
+                    ...prevState,
                     hasLoaded: true,
                     notFound: false,
-                    collection: collection,
-                    setCollection,
-                });
+                    collection: apiCollection,
+                    setCollection: setCollection,
+                }));
             }).catch(() => {
-                setCollectionState({
-                    ...collectionState,
+                setCollectionState(prevState => ({
+                    ...prevState,
                     hasLoaded: true,
                     notFound: true,
-                });
+                    setCollection: setCollection,
+                }));
             })
         }
-    }, [collectionId, window.location.pathname, skipCache, collectionState, setCollection]);
+    }, [collectionId, skipCache, setCollection]);
 
 
     return (

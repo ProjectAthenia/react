@@ -1,11 +1,10 @@
 import {
     BasePaginatedContextProviderProps,
-    BasePaginatedContextState, createCallbacks,
+    BasePaginatedContextState,
     defaultBaseContext, prepareContextState,
 } from './BasePaginatedContext';
 import React, {PropsWithChildren, useEffect, useState, useRef} from 'react';
 import CollectionItem from "../models/user/collection-items";
-import CollectionManagementRequests from "../services/requests/CollectionManagementRequests";
 
 export interface CollectionItemContextState extends BasePaginatedContextState<CollectionItem> {}
 
