@@ -1,8 +1,12 @@
 import api from '../api'
 import Organization from '../../models/organization/organization';
 import OrganizationManager from '../../models/organization/organization-manager';
-import Page from '../../models/page';
-import Category from '../../models/category';
+
+interface CreateOrganizationManagerPayload {
+    role_id: number;
+    email?: string;
+    phone?: string;
+}
 
 export default class OrganizationRequests {
 
@@ -28,7 +32,7 @@ export default class OrganizationRequests {
      * Creates an organization
      * @param organizationData
      */
-    static async createOrganization(organizationData: any): Promise<Organization> {
+    static async createOrganization(organizationData: Partial<Omit<Organization, 'id' | 'created_at' | 'updated_at'>>): Promise<Organization> {
         const { data } = await api.post('/organizations', organizationData);
         return data as Organization;
     }
@@ -41,9 +45,9 @@ export default class OrganizationRequests {
      * @param phone
      */
     static async createOrganizationManager(organizationId: number, roleId: number, email: string|null = null, phone: string|null = null): Promise<OrganizationManager> {
-        let requestData = {
+        let requestData: CreateOrganizationManagerPayload = {
             role_id: roleId,
-        } as any;
+        };
         if (email) {
             requestData.email = email;
         }
@@ -85,7 +89,7 @@ export default class OrganizationRequests {
      * Deletes an organization manager!
      * @param organizationManager
      */
-    static async deleteOrganizationManager(organizationManager: OrganizationManager) : Promise<any> {
-        return api.delete('/organizations/' + organizationManager.organization_id +  '/organization-managers/' + organizationManager.id)
+    static async deleteOrganizationManager(organizationManager: OrganizationManager) : Promise<void> {
+        await api.delete('/organizations/' + organizationManager.organization_id +  '/organization-managers/' + organizationManager.id)
     }
 }
