@@ -1,7 +1,15 @@
 import api from '../api';
 import Collection from "../../models/user/collection";
-import CollectionItem, {CollectionItemTypes} from "../../models/user/collection-items";
+import CollectionItem from "../../models/user/collection-items";
 import { CollectionItemCategory } from '../../models/user/collection-item-category';
+
+// Interface for creating a new collection item
+interface CreateCollectionItemPayload {
+    item_id: number;
+    item_type: string; 
+    description?: string;
+    rating?: number;
+}
 
 export default class CollectionManagementRequests {
 
@@ -20,7 +28,7 @@ export default class CollectionManagementRequests {
      * @param userId
      * @param collectionData
      */
-    static async createCollection(userId: number, collectionData: any): Promise<Collection> {
+    static async createCollection(userId: number, collectionData: Partial<Pick<Collection, 'name' | 'is_public'>>): Promise<Collection> {
         const {data} = await api.post('/users/' + userId + '/collections', collectionData);
         return data as Collection;
     }
@@ -30,7 +38,7 @@ export default class CollectionManagementRequests {
      * @param collection
      * @param collectionData
      */
-    static async updateCollection(collection: Collection, collectionData: any): Promise<Collection> {
+    static async updateCollection(collection: Collection, collectionData: Partial<Pick<Collection, 'name' | 'is_public'>>): Promise<Collection> {
         const {data} = await api.put('/collections/' + collection.id, collectionData);
         return data as Collection;
     }
@@ -49,7 +57,7 @@ export default class CollectionManagementRequests {
      * @param collection
      * @param collectionItemData
      */
-    static async createCollectionItem(collection: Collection, collectionItemData: any): Promise<CollectionItem> {
+    static async createCollectionItem(collection: Collection, collectionItemData: CreateCollectionItemPayload): Promise<CollectionItem> {
         const {data} = await api.post('/collections/' + collection.id + '/items', collectionItemData);
         return data as CollectionItem
 
