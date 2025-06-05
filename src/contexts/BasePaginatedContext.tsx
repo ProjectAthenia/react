@@ -22,7 +22,7 @@ function cancelRequest(route: string, page: number) {
     }
 }
 
-interface OrderProps {
+export interface OrderProps {
     [key: string]: 'desc' | 'asc'
 }
 

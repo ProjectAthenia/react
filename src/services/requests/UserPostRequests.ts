@@ -1,6 +1,15 @@
 import api from '../api';
 import Page from '../../models/page';
-import {isNaN} from 'formik';
+import CollectionItem from '../../models/user/collection-items';
+
+interface PostResponseData {
+    [key: string]: unknown;
+}
+
+interface PostResponseRef {
+    user_id: number;
+    id: number;
+}
 
 export default class UserPostRequests {
 
@@ -8,14 +17,14 @@ export default class UserPostRequests {
      * Gets a single post off the server
      * @param postId
      */
-    static async getPost(postId: number): Promise<any> {
+    static async getPost(postId: number): Promise<CollectionItem> {
         const {data} = await api.get('/posts/' + postId, {
             params: {
                 'expand[publisher]': '*',
             },
         });
 
-        return data;
+        return data as CollectionItem;
     }
 
     /**
@@ -23,8 +32,8 @@ export default class UserPostRequests {
      * @param post
      * @param postResponseData The response data
      */
-    static async reportPostResponse(post: any|string, postResponseData: any): Promise<any> {
-        const postId = isNaN(+post) ? (post as any).id! : post;
+    static async reportPostResponse(post: CollectionItem | number | string, postResponseData: PostResponseData): Promise<unknown> {
+        const postId = typeof post === 'object' ? post.id : post;
         const {data} = await api.post('/posts/' + postId + '/responses', postResponseData);
 
         return data;
@@ -35,7 +44,7 @@ export default class UserPostRequests {
      * @param postResponse The existing response ID
      * @param postResponseData The response data
      */
-    static async updatePostResponse(postResponse: any, postResponseData: any): Promise<any> {
+    static async updatePostResponse(postResponse: PostResponseRef, postResponseData: PostResponseData): Promise<unknown> {
         const {data} = await api.put('/users/' + postResponse.user_id + '/post-responses/' + postResponse.id!, postResponseData);
         return data;
     }
@@ -44,7 +53,7 @@ export default class UserPostRequests {
      * Archives a post response for us
      * @param postResponse
      */
-    static async archivePostResponse(postResponse: any): Promise<any> {
+    static async archivePostResponse(postResponse: PostResponseRef): Promise<unknown> {
         const {data} = await api.put('/users/' + postResponse.user_id + '/post-responses/' + postResponse.id!, {
             archived: true,
         });
@@ -57,9 +66,9 @@ export default class UserPostRequests {
      *
      * @param userId
      */
-    static async getUserFollowingUnseenPosts(userId: number): Promise<Page<any>> {
+    static async getUserFollowingUnseenPosts(userId: number): Promise<Page<CollectionItem>> {
         const {data} = await api.get('/users/' + userId + '/followed-posts');
-        return data as Page<any>;
+        return data as Page<CollectionItem>;
     }
 
     /**
@@ -68,7 +77,7 @@ export default class UserPostRequests {
      * @param postId
      * @param includePostData
      */
-    static async searchForPostResponse(userId: number, postId: number, includePostData = true): Promise<Page<any>> {
+    static async searchForPostResponse(userId: number, postId: number, includePostData = true): Promise<Page<unknown>> {
         const expands = [
             'follows',
             'follows.follows',
@@ -82,6 +91,6 @@ export default class UserPostRequests {
         const expand = "&expand[" + expands.join("]=*&expand[") + "]=*";
         const {data} = await api.get('/users/' + userId + '/post-responses?filter[post_id]=' + postId + expand + "&order[created_at]=DESC");
 
-        return data as Page<any>;
+        return data as Page<unknown>;
     }
 }

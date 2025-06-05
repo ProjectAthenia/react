@@ -1,4 +1,4 @@
-import React from 'react';
+// The unused 'React' import will be removed.
 
 // Mock react-router-dom
 const mockHistoryPush = jest.fn();

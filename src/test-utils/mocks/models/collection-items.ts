@@ -1,8 +1,5 @@
 import CollectionItem, { CollectionItemTypes } from '../../../models/user/collection-items';
 import { HasType } from '../../../models/has-type';
-import { CollectionItemCategory } from '../../../models/user/collection-item-category';
-import Category from '../../../models/category';
-import { mockCategory } from './category';
 
 export const mockCollectionItem = (overrides: Partial<CollectionItem> = {}): CollectionItem => ({
     id: 100,

@@ -1,8 +1,9 @@
 import User from '../../models/user/user';
-import Follower from '../../models/user/follower';
+import Follower, { FollowerType } from '../../models/user/follower';
 import FollowerRequests from '../requests/FollowerRequests';
 import Category from "../../models/category";
 import api from '../api';
+import Organization from '../../models/organization/organization';
 
 export default class UserFollowersService {
 
@@ -15,12 +16,12 @@ export default class UserFollowersService {
      * @param existingFollowers
      * @param addFollower
      */
-    static follow(user: User, follows: User|Category, id: number, type: string, existingFollowers: Follower[], addFollower: (follower: Follower) => void) {
+    static follow(user: User, follows: User|Category, id: number, type: FollowerType, existingFollowers: Follower[], addFollower: (follower: Follower) => void) {
         FollowerRequests.follow(user, follows, id, type).then(addFollower);
     }
 
-    static async getBusinesses(user: User): Promise<any[]> {
+    static async getBusinesses(user: User): Promise<Organization[]> {
         const {data} = await api.get('/users/' + user.id + '/businesses');
-        return data;
+        return data as Organization[];
     }
 }

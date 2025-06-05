@@ -1,5 +1,3 @@
-import User from '../../models/user/user';
-
 export const mockAuthRequests = {
     login: jest.fn(),
     logout: jest.fn(),

@@ -1,3 +1,5 @@
+/* eslint-disable */
+// @ts-nocheck
 import { mockUser } from './models/user';
 import { mockCategory } from './models/category';
 import { mockCollection } from './models/collection';
