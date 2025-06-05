@@ -91,7 +91,7 @@ export interface BasePaginatedContextState<Model> {
     params: Record<string, unknown>
 }
 
-export function defaultBaseContext(): BasePaginatedContextState<unknown> {
+export function defaultBaseContext<Model extends BaseModel>(): BasePaginatedContextState<Model> {
     return {
         hasAnotherPage: false,
         initialLoadComplete: false,
@@ -103,17 +103,20 @@ export function defaultBaseContext(): BasePaginatedContextState<unknown> {
         filter: {},
         search: {},
         limit: 20,
-        loadedData: [],
+        loadedData: [] as Model[],
         loadAll: false,
         params: {},
-        loadNext: () => Promise.resolve(placeholderPage()),
-        refreshData: () => Promise.resolve(placeholderPage()),
-        setFilter: () => Promise.resolve(placeholderPage()),
-        setSearch: () => Promise.resolve(placeholderPage()),
-        setOrder: () => Promise.resolve(placeholderPage()),
-        addModel: () => {},
-        removeModel: () => {},
-        getModel: () => null,
+        loadNext: () => Promise.resolve(placeholderPage<Model>()),
+        refreshData: () => Promise.resolve(placeholderPage<Model>()),
+        setFilter: () => Promise.resolve(placeholderPage<Model>()),
+        setSearch: () => Promise.resolve(placeholderPage<Model>()),
+        setOrder: () => Promise.resolve(placeholderPage<Model>()),
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        addModel: (_model: Model) => {},
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        removeModel: (_model: Model) => {},
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        getModel: (_id: number): Model | null => null,
     }
 }
 

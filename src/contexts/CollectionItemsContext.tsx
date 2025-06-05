@@ -32,7 +32,7 @@ export interface CollectionItemsContextProviderProps extends BasePaginatedContex
     skipCache?: boolean;
 }
 
-export const CollectionItemsContextProvider: React.FC<PropsWithChildren<CollectionItemsContextProviderProps>> = ({collectionIds, skipCache, children, ...rest}) => {
+export const CollectionItemsContextProvider: React.FC<PropsWithChildren<CollectionItemsContextProviderProps>> = ({collectionIds, skipCache, children}) => {
     // Use a ref to track if this is the first render
     const isFirstRender = useRef(true);
     
@@ -55,7 +55,7 @@ export const CollectionItemsContextProvider: React.FC<PropsWithChildren<Collecti
             if (!newState[collectionId]) {
                 // Initialize state for this collection if it doesn't exist
                 newState[collectionId] = {
-                    ...defaultBaseContext(),
+                    ...defaultBaseContext<CollectionItem>(),
                     expands: [
                         'item',
                         'collectionItemCategories',

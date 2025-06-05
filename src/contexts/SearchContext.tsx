@@ -1,9 +1,11 @@
 import {
     BasePaginatedContextProviderProps,
-    BasePaginatedContextState, createCallbacks,
-    defaultBaseContext, prepareContextState,
+    BasePaginatedContextState,
+    defaultBaseContext,
+    createCallbacks,
+    SearchProps,
 } from './BasePaginatedContext';
-import React, {createContext, PropsWithChildren, useEffect, useState} from 'react';
+import React, { useCallback, PropsWithChildren, useEffect, useState, Dispatch, SetStateAction} from 'react';
 import User from "../models/user/user";
 import Resource from "../models/resource";
 import LoadingScreen from '../components/LoadingScreen';
@@ -15,19 +17,20 @@ export interface SearchContextState extends BasePaginatedContextState<Resource<U
     lastSearch: string|null,
 }
 
-const defaultContext = {
-    ...defaultBaseContext(),
+const defaultContextObject: SearchContextState = {
+    ...defaultBaseContext<Resource<User>>(),
     expands: [
         'resource',
         'resource.business',
     ],
     limit: 20,
-} as SearchContextState;
+    lastSearch: null,
+};
 
 /**
  * The actual context component
  */
-export const SearchContext = React.createContext<SearchContextState>(defaultContext);
+export const SearchContext = React.createContext<SearchContextState>(defaultContextObject);
 
 export interface SearchContextProviderProps extends BasePaginatedContextProviderProps {
     latitude: number,
@@ -35,37 +38,67 @@ export interface SearchContextProviderProps extends BasePaginatedContextProvider
     searchText: string,
 }
 
-export const SearchContextProvider: React.FC<PropsWithChildren<SearchContextProviderProps>> = (({latitude, longitude, searchText, ...props}) => {
-    const [searchState, setSearchState] = useState({...defaultContext});
+export const SearchContextProvider: React.FC<PropsWithChildren<SearchContextProviderProps>> = (({latitude, longitude, searchText, children}) => {
+    const [searchState, setSearchState] = useState<SearchContextState>({...defaultContextObject});
+
+    const wrappedSetSearchStateForBaseContext: Dispatch<SetStateAction<BasePaginatedContextState<Resource<User>>>> = 
+        useCallback((action) => {
+            setSearchState(currentSearchState => {
+                const baseStateChanges = typeof action === 'function' 
+                    ? (action as (prevState: BasePaginatedContextState<Resource<User>>) => BasePaginatedContextState<Resource<User>>)(currentSearchState) 
+                    : action;
+                return { ...currentSearchState, ...baseStateChanges };
+            });
+    }, [setSearchState]);
 
     useEffect(() => {
-        const params = {
-            latitude,
-            longitude,
-        } as any;
-        if (!searchText || searchText.length === 0) {
-            params.radius = 80.4672;
-            params['filter[resource_type]'] = 'location';
-        }
-        searchState.initiated = true;
-        const newState = prepareContextState(setSearchState as any, searchState,'/resources', params);
+        setSearchState(prevState => {
+            const newParams: Record<string, unknown | number> = {
+                latitude,
+                longitude,
+            };
+            if (!searchText || searchText.length === 0) {
+                newParams.radius = 80.4672;
+                newParams['filter[resource_type]'] = 'location';
+            }
 
-        // This actually kicks off the load
-        newState.initialLoadComplete = false;
-        newState.setSearch('content', searchText);
-    }
-    , [latitude, longitude, searchText]);
+            const newSearchProps: SearchProps = { ...prevState.search };
+            if (searchText && searchText.length > 0) {
+                newSearchProps.content = searchText;
+            } else {
+                delete newSearchProps.content;
+            }
+
+            const nextState: SearchContextState = {
+                ...prevState,
+                params: newParams,
+                search: newSearchProps,
+                lastSearch: searchText,
+                initiated: true,
+                initialLoadComplete: false,
+                loadedData: [],
+                lastLoadedPage: undefined,
+                noResults: false,
+                refreshing: true,
+            };
+
+            const contextWithNewSettings = createCallbacks<Resource<User>>(wrappedSetSearchStateForBaseContext, nextState, '/resources');
+            contextWithNewSettings.refreshData(false).catch(console.error);
+
+            return nextState;
+        });
+    }, [latitude, longitude, searchText, setSearchState, wrappedSetSearchStateForBaseContext]);
 
     const fullContext = {
         ...searchState,
-        ...createCallbacks(setSearchState as any, searchState, '/resources')
-    }
+        ...createCallbacks<Resource<User>>(wrappedSetSearchStateForBaseContext, searchState, '/resources')
+    };
 
     return (
         <SearchContext.Provider value={fullContext}>
             <SearchContext.Consumer>
                 {context => {
-                    return context.initialLoadComplete ? props.children : <LoadingScreen text={"Searching"}/>;
+                    return context.initialLoadComplete ? children : <LoadingScreen text={"Searching"}/>;
                 }}
             </SearchContext.Consumer>
         </SearchContext.Provider>

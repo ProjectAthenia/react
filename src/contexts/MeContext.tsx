@@ -1,4 +1,4 @@
-import React, {Dispatch, PropsWithChildren, SetStateAction, useEffect, useRef, useState} from 'react';
+import React, {Dispatch, PropsWithChildren, SetStateAction, useCallback, useEffect, useState} from 'react';
 import User, {placeholderUser} from '../models/user/user';
 import AuthRequests from '../services/requests/AuthRequests';
 import { logOut } from '../data/persistent/persistent.actions';
@@ -33,7 +33,8 @@ let meSubscriptions: {[key: string]: Dispatch<SetStateAction<MeContextState>>} =
 function createDefaultState(): MeContextStateConsumer {
     return {
         ...persistedState,
-        setMe: (user: User) => {},
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        setMe: (_user: User) => {},
     }
 }
 
@@ -82,8 +83,49 @@ interface MeContextProviderProps extends OwnProps, StateProps, DispatchProps {
  */
 const MeContextProvider: React.FC<PropsWithChildren<MeContextProviderProps>> = ({hideLoadingSpace, logOut, optional, reset, tokenData, ...props}) => {
     const [meContext, setMeContext] = useState(persistedState);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [instanceKey, _] = useState(Math.random() + "-" + Date.now());
     const history = useHistory();
+
+    const goToSignIn = useCallback(() => {
+        if (!optional) {
+            try {
+                logOut();
+                history.push('/welcome', 'root');
+            } catch (e) {}
+        }
+    }, [optional, logOut, history]);
+
+    const loadInfo = useCallback(async () => {
+        if (!meRequest && !meContext.me.id && tokenData?.token) {
+            try {
+                meRequest = AuthRequests.getMe();
+                const me = await meRequest;
+                setPersistedState(me);
+            } catch(error: unknown)  {
+                let status: number | undefined;
+                if (typeof error === 'object' && error !== null && 'status' in error) {
+                    const potentialStatus = (error as { status: unknown }).status;
+                    if (typeof potentialStatus === 'number') {
+                        status = potentialStatus;
+                    }
+                }
+
+                if (status) {
+                    const ignoredStatuses = [
+                        429, 499,
+                        500, 503,
+                    ];
+                    if (!ignoredStatuses.includes(status)) {
+                        goToSignIn();
+                    }
+                } else {
+                    setNetworkError();
+                }
+            }
+            meRequest = null;
+        }
+    }, [tokenData, meContext.me.id, goToSignIn]);
 
     useEffect(() => {
         meSubscriptions[instanceKey] = setMeContext;
@@ -97,45 +139,11 @@ const MeContextProvider: React.FC<PropsWithChildren<MeContextProviderProps>> = (
         return () => {
             delete meSubscriptions[instanceKey];
         }
-    }, [tokenData]);
-
-    const goToSignIn = () => {
-        if (!optional) {
-            try {
-                logOut();
-                history.push('/welcome', 'root');
-            } catch (e) {}
-        }
-    }
-
-    const loadInfo = async () => {
-        if (!meRequest && !meContext.me.id && tokenData?.token) {
-            try {
-                meRequest = AuthRequests.getMe();
-                const me = await meRequest;
-
-                setPersistedState(me);
-            } catch(error: any)  {
-                if (error.status) {
-                    const ignoredStatuses = [
-                        429, 499,
-                        500, 503,
-                    ]
-                    if (!ignoredStatuses.includes(error.status)) {
-                        // there is an error, and it is not a hang up
-                        goToSignIn();
-                    }
-                } else {
-                    setNetworkError();
-                }
-            }
-            meRequest = null;
-        }
-    }
+    }, [tokenData, instanceKey, loadInfo, meContext.me.id]);
 
     useEffect(() => {
         loadInfo()
-    }, [reset]);
+    }, [reset, loadInfo]);
 
     const fullContext = {
         ...meContext,

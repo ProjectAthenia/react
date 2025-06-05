@@ -1,11 +1,13 @@
 import React, {createContext, PropsWithChildren, useEffect, useReducer} from 'react';
 import {initialState, AppState, reducers} from './state'
+import { SessionActions } from './session/session.actions';
+import { PersistentActions } from './persistent/persistent.actions';
 
 let appState: AppContextState;
 
 export interface AppContextState {
     state: AppState;
-    dispatch: React.Dispatch<any>;
+    dispatch: React.Dispatch<SessionActions | PersistentActions>;
 }
 
 export const AppContext = createContext<AppContextState>({

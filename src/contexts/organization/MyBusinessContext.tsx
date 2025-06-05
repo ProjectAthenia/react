@@ -42,7 +42,8 @@ interface MyBusinessContextProviderMeReadyProps extends MyBusinessContextProvide
  */
 const MyBusinessContextProviderMeReady: React.FC<PropsWithChildren<MyBusinessContextProviderMeReadyProps>> = ({me, hideLoadingSpace, setManagingBusinessId, doneManagingRedirectLink, managingBusinessId, ...props}) => {
     const [myBusinessContext, setMyBusinessContext] = useState(persistedState);
-    const [organizationId, setOrganizationId] = useState(0);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_organizationId, setOrganizationId] = useState(0);
     const history = useHistory();
 
     useEffect(() => {
@@ -65,7 +66,7 @@ const MyBusinessContextProviderMeReady: React.FC<PropsWithChildren<MyBusinessCon
                 });
             }
         }
-    }, [managingBusinessId]);
+    }, [managingBusinessId, doneManagingRedirectLink, history, myBusinessContext.organization.id]);
 
     const fullContext = {
         ...persistedState,
