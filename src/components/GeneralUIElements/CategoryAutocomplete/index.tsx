@@ -96,7 +96,7 @@ const CategoryAutocompleteContent = forwardRef<{ clearInput: () => void }, Categ
             setOptions(sortedResults);
         }
         setLoading(false);
-    }, [searchValue, uniqueNames]);
+    }, [searchValue, uniqueNames, prioritizedIds]);
 
     const handleSelect = async (selectedValue: string) => {
         if (!selectedValue) {

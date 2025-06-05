@@ -4,7 +4,7 @@ import './index.scss';
 import Menu from "../../Menu";
 import { Link } from "react-router-dom";
 
-interface PageProps extends React.HTMLProps<any> {
+interface PageProps extends React.HTMLProps<HTMLDivElement> {
 }
 
 const Page: React.FC<PageProps> = ({children}) => {

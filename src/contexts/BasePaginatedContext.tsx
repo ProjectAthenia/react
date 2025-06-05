@@ -1,7 +1,7 @@
 import Page, {placeholderPage, mergePageData} from '../models/page';
 import React, {Dispatch, SetStateAction} from 'react';
 import api from '../services/api';
-import axios, { AxiosResponse, AxiosError } from 'axios';
+import { type AxiosResponse, type AxiosError } from 'axios';
 
 // Global cache for pending requests organized by route and page number
 let pendingRequests: { [route: string]: { [page: number]: AbortController } } = {};
@@ -87,7 +87,7 @@ export interface BasePaginatedContextState<Model> {
     // validates that a result is correct
     validateResult?: (baseContext: BasePaginatedContextState<Model>, page: Page<Model>) => boolean
     // The raw params that we use
-    params: any
+    params: Record<string, unknown>
 }
 
 export function defaultBaseContext(): BasePaginatedContextState<any> {
@@ -127,7 +127,7 @@ export function defaultBaseContext(): BasePaginatedContextState<any> {
  * @param search
  * @param params
  */
-function runRequest(endpoint: string, page: number, expands: string[], limit: number, order: OrderProps, filter: FilterProps, search: SearchProps, params: any = {}): Promise<Page<any>> {
+function runRequest(endpoint: string, page: number, expands: string[], limit: number, order: OrderProps, filter: FilterProps, search: SearchProps, params: Record<string, unknown> = {}): Promise<Page<any>> {
     if (!pendingRequests[endpoint]) {
         pendingRequests[endpoint] = {};
     }
