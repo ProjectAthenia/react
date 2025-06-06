@@ -2,7 +2,6 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MantineProvider } from '@mantine/core';
 import CollectionCard from './index';
-import Collection from '../../../../../models/user/collection';
 import { mockCollection } from '../../../../../test-utils/mocks/models/collection';
 
 // Mock react-router-dom

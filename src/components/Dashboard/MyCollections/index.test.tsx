@@ -1,10 +1,9 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 import MyCollections from './index';
 import User from '../../../models/user/user';
 import { UserCollectionsContext, UserCollectionsContextState } from '../../../contexts/UserCollectionsContext';
 import CollectionManagementRequests from '../../../services/requests/CollectionManagementRequests';
-import { mockUser } from '../../../test-utils/mocks/models';
 import { mockPagination } from '../../../test-utils/mocks';
 import { renderWithProviders } from '../../../test-utils';
 import Collection from '../../../models/user/collection';

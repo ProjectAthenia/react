@@ -42,10 +42,7 @@ interface StateProps {
 	tokenData?: TokenState
 }
 
-interface DispatchProps {
-}
-
-interface AppProps extends StateProps, DispatchProps {
+interface AppProps extends StateProps {
 }
 
 const ReactApp: React.FC<AppProps> = () => {
@@ -63,7 +60,7 @@ const ReactApp: React.FC<AppProps> = () => {
 	)
 }
 
-const ReactAppConnected = connect<{}, StateProps, DispatchProps>({
+const ReactAppConnected = connect<{}, StateProps>({
 	mapStateToProps: (state) => ({
 		tokenData: state.persistent.tokenData
 	}),

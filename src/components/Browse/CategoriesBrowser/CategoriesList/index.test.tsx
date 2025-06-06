@@ -1,10 +1,8 @@
-import React from 'react';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import CategoriesList from './index';
 import { mockCategoriesContextValue } from '../../../../test-utils/mocks/contexts';
 import { renderWithProviders } from '../../../../test-utils';
 import CategoryRequests from '../../../../services/requests/CategoryRequests';
-import Category from '../../../../models/category';
 import { mockCategory } from '../../../../test-utils/mocks/models/category';
 
 // Mock the useHistory hook

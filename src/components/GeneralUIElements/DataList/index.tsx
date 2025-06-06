@@ -16,13 +16,14 @@ import { IconArrowUp, IconArrowDown, IconArrowsUpDown } from '@tabler/icons-reac
 import { useHistory } from 'react-router-dom';
 import RangeFilter, { RangeFilterValue, rangeFilterFn } from './RangeFilter';
 import { BasePaginatedContextState } from '../../../contexts/BasePaginatedContext';
+import BaseModel from '../../../models/base-model';
 
 export interface RangeFilterColumn<T> {
     valueCallback?: (row: T) => number | undefined | null;
     disableServerSearch?: boolean;
 }
 
-export interface DataListProps<T> {
+export interface DataListProps<T extends BaseModel> {
     context: BasePaginatedContextState<T>;
     columns: AccessorKeyColumnDef<T>[];
     onRowClick?: (row: T) => void;
@@ -37,7 +38,7 @@ export interface DataListProps<T> {
     selectedItems?: Set<number>;
 }
 
-const handleTableFilter = <T extends Record<string, unknown>>(
+const handleTableFilter = <T extends BaseModel>(
     row: Row<T>,
     columnId: string,
     value: unknown,
@@ -65,7 +66,7 @@ const handleTableFilter = <T extends Record<string, unknown>>(
     return String(cellValue).toLowerCase().includes(String(value).toLowerCase());
 };
 
-const DataList = <T extends Record<string, unknown>>({
+const DataList = <T extends BaseModel>({
     context,
     columns,
     onRowClick,

@@ -1,4 +1,3 @@
-import React from 'react';
 import { renderWithRouter } from '../../test-utils';
 import ContactUsForm from './index';
 

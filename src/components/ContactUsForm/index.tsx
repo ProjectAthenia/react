@@ -71,7 +71,13 @@ const ContactUsForm: React.FC<ContactUsFormProps> = ({loggedInUser}) => {
     }
 
     const submit = async (contactUsData: ContactUsData) => {
-        await ContactUsRequests.submitGeneralContact(contactUsData);
+        const data = {
+            name: `${contactUsData.first_name} ${contactUsData.last_name}`,
+            email: contactUsData.email,
+            subject: 'General Contact Form',
+            message: contactUsData.message,
+        };
+        await ContactUsRequests.submitGeneralContact(data);
     }
 
     return (
