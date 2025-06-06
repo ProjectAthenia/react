@@ -1,4 +1,3 @@
-import React from 'react';
 import { screen } from '@testing-library/react';
 import CollectionsModal from './index';
 import { mockCollection } from '../../../test-utils/mocks/models/collection';
