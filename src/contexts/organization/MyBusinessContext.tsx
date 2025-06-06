@@ -35,6 +35,7 @@ function createSetOrganizationCallback(businessContext: MyBusinessContextState, 
 
 interface MyBusinessContextProviderMeReadyProps extends MyBusinessContextProviderProps {
     me: User,
+    setManagingBusinessId: (id?: number) => void,
 }
 
 /**
@@ -87,20 +88,22 @@ interface OwnProps {
     doneManagingRedirectLink?: string,
 }
 
-interface DispatchProps {
-    setManagingBusinessId: typeof setManagingBusinessId,
-}
+const mapDispatchToProps = {
+    setManagingBusinessId,
+};
+
+type DispatchProps = typeof mapDispatchToProps;
 
 interface StateProps {
     managingBusinessId?: number
 }
 
-interface MyBusinessContextProviderProps extends OwnProps, DispatchProps, StateProps {}
+interface MyBusinessContextProviderProps extends OwnProps, StateProps {}
 
 /**
  * Allows child components the ability to easily use the information of the current business the user is managing
  */
-const MyBusinessContextProvider: React.FC<MyBusinessContextProviderProps> = ({hideLoadingSpace, ...props}) => {
+const MyBusinessContextProvider: React.FC<MyBusinessContextProviderProps & { setManagingBusinessId: (id?: number) => void, }> = ({hideLoadingSpace, ...props}) => {
     return (
         <MeContextProvider hideLoadingSpace={hideLoadingSpace}>
             <MeContext.Consumer>
@@ -113,9 +116,7 @@ const MyBusinessContextProvider: React.FC<MyBusinessContextProviderProps> = ({hi
 };
 
 export default connect<OwnProps, StateProps, DispatchProps >({
-    mapDispatchToProps: {
-        setManagingBusinessId,
-    },
+    mapDispatchToProps,
     mapStateToProps: (state) => ({
         managingBusinessId: state.persistent.managingBusinessId
     }),

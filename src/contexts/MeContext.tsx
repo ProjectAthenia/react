@@ -71,11 +71,12 @@ interface StateProps {
     tokenData?: { token: string; receivedAt: number };
 }
 
-interface DispatchProps {
-    logOut: logOut,
+type DispatchProps = {
+    logOut: typeof logOut,
 }
 
-interface MeContextProviderProps extends OwnProps, StateProps, DispatchProps {
+interface MeContextProviderProps extends OwnProps, StateProps {
+    logOut: () => void;
 }
 
 /**

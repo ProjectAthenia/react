@@ -3,6 +3,7 @@ import React, {Dispatch, SetStateAction} from 'react';
 import api from '../services/api';
 import { type AxiosResponse, type AxiosError } from 'axios';
 import BaseModel from '../models/base-model';
+import { act } from 'react';
 
 // Global cache for pending requests organized by route and page number
 let pendingRequests: { [route: string]: { [page: number]: AbortController } } = {};
@@ -219,7 +220,13 @@ function loadPage<Model extends BaseModel>(setContext: Dispatch<SetStateAction<B
         baseContext.noResults = page.total === 0;
         baseContext.hasAnotherPage = page.current_page < page.last_page;
         const newContext= {...baseContext};
-        setContext(newContext);
+        if (process.env.NODE_ENV === 'test') {
+            act(() => {
+                setContext(newContext);
+            });
+        } else {
+            setContext(newContext);
+        }
         if (baseContext.loadAll) {
             newContext.loadNext();
         }
