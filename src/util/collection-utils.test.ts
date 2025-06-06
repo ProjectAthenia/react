@@ -1,6 +1,5 @@
 import { isInCollection } from './collection-utils';
 import { CollectionItemsContextState } from '../contexts/CollectionItemsContext';
-import { HasType } from '../models/has-type';
 import type CollectionItem from '../models/user/collection-items';
 import { mockPagination } from '../test-utils/mocks/pagination';
 
