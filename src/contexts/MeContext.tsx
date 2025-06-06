@@ -72,7 +72,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
-    logOut: typeof logOut,
+    logOut: logOut,
 }
 
 interface MeContextProviderProps extends OwnProps, StateProps, DispatchProps {
@@ -168,9 +168,9 @@ export default connect<PropsWithChildren<OwnProps>, StateProps, DispatchProps>({
     mapStateToProps: (state: AppState) => ({
         tokenData: state.persistent.tokenData
     }),
-    mapDispatchToProps: ({
+    mapDispatchToProps: {
         logOut,
-    }),
+    },
     component: MeContextProvider
 });
 

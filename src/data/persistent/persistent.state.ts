@@ -6,6 +6,7 @@ export interface TokenState {
 
 export default interface PersistentState {
     tokenData?: TokenState;
+    managingBusinessId?: number;
 }
 
 

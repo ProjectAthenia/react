@@ -13,10 +13,9 @@ export default class UserFollowersService {
      * @param follows
      * @param id
      * @param type
-     * @param existingFollowers
      * @param addFollower
      */
-    static follow(user: User, follows: User|Category, id: number, type: FollowerType, existingFollowers: Follower[], addFollower: (follower: Follower) => void) {
+    static follow(user: User, follows: User|Category, id: number, type: FollowerType, addFollower: (follower: Follower) => void) {
         FollowerRequests.follow(user, follows, id, type).then(addFollower);
     }
 

@@ -113,9 +113,9 @@ const MyBusinessContextProvider: React.FC<MyBusinessContextProviderProps> = ({hi
 };
 
 export default connect<OwnProps, StateProps, DispatchProps >({
-    mapDispatchToProps: ({
+    mapDispatchToProps: {
         setManagingBusinessId,
-    }),
+    },
     mapStateToProps: (state) => ({
         managingBusinessId: state.persistent.managingBusinessId
     }),
