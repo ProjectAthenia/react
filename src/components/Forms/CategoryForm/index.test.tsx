@@ -1,8 +1,6 @@
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import CategoryForm from './index';
-import Category from '../../../models/category';
 import { mockCategory } from '../../../test-utils/mocks/models/category';
 
 describe('CategoryForm', () => {

@@ -3,11 +3,8 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MantineProvider } from '@mantine/core';
 import CategoryAutocomplete from './index';
 import { renderWithRouter } from '../../../test-utils';
-import { CategoriesContext } from '../../../contexts/CategoriesContext';
 import CategoryRequests from '../../../services/requests/CategoryRequests';
-import { mockPagination } from '../../../test-utils/mocks/pagination';
 import { mockCategory } from '../../../test-utils/mocks/models/category';
-import Category from '../../../models/category';
 
 // Mock ResizeObserver
 class ResizeObserverMock {
@@ -21,37 +18,6 @@ global.ResizeObserver = ResizeObserverMock;
 jest.mock('../../../services/requests/CategoryRequests', () => ({
   createCategory: jest.fn()
 }));
-
-// Mock the CategoriesContext
-jest.mock('../../../contexts/CategoriesContext', () => {
-  const originalCategoriesContextModule = jest.requireActual('../../../contexts/CategoriesContext');
-
-  // Use standard require for utilities inside the mock factory
-  const mockPaginationFunc = require('../../../test-utils/mocks/pagination').mockPagination;
-  const mockCategoryFunc = require('../../../test-utils/mocks/models/category').mockCategory;
-
-  // Create the mock context value once to ensure stability
-  const stableMockContextValue = mockPaginationFunc({
-    loadedData: [
-      mockCategoryFunc({ id: 1, name: 'Action' }),
-      mockCategoryFunc({ id: 2, name: 'Adventure' }),
-      mockCategoryFunc({ id: 3, name: 'RPG' })
-    ],
-    limit: 100,
-    // Ensure mockPaginationFunc provides stable jest.fn() for setSearch, setIsLoading etc.
-  });
-
-  return {
-    ...originalCategoriesContextModule,
-    // Provide the original Context object for an idiomatic Provider
-    CategoriesContext: originalCategoriesContextModule.CategoriesContext,
-    CategoriesContextProvider: ({ children }: { children: React.ReactNode }) => (
-      <originalCategoriesContextModule.CategoriesContext.Provider value={stableMockContextValue}>
-        {children}
-      </originalCategoriesContextModule.CategoriesContext.Provider>
-    ),
-  };
-});
 
 describe('CategoryAutocomplete', () => {
   jest.setTimeout(10000); // Add a 10-second timeout for all tests in this suite
