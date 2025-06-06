@@ -10,7 +10,8 @@ type AnyAction = SessionActions | PersistentActions;
 
 // Type for functions in mapDispatchToProps: can return an action or a thunk
 type ThunkOrActionCreator = (
-    ...args: unknown[]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ...args: any[]
 ) => AnyAction | ((dispatch: React.Dispatch<AnyAction>) => void | Promise<void | DispatchObject | AnyAction>); // Allow thunk to return AnyAction too
 
 // Map of action creators or thunks
