@@ -4,7 +4,7 @@ import SessionState from './session/session.state';
 import PersistentState from './persistent/persistent.state';
 
 // Union of all possible action types
-type AllActions = SessionActions | PersistentActions;
+export type AllActions = SessionActions | PersistentActions;
 
 // Describes the shape of the application state managed by these combined reducers
 interface CombinedState {
@@ -17,12 +17,12 @@ interface CombinedState {
 // S is the type of the overall state (e.g., CombinedState)
 // K is a key of S (e.g., 'session' or 'persistent')
 // Each reducer function takes its specific slice of state S[K] and an action, returning the new S[K]
-type ReducersMapObject<S> = {
-  [K in keyof S]: (state: S[K], action: AllActions) => S[K];
+type ReducersMapObject<S, A> = {
+  [K in keyof S]: (state: S[K], action: A) => S[K];
 };
 
 export function combineReducers<S_AppState extends CombinedState>(
-    reducers: ReducersMapObject<S_AppState>
+    reducers: ReducersMapObject<S_AppState, AllActions>
 ) {
     type ReducerKeys = keyof S_AppState;
 

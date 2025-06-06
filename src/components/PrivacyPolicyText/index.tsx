@@ -5,7 +5,7 @@ interface PrivacyPolicyTextProps {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const PrivacyPolicyText: React.FC<PrivacyPolicyTextProps> = ({contactUsUrl}) => {
+const PrivacyPolicyText: React.FC<PrivacyPolicyTextProps> = ({contactUsUrl: _contactUsUrl}) => {
 	return (
 		<section>
 			{/*TODO Privacy Policy Output*/}
