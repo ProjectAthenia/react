@@ -8,6 +8,7 @@ import { mockPagination } from '../../../test-utils/mocks';
 import { renderWithProviders } from '../../../test-utils';
 import Collection from '../../../models/user/collection';
 import CollectionItem from '../../../models/user/collection-items';
+import { mockUser } from '../../../test-utils/mocks/models';
 
 // Mock the CollectionManagementRequests
 jest.mock('../../../services/requests/CollectionManagementRequests', () => ({
@@ -47,20 +48,7 @@ jest.mock('../../../contexts/CollectionItemsContext', () => {
 });
 
 describe('MyCollections', () => {
-  const testUser: User = {
-    id: 1,
-    name: 'Test User',
-    email: 'test@example.com',
-    full_name: 'Test User',
-    first_name: 'Test',
-    last_name: 'User',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    about_me: '',
-    accepted_invites: 0,
-    allow_users_to_find_me: true,
-    allow_users_to_add_me: true
-  };
+  const testUser = mockUser();
 
   beforeEach(() => {
     jest.clearAllMocks();
