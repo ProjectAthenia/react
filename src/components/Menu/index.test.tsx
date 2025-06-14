@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { screen } from '@testing-library/react';
 import Menu from './index';
 import { mockUser } from '../../test-utils/mocks/models';
@@ -7,7 +7,7 @@ import { renderWithProviders, MeContextProvider as RealMeContextProvider } from 
 // Passthrough mock for MeContextProvider (default and named)
 jest.mock('../../contexts/MeContext', () => {
     const actual = jest.requireActual('../../contexts/MeContext');
-    const Passthrough = ({ children }: { children: React.ReactNode }) => React.createElement(React.Fragment, null, children);
+    const Passthrough: React.FC<PropsWithChildren<{}>> = ({ children }) => React.createElement(React.Fragment, null, children);
     return {
         __esModule: true,
         ...actual,

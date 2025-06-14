@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import MyCollections from './index';
 import User from '../../../models/user/user';
@@ -20,9 +20,9 @@ jest.mock('../../../contexts/UserCollectionsContext', () => {
   const originalModule = jest.requireActual('../../../contexts/UserCollectionsContext');
   return {
     ...originalModule,
-    UserCollectionsContextProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    UserCollectionsContextProvider: ({ children }: PropsWithChildren<{}>) => <>{children}</>,
     UserCollectionsContext: {
-      Consumer: ({ children }: { children: (value: UserCollectionsContextState) => React.ReactNode }) => (
+      Consumer: ({ children }: PropsWithChildren<{ children: (value: UserCollectionsContextState) => React.ReactNode }>) => (
         <div data-testid="mock-consumer">
           {children(mockPagination<Collection>())}
         </div>
@@ -36,9 +36,9 @@ jest.mock('../../../contexts/CollectionItemsContext', () => {
   const originalModule = jest.requireActual('../../../contexts/CollectionItemsContext');
   return {
     ...originalModule,
-    CollectionItemsContextProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    CollectionItemsContextProvider: ({ children }: PropsWithChildren<{}>) => <>{children}</>,
     CollectionItemsContext: {
-      Consumer: ({ children }: { children: (value: any) => React.ReactNode }) => (
+      Consumer: ({ children }: PropsWithChildren<{ children: (value: any) => React.ReactNode }>) => (
         <div data-testid="mock-collection-items-consumer">
           {children(mockPagination<CollectionItem>())}
         </div>

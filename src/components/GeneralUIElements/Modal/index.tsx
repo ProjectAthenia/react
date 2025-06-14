@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, PropsWithChildren } from 'react';
 import './index.scss';
 
 export interface ModalProps {
@@ -10,11 +10,9 @@ export interface ModalProps {
   contentLabel?: string;
 }
 
-interface ContentModalProps extends ModalProps {
-  children: React.ReactNode;
-}
+type ContentModalProps = ModalProps;
 
-const ContentModal: React.FC<ContentModalProps> = ({
+const ContentModal: React.FC<PropsWithChildren<ContentModalProps>> = ({
   isOpen,
   onRequestClose,
   title,
