@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, PropsWithChildren } from 'react';
 import { MeContextStateConsumer, MeContext } from '../../contexts/MeContext';
 import { placeholderUser } from '../../models/user/user';
 import User from '../../models/user/user';
@@ -80,8 +80,7 @@ jest.mock('../../contexts/CategoriesContext', () => ({
 // Create mock store
 const mockStore = configureStore([]);
 
-interface MeContextProviderProps {
-    children: ReactNode;
+type MeContextProviderProps = {
     initialState?: {
         me: {
             user: User;
@@ -94,7 +93,7 @@ interface MeContextProviderProps {
 }
 
 // MeContext Provider
-export const MeContextProvider: React.FC<MeContextProviderProps> = ({ children, initialState, hideLoadingSpace }) => {
+export const MeContextProvider: React.FC<PropsWithChildren<MeContextProviderProps>> = ({ children, initialState, hideLoadingSpace }) => {
     const store = mockStore(initialState || {
         me: {
             user: placeholderUser(),
