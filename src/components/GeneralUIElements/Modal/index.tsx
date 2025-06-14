@@ -10,9 +10,7 @@ export interface ModalProps {
   contentLabel?: string;
 }
 
-type ContentModalProps = ModalProps;
-
-const ContentModal: React.FC<PropsWithChildren<ContentModalProps>> = ({
+const ContentModal: React.FC<PropsWithChildren<ModalProps>> = ({
   isOpen,
   onRequestClose,
   title,
