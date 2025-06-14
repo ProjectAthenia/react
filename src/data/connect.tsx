@@ -39,7 +39,7 @@ export function connect<
 >(
   {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    mapStateToProps = (_state?: AppState, _props?: TOwnProps) => ({} as TStateProps), // Added eslint-disable for _state and _props
+    mapStateToProps = (_state?: AppState, _props?: TOwnProps) => ({} as TStateProps),
     mapDispatchToProps = {} as TDispatchProps,
     component
   }: ConnectParams<TOwnProps, TStateProps, TDispatchProps>
