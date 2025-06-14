@@ -6,31 +6,31 @@ import {
     SearchProps,
 } from './BasePaginatedContext';
 import React, { useCallback, PropsWithChildren, useEffect, useState, Dispatch, SetStateAction} from 'react';
-import User from "../models/user/user";
+import BaseModel from "../models/base-model";
 import Resource from "../models/resource";
 import LoadingScreen from '../components/LoadingScreen';
 
 /**
  * The state interface for our state
  */
-export interface SearchContextState extends BasePaginatedContextState<Resource<User>> {
+export interface SearchContextState<T extends BaseModel> extends BasePaginatedContextState<Resource<T>> {
     lastSearch: string|null,
 }
 
-const defaultContextObject: SearchContextState = {
-    ...defaultBaseContext<Resource<User>>(),
+const defaultContextObject = <T extends BaseModel>(): SearchContextState<T> => ({
+    ...defaultBaseContext<Resource<T>>(),
     expands: [
         'resource',
         'resource.business',
     ],
     limit: 20,
     lastSearch: null,
-};
+});
 
 /**
  * The actual context component
  */
-export const SearchContext = React.createContext<SearchContextState>(defaultContextObject);
+export const SearchContext = React.createContext<SearchContextState<BaseModel>>(defaultContextObject());
 
 export interface SearchContextProviderProps extends BasePaginatedContextProviderProps {
     latitude: number,
@@ -39,13 +39,13 @@ export interface SearchContextProviderProps extends BasePaginatedContextProvider
 }
 
 export const SearchContextProvider: React.FC<PropsWithChildren<SearchContextProviderProps>> = (({latitude, longitude, searchText, children}) => {
-    const [searchState, setSearchState] = useState<SearchContextState>({...defaultContextObject});
+    const [searchState, setSearchState] = useState<SearchContextState<BaseModel>>({...defaultContextObject()});
 
-    const wrappedSetSearchStateForBaseContext: Dispatch<SetStateAction<BasePaginatedContextState<Resource<User>>>> = 
+    const wrappedSetSearchStateForBaseContext: Dispatch<SetStateAction<BasePaginatedContextState<Resource<BaseModel>>>> = 
         useCallback((action) => {
             setSearchState(currentSearchState => {
                 const baseStateChanges = typeof action === 'function' 
-                    ? (action as (prevState: BasePaginatedContextState<Resource<User>>) => BasePaginatedContextState<Resource<User>>)(currentSearchState) 
+                    ? (action as (prevState: BasePaginatedContextState<Resource<BaseModel>>) => BasePaginatedContextState<Resource<BaseModel>>)(currentSearchState) 
                     : action;
                 return { ...currentSearchState, ...baseStateChanges };
             });
@@ -69,7 +69,7 @@ export const SearchContextProvider: React.FC<PropsWithChildren<SearchContextProv
                 delete newSearchProps.content;
             }
 
-            const nextState: SearchContextState = {
+            const nextState: SearchContextState<BaseModel> = {
                 ...prevState,
                 params: newParams,
                 search: newSearchProps,
@@ -82,7 +82,7 @@ export const SearchContextProvider: React.FC<PropsWithChildren<SearchContextProv
                 refreshing: true,
             };
 
-            const contextWithNewSettings = createCallbacks<Resource<User>>(wrappedSetSearchStateForBaseContext, nextState, '/resources');
+            const contextWithNewSettings = createCallbacks<Resource<BaseModel>>(wrappedSetSearchStateForBaseContext, nextState, '/resources');
             contextWithNewSettings.refreshData(false).catch(console.error);
 
             return nextState;
@@ -91,7 +91,7 @@ export const SearchContextProvider: React.FC<PropsWithChildren<SearchContextProv
 
     const fullContext = {
         ...searchState,
-        ...createCallbacks<Resource<User>>(wrappedSetSearchStateForBaseContext, searchState, '/resources')
+        ...createCallbacks<Resource<BaseModel>>(wrappedSetSearchStateForBaseContext, searchState, '/resources')
     };
 
     return (
