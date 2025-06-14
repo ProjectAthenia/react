@@ -19,7 +19,7 @@ const persistentStateRef = { current: createDefaultState() };
 function createDefaultState(): CategoriesContextState {
     return {
         ...defaultBaseContext(),
-        loadAll: process.env.NODE_ENV !== 'test',
+        loadAll: true,
         expands: [],
         limit: 100,
     }
