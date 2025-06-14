@@ -1,7 +1,7 @@
 import SessionState from './session.state';
-import { AllActions } from '../combineReducers';
+import { SessionActions } from './session.actions';
 
-export const sessionReducer = (state: SessionState, action: AllActions): SessionState => {
+export const sessionReducer = (state: SessionState, action: SessionActions): SessionState => {
     switch (action.type) {
         case 'increment-loading-count': {
             return {...state, loadingCount: state.loadingCount + 1};

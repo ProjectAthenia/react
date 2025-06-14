@@ -1,7 +1,5 @@
 import {ActionType} from '../../util/types';
 import {TokenState} from './persistent.state';
-import Category from "../../models/category";
-
 
 export const setTokenData = (tokenData: TokenState) => ({
     type: 'set-token-data',
@@ -13,11 +11,6 @@ export const setManagingBusinessId = (managingBusinessId?: number) => ({
     managingBusinessId,
 } as const);
 
-export const setTaggedCategories = (taggedCategories: Category[]) => ({
-    type: 'set-tagged-categories',
-    taggedCategories,
-} as const);
-
 export const logOut = () => ({
     type: 'log-out'
 } as const);
@@ -25,5 +18,4 @@ export const logOut = () => ({
 export type PersistentActions =
     | ActionType<typeof setTokenData>
     | ActionType<typeof setManagingBusinessId>
-    | ActionType<typeof setTaggedCategories>
     | ActionType<typeof logOut>
