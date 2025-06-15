@@ -1,5 +1,3 @@
-import Category from "../../models/category";
-
 export interface TokenState {
     token: string;
     receivedAt: number;

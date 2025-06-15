@@ -1,4 +1,4 @@
-import React, { ReactNode, PropsWithChildren } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { MeContextStateConsumer, MeContext } from '../../contexts/MeContext';
 import { placeholderUser } from '../../models/user/user';
 import User from '../../models/user/user';
