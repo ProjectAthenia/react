@@ -9,9 +9,7 @@ const PrivacyPolicy: React.FC = () => {
             <header>
                 Privacy Policy
             </header>
-            <PrivacyPolicyText
-                contactUsUrl={'/welcome/contact-us'}
-            />
+            <PrivacyPolicyText />
         </section>
     );
 }
