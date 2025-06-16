@@ -1,21 +1,15 @@
-import {ActionType} from '../../util/types';
 import {TokenState} from './persistent.state';
+import {ActionType} from '../../util/types';
 
 export const setTokenData = (tokenData: TokenState) => ({
-    type: 'set-token-data',
-    tokenData
-} as const);
-
-export const setManagingBusinessId = (managingBusinessId?: number) => ({
-    type: 'set-managing-business-id',
-    managingBusinessId,
-} as const);
+    type: 'set-token-data' as const,
+    tokenData,
+});
 
 export const logOut = () => ({
-    type: 'log-out'
-} as const);
+    type: 'log-out' as const,
+});
 
 export type PersistentActions =
     | ActionType<typeof setTokenData>
-    | ActionType<typeof setManagingBusinessId>
-    | ActionType<typeof logOut>
+    | ActionType<typeof logOut>;

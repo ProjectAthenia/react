@@ -3,9 +3,9 @@ export interface TokenState {
     receivedAt: number;
 }
 
-export default interface PersistentState {
+export interface PersistentState {
     tokenData?: TokenState;
-    managingBusinessId?: number;
+    organizationInitiated?: boolean;
 }
 
 export const initialPersistentState: PersistentState = {
