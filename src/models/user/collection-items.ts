@@ -3,9 +3,7 @@ import { HasType } from '../has-type';
 import Category from '../category';
 import { CollectionItemCategory } from './collection-item-category';
 
-export enum CollectionItemTypes {
-	USER = 'user'
-}
+export type CollectionItemTypes = 'user';
 
 /**
  * The data interface for albums
@@ -50,7 +48,7 @@ export default interface CollectionItem extends BaseModel {
 
 export const placeholderCollectionItem = (): CollectionItem => ({
 	item_id: 0,
-	item_type: CollectionItemTypes.USER,
+	item_type: 'user',
 	collection_id: 0,
 	order: 0,
 });
