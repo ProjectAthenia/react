@@ -2,12 +2,6 @@ import api from '../api'
 import Organization from '../../models/organization/organization';
 import OrganizationManager from '../../models/organization/organization-manager';
 
-interface CreateOrganizationManagerPayload {
-    role_id: number;
-    email?: string;
-    phone?: string;
-}
-
 export default class OrganizationRequests {
 
     /**
@@ -40,21 +34,10 @@ export default class OrganizationRequests {
     /**
      * Creates a payment method for us properly
      * @param organizationId
-     * @param roleId
-     * @param email
-     * @param phone
+     * @param organizationManagerData
      */
-    static async createOrganizationManager(organizationId: number, roleId: number, email: string|null = null, phone: string|null = null): Promise<OrganizationManager> {
-        let requestData: CreateOrganizationManagerPayload = {
-            role_id: roleId,
-        };
-        if (email) {
-            requestData.email = email;
-        }
-        if (phone) {
-            requestData.phone = phone;
-        }
-        const { data } = await api.post('/organizations/' + organizationId + '/organization-managers', requestData);
+    static async createOrganizationManager(organizationId: number, organizationManagerData: Partial<OrganizationManager>): Promise<OrganizationManager> {
+        const { data } = await api.post('/organizations/' + organizationId + '/organization-managers', organizationManagerData);
         return data as OrganizationManager;
     }
 
