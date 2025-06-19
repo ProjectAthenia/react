@@ -1,4 +1,4 @@
-import BaseModel from '../base-model';
+import BaseEntityModel from '../entities/base-entity-model';
 import Organization from '../organization/organization';
 import Role, {AvailableRoles} from '../role';
 import Category from "../category";
@@ -7,11 +7,7 @@ import OrganizationManager from "../organization/organization-manager";
 /**
  * Our user interface
  */
-export default interface User extends BaseModel {
-    name: string;
-    email: string;
-    profile_image_url?: string;
-
+export default interface User extends BaseEntityModel {
     /**
      * The full name of the user
      */
@@ -97,7 +93,7 @@ function canUserFillRole(user: User, role: AvailableRoles): boolean {
  * @param user
  */
 export function canUserCreateBusiness(user: User): boolean {
-    return isSuperUser(user) || canUserFillRole(user, AvailableRoles.BusinessCreator);
+    return isSuperUser(user) || canUserFillRole(user, AvailableRoles.Administrator);
 }
 
 /**

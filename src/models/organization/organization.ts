@@ -1,14 +1,9 @@
-import BaseModel from '../base-model';
+import BaseEntityModel from '../entities/base-entity-model';
 
 /**
  * Our Organization details
  */
-export default interface Organization extends BaseModel {
-
-    /**
-     * the name of the merchant
-     */
-    name: string;
+export default interface Organization extends BaseEntityModel {
 
     /**
      * The description of the organization
@@ -20,5 +15,6 @@ export default interface Organization extends BaseModel {
  * Gets an organization that we can use throughout the app if we need to load the organization
  */
 export const placeholderOrganization = (): Organization => ({
-    name: ''
+    name: '',
+    email: ''
 });
