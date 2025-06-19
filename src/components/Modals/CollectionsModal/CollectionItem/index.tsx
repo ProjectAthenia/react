@@ -26,10 +26,10 @@ const handleAddToCollection = async (
     try {
         // Create the collection item
         const collectionItemData = {
-            item_id: item.id,
-            item_type: item.type,
+            item_id: item.id as number,
+            item_type: 'user',
             order: 0
-        };
+        } as Partial<CollectionItem>;
         
         const newCollectionItem = await CollectionManagementRequests.createCollectionItem(collection, collectionItemData);
         
@@ -60,10 +60,10 @@ const handleBulkAddToCollection = async (
         // Create collection items for each item
         const collectionItemPromises = items.map(item => {
             const collectionItemData = {
-                item_id: item.id,
-                item_type: item.type,
+                item_id: item.id as number,
+                item_type: 'user',
                 order: 0
-            };
+            } as Partial<CollectionItem>;
             return CollectionManagementRequests.createCollectionItem(collection, collectionItemData);
         });
 
@@ -243,24 +243,28 @@ const CollectionItemComponent: React.FC<CollectionItemProps> = ({
         return isInCollection(item, collection.id, collectionItemsContext);
     }, [collection.id, collectionItemsContext, item]);
 
-    const collectionItem = collection.id && itemIsInCollection ? collectionItemsContext[collection.id]?.loadedData.find(
-        (ci: CollectionItem) => ci.item_id === item.id
-    ) : null;
+    const collectionItem = collection.id && itemIsInCollection 
+        ? collectionItemsContext[collection.id as keyof typeof collectionItemsContext]?.loadedData?.find(
+            (ci: CollectionItem) => ci.item_id === item.id
+        ) 
+        : null;
     const categories = collectionItem?.collection_item_categories || [];
 
     // Get selected releases for bulk operation
     const selectedReleases = useMemo(() => {
         if (!isBulkOperation || !selectedItems || !collection.id) return [];
+        const collectionState = collectionItemsContext[collection.id as keyof typeof collectionItemsContext];
+        if (!collectionState) return [];
         // Get all items that are selected but not already in the collection
-        const collectionState = collectionItemsContext[collection.id];
-        const existingItemIds = new Set(collectionState?.loadedData?.map(item => item.item_id) ?? []);
+        const existingItemIds = new Set(collectionState.loadedData?.map((item: CollectionItem) => item.item_id) ?? []);
         return Array.from(selectedItems)
             .filter(item => item.id !== undefined && !existingItemIds.has(item.id));
     }, [isBulkOperation, selectedItems, collectionItemsContext, collection.id]);
 
     // Function to handle category selection
     const handleCategorySelect = async (category: Category) => {
-        const collectionState = collectionItemsContext[collection.id];
+        if (!collection.id) return;
+        const collectionState = collectionItemsContext[collection.id as keyof typeof collectionItemsContext];
         if (!collectionState) return;
 
         const collectionItem = collectionState.loadedData?.find(
@@ -273,7 +277,6 @@ const CollectionItemComponent: React.FC<CollectionItemProps> = ({
                 category,
                 collectionItemsContext
             );
-            
             // Clear the CategoryAutocomplete input after successful addition
             if (categoryAutocompleteRef.current && typeof categoryAutocompleteRef.current.clearInput === 'function') {
                 categoryAutocompleteRef.current.clearInput();
@@ -327,7 +330,7 @@ const CollectionItemComponent: React.FC<CollectionItemProps> = ({
                         <CategoryAutocomplete
                             onSelect={handleCategorySelect}
                             ref={categoryAutocompleteRef}
-                            prioritizedCategories={collectionItem?.collection_item_categories?.map(cic => cic.category) || []}
+                            prioritizedCategories={collectionItem?.collection_item_categories?.map((cic: CollectionItemCategory) => cic.category) || []}
                             placeholder="Add a category..."
                         />
                         
