@@ -1,10 +1,7 @@
+import SessionState from './session/session.state';
+import { PersistentState } from './persistent/persistent.state';
 import { SessionActions } from './session/session.actions';
 import { PersistentActions } from './persistent/persistent.actions';
-import SessionState from './session/session.state';
-import PersistentState from './persistent/persistent.state';
-
-// Union of all possible action types
-export type AllActions = SessionActions | PersistentActions;
 
 // Describes the shape of the application state managed by these combined reducers
 interface CombinedState {
@@ -13,34 +10,51 @@ interface CombinedState {
     // Add other state slices here if they exist
 }
 
+// Union of all possible action types
+export type AllActions = SessionActions | PersistentActions;
+
 // Describes the type of the 'reducers' object passed to combineReducers
-// S is the type of the overall state (e.g., CombinedState)
-// K is a key of S (e.g., 'session' or 'persistent')
-// Each reducer function takes its specific slice of state S[K] and an action, returning the new S[K]
-type ReducersMapObject<S, A> = {
-  [K in keyof S]: (state: S[K], action: A) => S[K];
+// Each reducer function takes its specific slice of state and its specific actions
+type ReducersMapObject = {
+  session: (state: SessionState, action: SessionActions) => SessionState;
+  persistent: (state: PersistentState, action: PersistentActions) => PersistentState;
 };
 
-export function combineReducers<S_AppState extends CombinedState>(
-    reducers: ReducersMapObject<S_AppState, AllActions>
+export function combineReducers(
+    reducers: ReducersMapObject
 ) {
-    type ReducerKeys = keyof S_AppState;
-
     // The returned function is the main reducer for the application
-    return (state: S_AppState, action: AllActions): S_AppState => {
-        // Initialize newState as an empty object, to be cast to S_AppState at the end
-        // This ensures all keys from S_AppState are potentially set.
-        const newStatePartial: Partial<S_AppState> = {};
-        const reducerKeysArray = Object.keys(reducers) as ReducerKeys[];
+    return (state: CombinedState, action: AllActions): CombinedState => {
+        // Initialize newState as an empty object, to be cast to CombinedState at the end
+        const newStatePartial: Partial<CombinedState> = {};
 
-        reducerKeysArray.forEach(key => {
-            const reducer = reducers[key];
-            const previousStateForKey = state[key];
-            const result = reducer(previousStateForKey, action);
-            // Original logic: if reducer returns a falsy value, keep the old state for that key
-            newStatePartial[key] = result || previousStateForKey;
-        });
-        // Cast to S_AppState, assuming all keys are handled and newStatePartial now matches S_AppState structure.
-        return newStatePartial as S_AppState;
+        // Handle session actions
+        if (isSessionAction(action)) {
+            newStatePartial.session = reducers.session(state.session, action);
+            newStatePartial.persistent = state.persistent;
+        }
+        // Handle persistent actions
+        else if (isPersistentAction(action)) {
+            newStatePartial.persistent = reducers.persistent(state.persistent, action);
+            newStatePartial.session = state.session;
+        }
+
+        // Cast to CombinedState, assuming all keys are handled and newStatePartial now matches CombinedState structure.
+        return newStatePartial as CombinedState;
     };
+}
+
+function isSessionAction(action: AllActions): action is SessionActions {
+    return (
+        action.type === 'increment-loading-count' ||
+        action.type === 'decrement-loading-count' ||
+        action.type === 'clear-loading-count'
+    );
+}
+
+function isPersistentAction(action: AllActions): action is PersistentActions {
+    return (
+        action.type === 'set-token-data' ||
+        action.type === 'log-out'
+    );
 }

@@ -1,5 +1,4 @@
 import {TokenState} from './persistent.state';
-import {ActionType} from '../../util/types';
 
 export const setTokenData = (tokenData: TokenState) => ({
     type: 'set-token-data' as const,
@@ -11,5 +10,5 @@ export const logOut = () => ({
 });
 
 export type PersistentActions =
-    | ActionType<typeof setTokenData>
-    | ActionType<typeof logOut>;
+    | ReturnType<typeof setTokenData>
+    | ReturnType<typeof logOut>; 

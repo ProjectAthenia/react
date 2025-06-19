@@ -1,18 +1,13 @@
 import React, {useContext, useMemo} from 'react';
 import {AppContext} from './AppContext';
-import {DispatchObject} from '../util/types';
 import {AppState} from './state';
-import {SessionActions} from './session/session.actions';
-import {PersistentActions} from './persistent/persistent.actions';
-
-// Union of all possible action types
-type AnyAction = SessionActions | PersistentActions;
+import {AllActions} from './combineReducers';
 
 // Type for functions in mapDispatchToProps: can return an action or a thunk
 type ThunkOrActionCreator = (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ...args: any[]
-) => AnyAction | ((dispatch: React.Dispatch<AnyAction>) => void | Promise<void | DispatchObject | AnyAction>); // Allow thunk to return AnyAction too
+) => AllActions | ((dispatch: React.Dispatch<AllActions>) => void | Promise<void>);
 
 // Map of action creators or thunks
 type ActionCreatorsMap = Record<string, ThunkOrActionCreator>;
@@ -59,20 +54,10 @@ export function connect<
           const resultOrThunk = originalActionCreator(...args);
 
           if (typeof resultOrThunk === 'function') {
-            const thunk = resultOrThunk as ((dispatch: React.Dispatch<AnyAction>) => void | Promise<void | DispatchObject | AnyAction>);
-            const promiseOrVoid = thunk(context.dispatch);
-
-            if (promiseOrVoid && typeof (promiseOrVoid as Promise<unknown>).then === 'function') {
-              (promiseOrVoid as Promise<void | DispatchObject | AnyAction>).then((resolvedValue: void | DispatchObject | AnyAction) => {
-                if (resolvedValue && typeof resolvedValue === 'object' && 'type' in resolvedValue && typeof resolvedValue.type === 'string') {
-                   context.dispatch(resolvedValue as AnyAction);
-                }
-              }).catch(err => {
-                console.error('Error in dispatched thunk promise:', err);
-              });
-            }
+            const thunk = resultOrThunk as ((dispatch: React.Dispatch<AllActions>) => void | Promise<void>);
+            thunk(context.dispatch);
           } else {
-            context.dispatch(resultOrThunk as AnyAction);
+            context.dispatch(resultOrThunk as AllActions);
           }
         };
       }
