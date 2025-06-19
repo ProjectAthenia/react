@@ -1,7 +1,7 @@
-import React, {PropsWithChildren} from 'react'
+import React, { PropsWithChildren } from 'react'
 import './index.scss';
 
-interface Props extends PropsWithChildren<any> {
+interface Props {
 	label: string
 	subtext?: string
 	error?: string
@@ -9,7 +9,7 @@ interface Props extends PropsWithChildren<any> {
 	rounded?: boolean
 }
 
-const InputWrapper: React.FC<Props> = ({  label, error, color, rounded, subtext, children }) => {
+const InputWrapper: React.FC<PropsWithChildren<Props>> = ({  label, error, color, rounded, subtext, children }) => {
 	const wrapperClasses =  (color ? ' ' + color : '') + (rounded ? ' rounded' : '')
 	return (
 		<div className={'input-wrapper' + wrapperClasses}>

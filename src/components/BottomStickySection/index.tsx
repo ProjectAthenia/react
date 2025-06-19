@@ -1,7 +1,7 @@
-import React, {PropsWithChildren, useState} from 'react';
+import React, {PropsWithChildren} from 'react';
 import './index.scss';
 
-interface Props extends PropsWithChildren<any> {
+interface Props extends PropsWithChildren<unknown> {
     className?: string,
 }
 

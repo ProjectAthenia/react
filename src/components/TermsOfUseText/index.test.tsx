@@ -1,8 +1,7 @@
-import React from 'react';
-import { render } from '@testing-library/react';
 import TermsOfUseText from './index';
+import { renderWithRouter } from '../../test-utils';
 
 test('renders Input without crashing', () => {
-    const { baseElement } = render(<TermsOfUseText />);
+    const { baseElement } = renderWithRouter(<TermsOfUseText />);
     expect(baseElement).toBeDefined();
 });

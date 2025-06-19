@@ -1,5 +1,5 @@
-import {SessionActions} from './session.actions';
 import SessionState from './session.state';
+import { SessionActions } from './session.actions';
 
 export const sessionReducer = (state: SessionState, action: SessionActions): SessionState => {
     switch (action.type) {

@@ -1,9 +1,7 @@
-import React from 'react';
+import { renderWithRouter } from '../../test-utils';
 import ContactUsForm from './index';
-import {MemoryRouter} from 'react-router';
-import {shallow} from 'enzyme';
 
 test('renders ContactUsForm without crashing', () => {
-    const baseElement = shallow(<MemoryRouter><ContactUsForm/></MemoryRouter>);
-    expect(baseElement).toBeDefined();
+  const { container } = renderWithRouter(<ContactUsForm />);
+  expect(container).toBeTruthy();
 });

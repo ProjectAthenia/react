@@ -3,11 +3,9 @@ export interface TokenState {
     receivedAt: number;
 }
 
-
-export default interface PersistentState {
+export interface PersistentState {
     tokenData?: TokenState;
 }
-
 
 export const initialPersistentState: PersistentState = {
 }

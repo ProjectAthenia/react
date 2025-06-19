@@ -1,0 +1,33 @@
+@media screen and (min-width: 500px) {
+  .home-splitpane {
+
+    .home-tabs {
+      padding: 1px;
+
+      .profile-image {
+        width: 40px;
+        height: 40px;
+      }
+
+      .icon {
+        font-size: 38px;
+      }
+    }
+  }
+}
+
+.icon {
+  font-size: 24px;
+  color: var(--primary-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  
+  &.small {
+    font-size: 16px;
+  }
+  
+  &.large {
+    font-size: 32px;
+  }
+}

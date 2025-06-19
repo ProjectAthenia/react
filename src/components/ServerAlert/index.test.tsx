@@ -1,10 +1,36 @@
-import React from 'react';
-import { render } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import ServerAlert from './index';
-import { shallow } from 'enzyme';
-import {MemoryRouter} from 'react-router';
+import { renderWithRouter } from '../../test-utils';
+
+const mockRequestError = {
+  data: {
+    errors: {
+      field1: ['Error message 1'],
+      field2: ['Error message 2']
+    }
+  }
+};
 
 test('renders ServerAlert without crashing', () => {
-    const baseElement = shallow(<MemoryRouter><ServerAlert requestError={{data: {}}}  onCloseAlert={() => {}}/></MemoryRouter>);
-    expect(baseElement).toBeDefined();
+  renderWithRouter(
+    <ServerAlert
+      requestError={mockRequestError}
+    />
+  );
+  expect(screen.getByText('Error message 1')).toBeInTheDocument();
+});
+
+test('renders unknown error when no error messages are provided', () => {
+  const emptyRequestError = {
+    data: {
+      errors: {}
+    }
+  };
+  
+  renderWithRouter(
+    <ServerAlert
+      requestError={emptyRequestError}
+    />
+  );
+  expect(screen.getByText('Unknown Error')).toBeInTheDocument();
 });

@@ -1,14 +1,8 @@
-import {api} from '../api';
+import api from '../api';
 import Page from '../../models/page';
 import Category from '../../models/category';
 
 export default class CategoryRequests {
-
-    /**
-     * All cached results from any category requests
-     */
-    private static cachedResults: {[key: string]: Category[]} = {};
-    private static cachedIds: {[key: number]: Category} = {};
 
     /**
      * Searches for a category based on the passed in name
@@ -16,21 +10,12 @@ export default class CategoryRequests {
      * @return Category[]
      */
     static async searchCategories(name: string): Promise<Category[]> {
-
-        if (CategoryRequests.cachedResults[name] !== undefined)  {
-            return CategoryRequests.cachedResults[name];
-        }
-
         const { data } = await api.get('/categories', {
             params: {
                 'search[name]': 'like,*' + name + '*',
             }
         });
-        const result = (data as Page<Category>).data;
-
-        CategoryRequests.cachedResults[name] = result;
-
-        return result;
+        return (data as Page<Category>).data;
     }
 
     /**
@@ -39,19 +24,9 @@ export default class CategoryRequests {
      * @return Category
      */
     static async getCategory(id: number): Promise<Category> {
-
-        if (CategoryRequests.cachedIds.hasOwnProperty(id))  {
-            return CategoryRequests.cachedIds[id];
-        }
-
-        const { data } = await api.get('/categories/' + id, );
-        const result = (data as Category);
-
-        CategoryRequests.cachedIds[id] = result;
-
-        return result;
+        const { data } = await api.get('/categories/' + id);
+        return data as Category;
     }
-
 
     /**
      * Creates a category for us properly
@@ -62,5 +37,25 @@ export default class CategoryRequests {
             name: name,
         });
         return data as Category;
+    }
+
+    /**
+     * Updates an existing category
+     * @param id - The category ID
+     * @param categoryData - The updated category data
+     * @returns Promise with the updated category data
+     */
+    static async updateCategory(id: number, categoryData: Partial<Category>): Promise<Category> {
+        const { data } = await api.put(`/categories/${id}`, categoryData);
+        return data as Category;
+    }
+
+    /**
+     * Deletes a category by ID
+     * @param id - The category ID
+     * @returns Promise that resolves when the category is deleted
+     */
+    static async deleteCategory(id: number): Promise<void> {
+        await api.delete(`/categories/${id}`);
     }
 }

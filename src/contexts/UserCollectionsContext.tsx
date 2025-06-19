@@ -1,9 +1,9 @@
 import {
     BasePaginatedContextProviderProps,
     BasePaginatedContextState, createCallbacks,
-    defaultBaseContext, prepareContextState,
+    defaultBaseContext,
 } from './BasePaginatedContext';
-import React, {PropsWithChildren, useEffect, useState} from 'react';
+import React, {PropsWithChildren, useCallback, useEffect, useMemo, useState, Dispatch, SetStateAction} from 'react';
 import Collection from "../models/user/collection";
 
 /**
@@ -13,12 +13,13 @@ export interface UserCollectionsContextState extends BasePaginatedContextState<C
 
 /**
  * This lets us persist the loaded state across multiple instances of the provider
+ * For initial load only.
  */
-let persistentContext = createDefaultState();
+const initialPersistentContextState = createDefaultState();
 
 function createDefaultState(): UserCollectionsContextState {
     return {
-        ...defaultBaseContext(),
+        ...defaultBaseContext<Collection>(), // Specify Model type
         loadAll: true,
         order: {
             'created_at': 'desc',
@@ -37,15 +38,47 @@ export interface UserCollectionsContextProviderProps extends BasePaginatedContex
 }
 
 export const UserCollectionsContextProvider: React.FC<PropsWithChildren<UserCollectionsContextProviderProps>> = (props => {
-    const [userCollectionsState, setUserCollectionsState] = useState(persistentContext);
-    useEffect(() => {
-        prepareContextState(setUserCollectionsState, userCollectionsState, '/users/' + props.userId + '/collections')
-    }, [props.userId]);
+    const [userCollectionsState, setUserCollectionsState] = useState<UserCollectionsContextState>(initialPersistentContextState);
 
-    const fullContext = {
-        ...persistentContext,
-        ...createCallbacks(setUserCollectionsState, persistentContext, '/users/' + props.userId + '/collections')
-    }
+    const wrappedSetUserCollectionsState: Dispatch<SetStateAction<BasePaginatedContextState<Collection>>> = 
+        useCallback((action) => {
+            setUserCollectionsState(currentUserCollectionsState => {
+                const baseStateChanges = typeof action === 'function' 
+                    ? (action as (prevState: BasePaginatedContextState<Collection>) => BasePaginatedContextState<Collection>)(currentUserCollectionsState) 
+                    : action;
+                return { ...currentUserCollectionsState, ...baseStateChanges } as UserCollectionsContextState;
+            });
+    }, [setUserCollectionsState]);
+
+    useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        setUserCollectionsState(_prevState => {
+            let newState = createDefaultState(); 
+
+            newState = createCallbacks<Collection>(
+                wrappedSetUserCollectionsState, 
+                newState, 
+                `/users/${props.userId}/collections`
+            );
+            
+            newState.refreshData(false).catch(console.error);
+
+            return {
+                ...newState,
+                loadedData: [],
+                lastLoadedPage: undefined,
+                noResults: false,
+                refreshing: true,
+                initialLoadComplete: false,
+                initiated: true, 
+            };
+        });
+    }, [props.userId, setUserCollectionsState, wrappedSetUserCollectionsState]);
+
+    const fullContext = useMemo(() => ({
+        ...userCollectionsState,
+        ...createCallbacks<Collection>(wrappedSetUserCollectionsState, userCollectionsState, `/users/${props.userId}/collections`)
+    }), [userCollectionsState, wrappedSetUserCollectionsState, props.userId]);
 
     return (
         <UserCollectionsContext.Provider value={fullContext}>

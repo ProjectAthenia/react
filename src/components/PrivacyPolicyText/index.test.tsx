@@ -1,9 +1,7 @@
-import React from 'react';
-import { render } from '@testing-library/react';
 import PrivacyPolicyText from './index';
-import {MemoryRouter} from 'react-router';
+import { renderWithRouter } from '../../test-utils';
 
 test('renders Input without crashing', () => {
-    const { baseElement } = render(<MemoryRouter><PrivacyPolicyText contactUsUrl={''} /></MemoryRouter>);
+    const { baseElement } = renderWithRouter(<PrivacyPolicyText />);
     expect(baseElement).toBeDefined();
 });

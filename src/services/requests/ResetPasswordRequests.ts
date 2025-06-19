@@ -1,4 +1,4 @@
-import {api} from '../api';
+import api from '../api';
 
 export default class ResetPasswordRequests {
 
@@ -6,7 +6,7 @@ export default class ResetPasswordRequests {
      * Runs a request to let the user reset their password
      * @param email
      */
-    static async forgotPassword(email: string): Promise<any> {
+    static async forgotPassword(email: string): Promise<unknown> {
         const { data } = await api.post('/forgot-password', { email });
 
         return data;
@@ -17,7 +17,7 @@ export default class ResetPasswordRequests {
      * @param email
      * @param password
      */
-    static async resetPassword(token: string, email: string, password: string): Promise<any> {
+    static async resetPassword(token: string, email: string, password: string): Promise<unknown> {
         const { data } = await api.post('/reset-password', {
             token,
             email,

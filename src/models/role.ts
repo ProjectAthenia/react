@@ -1,14 +1,24 @@
 import BaseModel from './base-model';
 
 export enum AvailableRoles {
-    SuperAdmin = 4,
-    BusinessCreator = 7,
-    Administrator = 8,
-    Manager = 9,
+    AppUser = 1,
+    SuperAdmin = 2,
+    ArticleViewer = 3,
+    ArticleEditor = 4,
+    Administrator = 10,
+    Manager = 11,
+    ContentEditor = 100,
+    SupportStaff = 101
 }
 
-export default interface Role extends BaseModel
-{}
+export default interface Role extends BaseModel {
+    name: string;
+    description?: string;
+}
+
+export const placeholderRole = (): Role => ({
+    name: ''
+});
 
 export function getRoleName(id: number): string
 {
@@ -23,8 +33,6 @@ export function getRoleName(id: number): string
             return 'Unknown Role';
     }
 }
-
-
 
 export function getRoleDescription(roleId: number): string {
     switch (roleId) {

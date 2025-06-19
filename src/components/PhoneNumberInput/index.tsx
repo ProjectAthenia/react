@@ -1,4 +1,4 @@
-import React, {HTMLAttributes, Ref, useEffect, useRef, useState} from 'react';
+import React, {HTMLAttributes, useEffect, useRef} from 'react';
 
 interface PhoneNumberInputProps  extends HTMLAttributes<HTMLInputElement> {
     name: string,
@@ -12,15 +12,15 @@ const PhoneNumberInput: React.FC<PhoneNumberInputProps> = ({name, value, placeho
 
     const phoneInputRef = useRef<HTMLInputElement>(null)
     const onDecoratedChange = (decoratedValue: string) => {
-        const undecoratedValue = decoratedValue.replace( /[\(\) -]/g, '')
-        onPhoneNumberChange( undecoratedValue )
+        const undecoratedValue = decoratedValue.replace(/[() -]/g, '')
+        onPhoneNumberChange(undecoratedValue)
     }
 
     useEffect(() => {
         if (onInputSet && phoneInputRef.current) {
             onInputSet(phoneInputRef.current);
         }
-    }, [phoneInputRef.current])
+    }, [onInputSet])
 
     return (
         <input
@@ -29,7 +29,7 @@ const PhoneNumberInput: React.FC<PhoneNumberInputProps> = ({name, value, placeho
             value={decoratePhoneNumber(value)}
             maxLength={14}
             placeholder={placeholder}
-            onChange={(event: any) => onDecoratedChange(event.detail.value!)}
+            onChange={(event) => onDecoratedChange(event.target.value)}
             autoComplete={"tel"}
             ref={phoneInputRef}
             {...rest}
@@ -38,16 +38,15 @@ const PhoneNumberInput: React.FC<PhoneNumberInputProps> = ({name, value, placeho
 }
 
 export function decoratePhoneNumber(phoneNumber: string): string {
-
     const numberParts = phoneNumber.match(/[0-9]{0,3}/g) ?? []
     const decoratedParts = numberParts.map((numberSet, index) => {
-        if(index == 0 && numberSet.length) {
+        if(index === 0 && numberSet.length) {
             numberSet = '(' + numberSet
         }
-        else if(index == 1 && numberSet.length ) {
+        else if(index === 1 && numberSet.length) {
             numberSet = ') ' + numberSet
         }
-        else if(index == 2 && numberSet.length) {
+        else if(index === 2 && numberSet.length) {
             numberSet = '-' + numberSet
         }
         return numberSet

@@ -1,5 +1,6 @@
-import React, {PropsWithChildren, useEffect, useState} from 'react';
-import Category, {generateEmptyCategory} from '../models/category';
+import React, {PropsWithChildren, useCallback, useEffect, useState} from 'react';
+import Category from '../models/category';
+import {generateEmptyCategory} from '../util/category-utils';
 import CategoryRequests from '../services/requests/CategoryRequests';
 import LoadingScreen from '../components/LoadingScreen';
 
@@ -19,7 +20,8 @@ let defaultContext: CategoryContextConsumerState = {
     hasLoaded: false,
     notFound: false,
     category: generateEmptyCategory(),
-    setCategory: (category: Category) => {}
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    setCategory: (_category: Category) => {}
 };
 
 export const CategoryContext = React.createContext<CategoryContextConsumerState>(defaultContext);
@@ -32,13 +34,13 @@ export interface CategoryContextProviderProps {
 export const CategoryContextProvider: React.FC<PropsWithChildren<CategoryContextProviderProps>> = ({categoryId, skipCache, children}) => {
     const [categoryState, setCategoryState] = useState(defaultContext);
 
-    const setCategory = (category: Category): void => {
-        cachedCategories[category.id!] = {...category};
-        setCategoryState({
-            ...categoryState,
-            category: category,
-        })
-    }
+    const setCategory = useCallback((newCategory: Category): void => {
+        cachedCategories[newCategory.id!] = {...newCategory};
+        setCategoryState(prevState => ({
+            ...prevState,
+            category: newCategory,
+        }));
+    }, []);
 
     useEffect(() => {
         if (!skipCache && cachedCategories[categoryId]) {
@@ -49,27 +51,30 @@ export const CategoryContextProvider: React.FC<PropsWithChildren<CategoryContext
                 setCategory: setCategory,
             });
         } else {
-            setCategoryState({
-                ...categoryState,
+            setCategoryState(prevState => ({
+                ...prevState,
                 hasLoaded: false,
-            });
-            CategoryRequests.getCategory(categoryId).then(category => {
-                cachedCategories[categoryId] = category;
-                setCategoryState({
+                setCategory: setCategory,
+            }));
+            CategoryRequests.getCategory(categoryId).then(apiCategory => {
+                cachedCategories[categoryId] = apiCategory;
+                setCategoryState(prevState => ({
+                    ...prevState,
                     hasLoaded: true,
                     notFound: false,
-                    category: category,
-                    setCategory,
-                });
+                    category: apiCategory,
+                    setCategory: setCategory,
+                }));
             }).catch(() => {
-                setCategoryState({
-                    ...categoryState,
+                setCategoryState(prevState => ({
+                    ...prevState,
                     hasLoaded: true,
                     notFound: true,
-                });
+                    setCategory: setCategory,
+                }));
             })
         }
-    }, [categoryId]);
+    }, [categoryId, skipCache, setCategory]);
 
     return (
         <CategoryContext.Provider value={{...categoryState, setCategory}}>

@@ -1,6 +1,5 @@
-import {api} from '../api';
-import Follower from '../../models/user/follower';
-import Location from '../../models/location/location';
+import api from '../api';
+import Follower, { FollowerType } from '../../models/user/follower';
 import User from '../../models/user/user';
 import Category from "../../models/category";
 
@@ -13,7 +12,7 @@ export default class FollowerRequests {
      * @param id
      * @param type
      */
-    static async follow(user: User, follows: User|Location|Category, id: number, type: string): Promise<Follower> {
+    static async follow(user: User, follows: User|Category, id: number, type: FollowerType): Promise<Follower> {
         const {data} = await api.post('/users/' + user.id + '/follows', {
             follows_id: id,
             follows_type: type,
@@ -30,8 +29,8 @@ export default class FollowerRequests {
      * Allows a user to stop following a business
      * @param follower
      */
-    static unFollow(follower: Follower): Promise<any> {
-        return api.delete('/users/' + follower.user_id + '/follows/' + follower.id);
+    static async unFollow(follower: Follower): Promise<void> {
+        await api.delete('/users/' + follower.user_id + '/follows/' + follower.id);
     }
 
     /**
@@ -39,7 +38,8 @@ export default class FollowerRequests {
      * @param follower
      * @param updateData
      */
-    static update(follower: Follower, updateData: any): Promise<Follower> {
-        return api.put('/users/' + follower.user_id + '/follows/' + follower.id, updateData)
+    static async update(follower: Follower, updateData: Partial<Pick<Follower, 'hidden' | 'notify'>>): Promise<Follower> {
+        const {data} = await api.put('/users/' + follower.user_id + '/follows/' + follower.id, updateData);
+        return data as Follower;
     }
 }

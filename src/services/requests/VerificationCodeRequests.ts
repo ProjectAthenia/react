@@ -1,4 +1,4 @@
-import {api} from '../api';
+import api from '../api';
 
 export default class VerificationCodeRequests {
 
@@ -13,7 +13,7 @@ export default class VerificationCodeRequests {
             must_exist: mustExist,
         });
 
-        return data.status == 'OK';
+        return data.status === 'OK';
     }
 
     /**
@@ -27,6 +27,6 @@ export default class VerificationCodeRequests {
             code: code,
         });
 
-        return data.status == 'OK';
+        return data.status === 'OK';
     }
 }

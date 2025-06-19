@@ -5,10 +5,10 @@
     height: 70%;
     text-align: center;
     padding: 0 10%;
-    img {
-        display: block;
-        margin: 0 auto;
-        font-size: 96px;
+    .icon {
+        font-size: 48px;
+        color: var(--danger-color);
+        margin-bottom: 16px;
     }
 }
 @import "responsive";

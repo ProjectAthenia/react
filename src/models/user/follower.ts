@@ -1,9 +1,8 @@
 import BaseModel from '../base-model';
-import Location from '../location/location';
 import User from './user';
 import Category from "../category";
 
-export type FollowerType = 'location' | 'user' | 'category';
+export type FollowerType = 'user' | 'category';
 
 /**
  * The data interface for the follows location
@@ -40,7 +39,7 @@ export default interface Follower extends BaseModel {
     /**
      * The business the user is following
      */
-    follows?: Location | User | Category;
+    follows?: User | Category;
 
     /**
      * The user that is doing the following
@@ -55,7 +54,7 @@ export default interface Follower extends BaseModel {
  * @param relatedType
  */
 export function findFollower(follows: Follower[], relatedId: number, relatedType: FollowerType): Follower|undefined {
-    return follows.find(i => i.follows_id == relatedId && i.follows_type == relatedType);
+    return follows.find(i => i.follows_id === relatedId && i.follows_type === relatedType);
 }
 
 /**
@@ -65,5 +64,5 @@ export function findFollower(follows: Follower[], relatedId: number, relatedType
  * @param relatedType
  */
 export function isFollowingEntity(follows: Follower[], relatedId: number, relatedType: FollowerType): boolean {
-    return findFollower(follows, relatedId, relatedType) != undefined;
+    return findFollower(follows, relatedId, relatedType) !== undefined;
 }

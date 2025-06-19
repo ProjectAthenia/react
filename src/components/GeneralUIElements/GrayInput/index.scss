@@ -1,8 +1,9 @@
 .gray-input {
-  input {
+  ion-datetime,
+  ion-input {
     --padding-start: 3.125vw;
     border: transparent;
-  	background: var(--color-light);
+  	background: var(--ion-color-light);
   	border-radius: 10px;
   }
 }

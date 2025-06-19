@@ -1,11 +1,8 @@
 import React from 'react'
-import { Link } from 'react-router-dom';
 
-interface PrivacyPolicyTextProps {
-	contactUsUrl: string,
-}
+interface PrivacyPolicyTextProps {}
 
-const PrivacyPolicyText: React.FC<PrivacyPolicyTextProps> = ({contactUsUrl}) => {
+const PrivacyPolicyText: React.FC<PrivacyPolicyTextProps> = () => {
 	return (
 		<section>
 			{/*TODO Privacy Policy Output*/}

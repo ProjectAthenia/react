@@ -1,5 +1,4 @@
-
-import BaseEntityModel from '../entities';
+import BaseEntityModel from '../entities/base-entity-model';
 import Organization from '../organization/organization';
 import Role, {AvailableRoles} from '../role';
 import Category from "../category";
@@ -9,7 +8,6 @@ import OrganizationManager from "../organization/organization-manager";
  * Our user interface
  */
 export default interface User extends BaseEntityModel {
-
     /**
      * The full name of the user
      */
@@ -24,11 +22,6 @@ export default interface User extends BaseEntityModel {
      * The last name the user entered upon sign up
      */
     last_name: string;
-
-    /**
-     * The email address of the user
-     */
-    email: string;
 
     /**
      * The phone number if set
@@ -61,79 +54,9 @@ export default interface User extends BaseEntityModel {
     accepted_invites: number;
 
     /**
-     * The total amount of people that the user follows
-     */
-    follows_count: number;
-
-    /**
-     * The total amount of people that follow the user
-     */
-    followers_count: number;
-
-    /**
      * The date for when the user
      */
     website_registered_at?: string;
-
-    /**
-     * Whether this user signed up when the password field was still required
-     */
-    has_password: boolean;
-
-    /**
-     * Whether this user will receive email notification for transaction receipts
-     */
-    allow_transaction_receipts: boolean;
-
-    /**
-     * Master switch of all push notifications
-     */
-    receive_push_notifications: boolean;
-
-    /**
-     * Whether this user will receive push notification for breaking news
-     */
-    push_notifications_receive_breaking_news: boolean;
-
-    /**
-     * Whether this user will receive push notification for inbox reminders
-     */
-    push_notifications_receive_inbox_reminders: boolean;
-
-    /**
-     * Whether this user will receive push notification for business offers
-     */
-    push_notifications_receive_business_offers: boolean;
-
-    /**
-     * Whether this user will receive push notification for business events
-     */
-    push_notifications_receive_business_events: boolean;
-
-    /**
-     * Whether this user will receive push notification for business updates
-     */
-    push_notifications_receive_business_updates: boolean;
-
-    /**
-     * Whether this user wants notifications for new locations nearby
-     */
-    push_notifications_receive_new_locations: boolean;
-
-    /**
-     * Whether this user receives new followers emails
-     */
-    email_notifications_receive_new_followers: boolean;
-
-    /**
-     * Whether this user receives new locations emails
-     */
-    email_notifications_receive_new_locations: boolean;
-
-    /**
-     * Whether this user receives recent posts emails
-     */
-    email_notifications_receive_recent_posts: boolean;
 
     /**
      * Whether other users can find this user
@@ -162,7 +85,7 @@ export default interface User extends BaseEntityModel {
 }
 
 function canUserFillRole(user: User, role: AvailableRoles): boolean {
-    return user.roles ? user.roles.find(i => i.id == role) != null : false;
+    return user.roles ? user.roles.find(i => i.id === role) !== undefined : false;
 }
 
 /**
@@ -170,7 +93,7 @@ function canUserFillRole(user: User, role: AvailableRoles): boolean {
  * @param user
  */
 export function canUserCreateBusiness(user: User): boolean {
-    return isSuperUser(user) || canUserFillRole(user, AvailableRoles.BusinessCreator);
+    return isSuperUser(user) || canUserFillRole(user, AvailableRoles.Administrator);
 }
 
 /**
@@ -189,9 +112,9 @@ export function isSuperUser(user: User): boolean {
  */
 export function canFillRole(user: User, organization: Organization, roles: AvailableRoles[]) : boolean {
     roles.push(AvailableRoles.Administrator);
-    const relatedOrganizationManagers = user.organization_managers?.filter(i => i.organization_id == organization.id) ?? [];
+    const relatedOrganizationManagers = user.organization_managers?.filter(i => i.organization_id === organization.id) ?? [];
 
-    return isSuperUser(user) || relatedOrganizationManagers.find(i => roles.indexOf(i.role_id) != -1) != undefined;
+    return isSuperUser(user) || relatedOrganizationManagers.find(i => roles.indexOf(i.role_id) !== -1) !== undefined;
 }
 
 /**
@@ -223,33 +146,17 @@ export function formatUserPhoneNumber(user: User): string {
 /**
  * Creates a placeholder user to handle our default logged in user state
  */
-export function placeholderUser(): User {
-    return {
-        first_name: '',
-        last_name: '',
-        full_name: '',
-        email: '',
-        phone: '',
-        about_me: '',
-        has_password: false,
-        allow_transaction_receipts: false,
-        receive_push_notifications: false,
-        push_notifications_receive_breaking_news: false,
-        push_notifications_receive_inbox_reminders: false,
-        push_notifications_receive_business_offers: false,
-        push_notifications_receive_business_events: false,
-        push_notifications_receive_business_updates: false,
-        push_notifications_receive_new_locations: true,
-        email_notifications_receive_new_followers: true,
-        email_notifications_receive_new_locations: true,
-        email_notifications_receive_recent_posts: true,
-        allow_users_to_find_me: true,
-        allow_users_to_add_me: true,
-        accepted_invites: 0,
-        follows_count: 0,
-        followers_count: 0,
-    };
-}
+export const placeholderUser = (): User => ({
+    name: '',
+    email: '',
+    first_name: '',
+    last_name: '',
+    full_name: '',
+    about_me: '',
+    allow_users_to_find_me: true,
+    allow_users_to_add_me: true,
+    accepted_invites: 0,
+});
 
 /**
  * The name of the user to display
