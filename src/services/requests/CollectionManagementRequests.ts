@@ -3,14 +3,6 @@ import Collection from "../../models/user/collection";
 import CollectionItem from "../../models/user/collection-items";
 import { CollectionItemCategory } from '../../models/user/collection-item-category';
 
-// Interface for creating a new collection item
-interface CreateCollectionItemPayload {
-    item_id: number;
-    item_type: string; 
-    description?: string;
-    rating?: number;
-}
-
 export default class CollectionManagementRequests {
 
     /**
@@ -57,7 +49,7 @@ export default class CollectionManagementRequests {
      * @param collection
      * @param collectionItemData
      */
-    static async createCollectionItem(collection: Collection, collectionItemData: CreateCollectionItemPayload): Promise<CollectionItem> {
+    static async createCollectionItem(collection: Collection, collectionItemData: Partial<CollectionItem>): Promise<CollectionItem> {
         const {data} = await api.post('/collections/' + collection.id + '/items', collectionItemData);
         return data as CollectionItem
 
