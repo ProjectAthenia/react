@@ -2,10 +2,11 @@ import { isInCollection } from './collection-utils';
 import { CollectionItemsContextState } from '../contexts/CollectionItemsContext';
 import type CollectionItem from '../models/user/collection-items';
 import { mockPagination } from '../test-utils/mocks/pagination';
+import type { HasType } from '../models/has-type';
 
 describe('collection-utils', () => {
     describe('isInCollection', () => {
-        const mockItem = {
+        const mockItem: HasType = {
             id: 1,
             type: 'user',
             created_at: new Date().toISOString(),

@@ -1,11 +1,10 @@
-import CollectionItem, { CollectionItemTypes } from '../../../models/user/collection-items';
+import CollectionItem from '../../../models/user/collection-items';
 import { HasType } from '../../../models/has-type';
 
 export const mockCollectionItem = (overrides: Partial<CollectionItem> = {}): CollectionItem => ({
     id: 100,
-    type: CollectionItemTypes.POST,
     item_id: 1,
-    item_type: 'post',
+    item_type: 'user',
     collection_id: 1,
     order: 0,
     item: {} as HasType,

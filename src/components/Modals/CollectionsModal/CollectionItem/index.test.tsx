@@ -4,7 +4,6 @@ import { MantineProvider } from '@mantine/core';
 import CollectionItemComponent from './index';
 import CollectionManagementRequests from '../../../../services/requests/CollectionManagementRequests';
 import CollectionItem from '../../../../models/user/collection-items';
-import { HasType } from '../../../../models/has-type';
 import { mockCollection } from '../../../../test-utils/mocks/models/collection';
 import { mockCollectionItem } from '../../../../test-utils/mocks/models/collection-items';
 import { mockCollectionItemCategory } from '../../../../test-utils/mocks/models/collection-item-category';
@@ -51,9 +50,9 @@ const renderWithProviders = (ui: React.ReactElement) => {
 };
 
 describe('CollectionItemComponent', () => {
-    const mockItem: HasType = {
+    const mockItem = {
         id: 1,
-        type: 'release',
+        type: 'user' as const,
         created_at: '2024-03-20T00:00:00Z',
         updated_at: '2024-03-20T00:00:00Z'
     };
