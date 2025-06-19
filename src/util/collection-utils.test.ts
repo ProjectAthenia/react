@@ -1,12 +1,17 @@
 import { isInCollection } from './collection-utils';
 import { CollectionItemsContextState } from '../contexts/CollectionItemsContext';
-import { HasType } from '../models/has-type';
 import type CollectionItem from '../models/user/collection-items';
 import { mockPagination } from '../test-utils/mocks/pagination';
+import type { HasType } from '../models/has-type';
 
 describe('collection-utils', () => {
     describe('isInCollection', () => {
-        const mockItem: HasType = { id: 1, type: 'item' };
+        const mockItem: HasType = {
+            id: 1,
+            type: 'user',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
         const mockCollectionId = 123;
         
         const createMockContextState = (items: Array<{ item_id: number; item_type: string }>) => mockPagination<CollectionItem>({
@@ -30,8 +35,8 @@ describe('collection-utils', () => {
         it('should return false when item is not in collection', () => {
             const context: CollectionItemsContextState = {
                 [mockCollectionId]: createMockContextState([
-                    { item_id: 2, item_type: 'item' },
-                    { item_id: 1, item_type: 'other' }
+                    { item_id: 2, item_type: 'user' },
+                    { item_id: 3, item_type: 'user' }
                 ])
             };
             expect(isInCollection(mockItem, mockCollectionId, context)).toBe(false);
@@ -40,8 +45,8 @@ describe('collection-utils', () => {
         it('should return true when item exists in collection with matching id and type', () => {
             const context: CollectionItemsContextState = {
                 [mockCollectionId]: createMockContextState([
-                    { item_id: 2, item_type: 'item' },
-                    { item_id: 1, item_type: 'item' }
+                    { item_id: 2, item_type: 'user' },
+                    { item_id: 1, item_type: 'user' }
                 ])
             };
             expect(isInCollection(mockItem, mockCollectionId, context)).toBe(true);

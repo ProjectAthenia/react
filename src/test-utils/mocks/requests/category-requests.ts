@@ -1,5 +1,3 @@
-import Category from '../../models/category/category';
-
 export const mockCategoryRequests = {
     getCategories: jest.fn(),
     getCategory: jest.fn(),

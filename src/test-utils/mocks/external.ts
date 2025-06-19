@@ -1,5 +1,3 @@
-import React from 'react';
-
 // Mock react-router-dom
 const mockHistoryPush = jest.fn();
 const mockHistory = {

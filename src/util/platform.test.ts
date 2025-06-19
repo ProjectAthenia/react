@@ -1,15 +1,4 @@
 // Mock window and navigator before importing the module
-import { 
-  isIOS, 
-  isAndroid, 
-  isChrome, 
-  isSafari, 
-  isFirefox, 
-  isEdge, 
-  isTouchDevice, 
-  hasMouse, 
-  isBot 
-} from './platform';
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -34,7 +23,7 @@ Object.defineProperty(window, 'navigator', {
   }
 });
 
-describe('platform utilities', () => {
+describe('platform-utils', () => {
   beforeEach(() => {
     jest.resetModules();
     

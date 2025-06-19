@@ -1,10 +1,8 @@
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import PhoneNumberInput from './index';
 import { renderWithRouter } from '../../test-utils';
 
 const mockOnPhoneNumberChange = jest.fn();
-const mockOnInputSet = jest.fn();
 
 describe('PhoneNumberInput', () => {
     it('renders without crashing', () => {

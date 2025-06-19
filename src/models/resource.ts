@@ -1,6 +1,5 @@
 import BaseModel from './base-model';
 import User from './user/user';
-import Location from './location/location';
 
 /**
  * The interface for what our resource will look like
@@ -33,4 +32,4 @@ export default interface Resource<Model> extends BaseModel {
     resource: Model;
 }
 
-export type ResourceTypes = Location | User
+export type ResourceTypes = User

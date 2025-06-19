@@ -1,4 +1,4 @@
-import BaseEntityModel from '../entities';
+import BaseEntityModel from '../entities/base-entity-model';
 import Organization from '../organization/organization';
 import Role, {AvailableRoles} from '../role';
 import Category from "../category";
@@ -8,7 +8,6 @@ import OrganizationManager from "../organization/organization-manager";
  * Our user interface
  */
 export default interface User extends BaseEntityModel {
-
     /**
      * The full name of the user
      */
@@ -23,11 +22,6 @@ export default interface User extends BaseEntityModel {
      * The last name the user entered upon sign up
      */
     last_name: string;
-
-    /**
-     * The email address of the user
-     */
-    email: string;
 
     /**
      * The phone number if set
@@ -91,7 +85,7 @@ export default interface User extends BaseEntityModel {
 }
 
 function canUserFillRole(user: User, role: AvailableRoles): boolean {
-    return user.roles ? user.roles.find(i => i.id == role) != null : false;
+    return user.roles ? user.roles.find(i => i.id === role) !== undefined : false;
 }
 
 /**
@@ -99,7 +93,7 @@ function canUserFillRole(user: User, role: AvailableRoles): boolean {
  * @param user
  */
 export function canUserCreateBusiness(user: User): boolean {
-    return isSuperUser(user) || canUserFillRole(user, AvailableRoles.BusinessCreator);
+    return isSuperUser(user) || canUserFillRole(user, AvailableRoles.Administrator);
 }
 
 /**
@@ -118,9 +112,9 @@ export function isSuperUser(user: User): boolean {
  */
 export function canFillRole(user: User, organization: Organization, roles: AvailableRoles[]) : boolean {
     roles.push(AvailableRoles.Administrator);
-    const relatedOrganizationManagers = user.organization_managers?.filter(i => i.organization_id == organization.id) ?? [];
+    const relatedOrganizationManagers = user.organization_managers?.filter(i => i.organization_id === organization.id) ?? [];
 
-    return isSuperUser(user) || relatedOrganizationManagers.find(i => roles.indexOf(i.role_id) != -1) != undefined;
+    return isSuperUser(user) || relatedOrganizationManagers.find(i => roles.indexOf(i.role_id) !== -1) !== undefined;
 }
 
 /**
@@ -152,19 +146,17 @@ export function formatUserPhoneNumber(user: User): string {
 /**
  * Creates a placeholder user to handle our default logged in user state
  */
-export function placeholderUser(): User {
-    return {
-        first_name: '',
-        last_name: '',
-        full_name: '',
-        email: '',
-        phone: '',
-        about_me: '',
-        allow_users_to_find_me: true,
-        allow_users_to_add_me: true,
-        accepted_invites: 0,
-    };
-}
+export const placeholderUser = (): User => ({
+    name: '',
+    email: '',
+    first_name: '',
+    last_name: '',
+    full_name: '',
+    about_me: '',
+    allow_users_to_find_me: true,
+    allow_users_to_add_me: true,
+    accepted_invites: 0,
+});
 
 /**
  * The name of the user to display

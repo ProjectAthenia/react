@@ -3,7 +3,7 @@ import React from 'react'
 import './index.scss';
 import {Link} from "react-router-dom";
 
-const Splash: React.FC = ({}) => {
+const Splash: React.FC = () => {
 
 	return (
 		<section id={'splash-page'}>

@@ -1,4 +1,3 @@
-import React from 'react';
 import Footnote from './index';
 import { renderWithRouter } from '../../test-utils';
 

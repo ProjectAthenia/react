@@ -1,11 +1,8 @@
-import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Switch } from 'react-router-dom';
 import AuthenticatedRoute from './index';
 import { TokenState } from '../../data/persistent/persistent.state';
 import { connect } from '../../data/connect';
-import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
 
 // Mock the connect function
 jest.mock('../../data/connect', () => ({
@@ -63,6 +60,8 @@ describe('AuthenticatedRoute', () => {
         renderWithRouter(undefined, '/protected');
         await waitFor(() => {
             expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
+        });
+        await waitFor(() => {
             expect(screen.getByText('Splash Page')).toBeInTheDocument();
         });
     });

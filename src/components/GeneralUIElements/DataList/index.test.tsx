@@ -1,28 +1,21 @@
-import React from 'react';
 import { screen, fireEvent, render } from '@testing-library/react';
-import DataList, { RangeFilterColumn } from '.';
-import { renderWithRouter } from '../../../test-utils';
+import DataList from '.';
 import { MantineProvider } from '@mantine/core';
-import { useHistory } from 'react-router-dom';
 import { BasePaginatedContextState } from '../../../contexts/BasePaginatedContext';
 import { defaultBaseContext } from '../../../contexts/BasePaginatedContext';
+import BaseModel from '../../../models/base-model';
+import { CellContext } from '@tanstack/react-table';
 
 // Mock useHistory
 jest.mock('react-router-dom', () => ({
     useHistory: jest.fn(),
 }));
 
-interface TestItem {
-    id: number;
+interface TestItem extends BaseModel {
     name: string;
     date: string;
     score: number;
 }
-
-const mockData: TestItem[] = [
-    { id: 1, name: 'Test Item 1', date: '2024-01-01', score: 100 },
-    { id: 2, name: 'Test Item 2', date: '2024-01-02', score: 200 },
-];
 
 const columns = [
     {
@@ -32,12 +25,12 @@ const columns = [
     {
         accessorKey: 'date',
         header: 'Date',
-        cell: (info: { getValue: () => string }) => new Date(info.getValue()).toLocaleDateString(),
+        cell: (info: CellContext<TestItem, unknown>) => new Date(info.getValue() as string).toLocaleDateString(),
     },
     {
         accessorKey: 'score',
         header: 'Score',
-        cell: (info: { getValue: () => number }) => info.getValue().toFixed(1),
+        cell: (info: CellContext<TestItem, unknown>) => (info.getValue() as number).toFixed(1),
         meta: {
             filterType: 'range'
         }
@@ -69,6 +62,7 @@ describe('DataList', () => {
         limit: 20,
         loadAll: false,
         params: {},
+        lastLoadedPage: undefined,
         loadNext: jest.fn(),
         refreshData: jest.fn(),
         setFilter: jest.fn(),
@@ -97,9 +91,9 @@ describe('DataList', () => {
     });
 
     it('renders data table with provided data', () => {
-        const data = [
-            { id: 1, name: 'Test Item 1', date: '2024-01-01', score: 100 },
-            { id: 2, name: 'Test Item 2', date: '2024-01-02', score: 200 }
+        const data: TestItem[] = [
+            { id: 1, name: 'Test Item 1', date: '2024-01-01', score: 100, created_at: '', updated_at: '' },
+            { id: 2, name: 'Test Item 2', date: '2024-01-02', score: 200, created_at: '', updated_at: '' }
         ];
 
         const contextWithData = {
@@ -142,8 +136,8 @@ describe('DataList', () => {
 
     it('handles bulk selection when enabled', () => {
         const onBulkSelect = jest.fn();
-        const data = [
-            { id: 1, name: 'Test Item 1', date: '2024-01-01', score: 100 }
+        const data: TestItem[] = [
+            { id: 1, name: 'Test Item 1', date: '2024-01-01', score: 100, created_at: '', updated_at: '' }
         ];
 
         const contextWithData = {

@@ -1,5 +1,3 @@
-import Organization from '../../models/organization/organization';
-
 export const mockOrganizationRequests = {
     getOrganizations: jest.fn(),
     getOrganization: jest.fn(),

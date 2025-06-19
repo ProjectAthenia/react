@@ -1,6 +1,10 @@
 import BaseModel from './base-model';
 
-export default interface Page<Model> {
+export default interface Page<T> {
+    /**
+     * All entries within this page
+     */
+    data: T[];
 
     /**
      * The total amount of data
@@ -18,9 +22,9 @@ export default interface Page<Model> {
     last_page: number;
 
     /**
-     * All entries within this page
+     * How many items per page
      */
-    data: Model[];
+    per_page: number;
 }
 
 export function createDummyPage<Model>() : Page<Model>{
@@ -29,6 +33,7 @@ export function createDummyPage<Model>() : Page<Model>{
         last_page: 0,
         total: 0,
         data: [],
+        per_page: 0,
     }
 }
 
@@ -37,9 +42,9 @@ export function createDummyPage<Model>() : Page<Model>{
  * @param page
  * @param existingEntries
  */
-export function mergePageData(page: Page<BaseModel>, existingEntries: BaseModel[]): BaseModel[]
+export function mergePageData<M extends BaseModel>(page: Page<M>, existingEntries: M[]): M[]
 {
-    const data = (page.data as any[]) as BaseModel[];
+    const data = page.data;
     data.forEach(entry => {
         const index = existingEntries.findIndex(i => i.id === entry.id);
         if (index !== -1) {
@@ -48,5 +53,5 @@ export function mergePageData(page: Page<BaseModel>, existingEntries: BaseModel[
             existingEntries.push(entry);
         }
     });
-    return (existingEntries as any[]) as BaseModel[];
+    return existingEntries;
 }

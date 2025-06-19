@@ -1,6 +1,6 @@
-import { BasePaginatedContextState } from '../../contexts/BasePaginatedContext';
+import { BasePaginatedContextState, OrderProps, FilterProps, SearchProps } from '../../contexts/BasePaginatedContext';
 
-export interface PaginationMockOptions<T = any> {
+export interface PaginationMockOptions<T = unknown> {
     loadedData?: T[];
     refreshing?: boolean;
     hasAnotherPage?: boolean;
@@ -8,9 +8,9 @@ export interface PaginationMockOptions<T = any> {
     initiated?: boolean;
     noResults?: boolean;
     expands?: string[];
-    order?: Record<string, any>;
-    filter?: Record<string, any>;
-    search?: Record<string, any>;
+    order?: OrderProps;
+    filter?: FilterProps;
+    search?: SearchProps;
     limit?: number;
     loadAll?: boolean;
     loadNext?: jest.Mock;
@@ -21,10 +21,10 @@ export interface PaginationMockOptions<T = any> {
     addModel?: jest.Mock;
     removeModel?: jest.Mock;
     getModel?: jest.Mock;
-    params?: Record<string, any>;
+    params?: Record<string, unknown>;
 }
 
-export const mockPagination = <T = any>(options: PaginationMockOptions<T> = {}): BasePaginatedContextState<T> => {
+export const mockPagination = <T = unknown>(options: PaginationMockOptions<T> = {}): BasePaginatedContextState<T> => {
     const defaultMock: BasePaginatedContextState<T> = {
         loadedData: [],
         refreshing: false,

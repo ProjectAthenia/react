@@ -1,9 +1,8 @@
 import User from '../../models/user/user';
-import React, {useState} from 'react';
+import React from 'react';
 import * as Yup from 'yup';
 import {phoneRegExp} from '../../util/regex';
 import {useFormik} from 'formik';
-import {useHistory} from 'react-router';
 import ContactUsRequests from '../../services/requests/ContactUsRequests';
 import BorderedInput from '../GeneralUIElements/BorderedInput';
 import PhoneNumberInput from '../PhoneNumberInput';
@@ -30,22 +29,19 @@ interface ContactUsFormProps {
 }
 
 const ContactUsForm: React.FC<ContactUsFormProps> = ({loggedInUser}) => {
-
-    const [successAlertShowing, setSuccessAlertShowing] = useState(false);
-
     const ContactUsSchema = Yup.object().shape({
         first_name: Yup.string().trim().required('First Name is required'),
         last_name: Yup.string().trim().required('Last Name is required'),
-        email: Yup.string().when("phone", {
-            is: (email: string) => !email || email.length === 0,
-            then: Yup.string().email('Invalid Email').required('Email is required'),
-            otherwise: Yup.string(),
-        } as any),
-        phone: Yup.string().when("email", {
-            is: (phone: string) => !phone || phone.length === 0,
-            then: Yup.string().required('Phone is required').matches(phoneRegExp, 'Invalid Phone'),
-            otherwise: Yup.string(),
-        } as any),
+        email: Yup.string().when('phone', {
+            is: (val: string | undefined) => !val || val.length === 0,
+            then: (schema) => schema.email('Invalid Email').required('Email is required'),
+            otherwise: (schema) => schema,
+        }),
+        phone: Yup.string().when('email', {
+            is: (val: string | undefined) => !val || val.length === 0,
+            then: (schema) => schema.required('Phone is required').matches(phoneRegExp, 'Invalid Phone'),
+            otherwise: (schema) => schema,
+        }),
         message: Yup.string().required('Message is required'),
     }, [['email', 'phone']])
 
@@ -74,10 +70,14 @@ const ContactUsForm: React.FC<ContactUsFormProps> = ({loggedInUser}) => {
         return ''
     }
 
-    const history = useHistory();
-
     const submit = async (contactUsData: ContactUsData) => {
-        ContactUsRequests.submitGeneralContact(contactUsData).then(() => setSuccessAlertShowing(true));
+        const data = {
+            name: `${contactUsData.first_name} ${contactUsData.last_name}`,
+            email: contactUsData.email,
+            subject: 'General Contact Form',
+            message: contactUsData.message,
+        };
+        await ContactUsRequests.submitGeneralContact(data);
     }
 
     return (
@@ -131,13 +131,6 @@ const ContactUsForm: React.FC<ContactUsFormProps> = ({loggedInUser}) => {
             <button onClick={() => form.handleSubmit()}>
                 Submit
             </button>
-            {/*<IonAlert*/}
-            {/*    isOpen={successAlertShowing}*/}
-            {/*    onDidDismiss={() => history.goBack()}*/}
-            {/*    header={'Thanks!'}*/}
-            {/*    message={'A Geddit local representative will review your message and be in touch with you shortly.'}*/}
-            {/*    buttons={['Okay']}*/}
-            {/*/>*/}
         </div>
     )
 }

@@ -1,14 +1,14 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import React, { PropsWithChildren } from 'react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 import MyCollections from './index';
 import User from '../../../models/user/user';
 import { UserCollectionsContext, UserCollectionsContextState } from '../../../contexts/UserCollectionsContext';
 import CollectionManagementRequests from '../../../services/requests/CollectionManagementRequests';
-import { mockUser } from '../../../test-utils/mocks/models';
 import { mockPagination } from '../../../test-utils/mocks';
 import { renderWithProviders } from '../../../test-utils';
 import Collection from '../../../models/user/collection';
 import CollectionItem from '../../../models/user/collection-items';
+import { mockUser } from '../../../test-utils/mocks/models';
 
 // Mock the CollectionManagementRequests
 jest.mock('../../../services/requests/CollectionManagementRequests', () => ({
@@ -20,9 +20,9 @@ jest.mock('../../../contexts/UserCollectionsContext', () => {
   const originalModule = jest.requireActual('../../../contexts/UserCollectionsContext');
   return {
     ...originalModule,
-    UserCollectionsContextProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    UserCollectionsContextProvider: ({ children }: PropsWithChildren<{}>) => <>{children}</>,
     UserCollectionsContext: {
-      Consumer: ({ children }: { children: (value: UserCollectionsContextState) => React.ReactNode }) => (
+      Consumer: ({ children }: PropsWithChildren<{ children: (value: UserCollectionsContextState) => React.ReactNode }>) => (
         <div data-testid="mock-consumer">
           {children(mockPagination<Collection>())}
         </div>
@@ -36,9 +36,9 @@ jest.mock('../../../contexts/CollectionItemsContext', () => {
   const originalModule = jest.requireActual('../../../contexts/CollectionItemsContext');
   return {
     ...originalModule,
-    CollectionItemsContextProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    CollectionItemsContextProvider: ({ children }: PropsWithChildren<{}>) => <>{children}</>,
     CollectionItemsContext: {
-      Consumer: ({ children }: { children: (value: any) => React.ReactNode }) => (
+      Consumer: ({ children }: PropsWithChildren<{ children: (value: any) => React.ReactNode }>) => (
         <div data-testid="mock-collection-items-consumer">
           {children(mockPagination<CollectionItem>())}
         </div>
@@ -63,7 +63,10 @@ describe('MyCollections', () => {
   });
 
   it('renders nothing when user has no id', () => {
-    const userWithoutId = { ...testUser, id: undefined };
+    const userWithoutId: User = {
+      ...testUser,
+      id: 0 // Use 0 instead of undefined since id is required
+    };
     const { container } = renderWithProviders(
       <MyCollections user={userWithoutId} />
     );
@@ -199,6 +202,9 @@ describe('MyCollections', () => {
     await waitFor(() => {
       const errorMessage = screen.getByText('Failed to create collection');
       expect(errorMessage).toBeInTheDocument();
+    });
+    await waitFor(() => {
+      const errorMessage = screen.getByText('Failed to create collection');
       expect(errorMessage.closest('.error-message')).toBeInTheDocument();
     });
     

@@ -1,12 +1,12 @@
 import React, { PropsWithChildren } from 'react'
 import './index.scss';
 
-interface Props extends PropsWithChildren<any> {
+interface Props {
 	value?: string;
 	onChange?: (value: string) => void;
 }
 
-const BorderedInput: React.FC<Props> = ({ children, value, onChange }) => {
+const BorderedInput: React.FC<PropsWithChildren<Props>> = ({ children, value, onChange }) => {
 	return (
 		<div className={'bordered-input'}>
 			<input

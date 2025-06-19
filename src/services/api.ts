@@ -4,7 +4,7 @@ import {appState} from '../data/AppContext';
 import {TokenState} from '../data/persistent/persistent.state';
 import {decrementLoadingCount, incrementLoadingCount} from '../data/session/session.actions';
 
-const baseURL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 const api = axios.create({
 	baseURL,

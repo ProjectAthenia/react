@@ -1,4 +1,3 @@
-import React from 'react';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import SignUp from './index';
 import { mockHistory, renderWithRouter } from '../../test-utils';

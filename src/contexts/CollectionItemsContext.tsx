@@ -1,11 +1,10 @@
 import {
     BasePaginatedContextProviderProps,
-    BasePaginatedContextState, createCallbacks,
+    BasePaginatedContextState,
     defaultBaseContext, prepareContextState,
 } from './BasePaginatedContext';
 import React, {PropsWithChildren, useEffect, useState, useRef} from 'react';
 import CollectionItem from "../models/user/collection-items";
-import CollectionManagementRequests from "../services/requests/CollectionManagementRequests";
 
 export interface CollectionItemContextState extends BasePaginatedContextState<CollectionItem> {}
 
@@ -33,7 +32,7 @@ export interface CollectionItemsContextProviderProps extends BasePaginatedContex
     skipCache?: boolean;
 }
 
-export const CollectionItemsContextProvider: React.FC<PropsWithChildren<CollectionItemsContextProviderProps>> = ({collectionIds, skipCache, children, ...rest}) => {
+export const CollectionItemsContextProvider: React.FC<PropsWithChildren<CollectionItemsContextProviderProps>> = ({collectionIds, skipCache, children}) => {
     // Use a ref to track if this is the first render
     const isFirstRender = useRef(true);
     
@@ -56,7 +55,7 @@ export const CollectionItemsContextProvider: React.FC<PropsWithChildren<Collecti
             if (!newState[collectionId]) {
                 // Initialize state for this collection if it doesn't exist
                 newState[collectionId] = {
-                    ...defaultBaseContext(),
+                    ...defaultBaseContext<CollectionItem>(),
                     expands: [
                         'item',
                         'collectionItemCategories',
@@ -110,7 +109,7 @@ export const CollectionItemsContextProvider: React.FC<PropsWithChildren<Collecti
             
             isFirstRender.current = false;
         }
-    }, [collectionIds.join(',')]); // Re-run when collection IDs change
+    }, [collectionIds, collectionItemsState, skipCache]); // Re-run when dependencies change
 
     return (
         <CollectionItemsContext.Provider value={collectionItemsState}>

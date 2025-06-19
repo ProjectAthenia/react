@@ -7,7 +7,7 @@ interface OwnProps extends HTMLAttributes<HTMLImageElement> {
 interface ApplicationLogoProps extends OwnProps {
 }
 
-const ApplicationLogo: React.FC<ApplicationLogoProps> = ({...props})  => (
+const ApplicationLogo: React.FC<ApplicationLogoProps> = ()  => (
 	<img className={'application-logo'} src={'/assets/images/main-logo.svg'} alt={''}/>
 )
 

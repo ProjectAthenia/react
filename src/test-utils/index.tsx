@@ -1,20 +1,30 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { createMemoryHistory } from 'history';
+import { createMemoryHistory, MemoryHistory } from 'history';
 import { MantineProvider } from '@mantine/core';
 import { MeContextProvider } from './mocks/contexts';
 import { BrowserRouter } from 'react-router-dom';
+import { CategoriesContext, CategoriesContextState } from '../contexts/CategoriesContext';
 
 // Import mocks
 import './mocks/requests';
 import './mocks/contexts';
+
+interface RouterOptions {
+    route?: string;
+    history?: MemoryHistory;
+}
+
+interface ProviderOptions extends RouterOptions {
+    value?: CategoriesContextState;
+}
 
 export const renderWithRouter = (
     component: React.ReactElement,
     {
         route = '/',
         history = createMemoryHistory({ initialEntries: [route] }),
-    } = {}
+    }: RouterOptions = {}
 ) => {
     return {
         ...render(
@@ -35,9 +45,16 @@ export const renderWithProviders = (
     {
         route = '/',
         history = createMemoryHistory({ initialEntries: [route] }),
-    } = {}
+        value,
+    }: ProviderOptions = {}
 ) => {
-    return renderWithRouter(component, { route, history });
+    const wrappedComponent = value ? (
+        <CategoriesContext.Provider value={value}>
+            {component}
+        </CategoriesContext.Provider>
+    ) : component;
+
+    return renderWithRouter(wrappedComponent, { route, history });
 };
 
 // Re-export mocks

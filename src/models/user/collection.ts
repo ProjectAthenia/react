@@ -1,4 +1,3 @@
-import BaseModel from '../base-model';
 import { HasType } from '../has-type';
 import CollectionItem from "./collection-items";
 
@@ -11,7 +10,7 @@ export const collectionPlaceholder: Collection = {
 	type: 'collection',
 	owner_id: 0,
 	owner_type: '',
-	is_public: false
+	is_public: false,
 };
 
 /**
@@ -49,3 +48,11 @@ export default interface Collection extends HasType {
 	 */
 	collectionItems?: CollectionItem[];
 }
+
+export const placeholderCollection = (): Collection => ({
+	type: 'collection',
+	owner_id: 0,
+	owner_type: 'user',
+	name: '',
+	is_public: false,
+});

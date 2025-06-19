@@ -19,19 +19,11 @@ export function removeCategoryFromList(categories: Category[], name: string): Ca
 }
 
 /**
- * determines if a category is eligible to signup for the pro plan
- * @param category
- */
-export function isCategoryEligibleForProPlan(category: Category): boolean {
-    return category.can_be_primary;
-}
-
-/**
  * Outputs an empty Category object
  */
 export function generateEmptyCategory(): Category {
     return {
         name: "",
-        can_be_primary: false,
+        can_be_primary: false
     }
 } 

@@ -1,4 +1,4 @@
-import React, {useState, useMemo} from 'react';
+import React, {useState} from 'react';
 import User from '../../../models/user/user';
 import {
     UserCollectionsContext,
@@ -6,7 +6,6 @@ import {
     UserCollectionsContextState
 } from '../../../contexts/UserCollectionsContext';
 import {
-    CollectionItemsContext,
     CollectionItemsContextProvider
 } from '../../../contexts/CollectionItemsContext';
 import MyCollectionsContent from './MyCollectionsContent';

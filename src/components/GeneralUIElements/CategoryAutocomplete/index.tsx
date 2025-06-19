@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useCallback, forwardRef } from 'react';
+import React, {useState, useEffect, forwardRef, useMemo} from 'react';
 import { Autocomplete, Loader } from '@mantine/core';
-import { useDebouncedValue } from '@mantine/hooks';
 import { CategoriesContext, CategoriesContextProvider, CategoriesContextState } from '../../../contexts/CategoriesContext';
 import Category from '../../../models/category';
 import CategoryRequests from '../../../services/requests/CategoryRequests';
@@ -21,14 +20,13 @@ interface CategoryAutocompleteContentProps extends CategoryAutocompleteProps {
 
 const CategoryAutocompleteContent = forwardRef<{ clearInput: () => void }, CategoryAutocompleteContentProps>(({
     onSelect,
-    prioritizedCategories = [],
+    prioritizedCategories ,
     placeholder = 'Search categories...',
     label,
     required = false,
     context
 }, ref) => {
     const [searchValue, setSearchValue] = useState('');
-    const [debouncedSearch] = useDebouncedValue(searchValue, 300);
     const [loading, setLoading] = useState(false);
     const [options, setOptions] = useState<Category[]>([]);
 
@@ -36,9 +34,6 @@ const CategoryAutocompleteContent = forwardRef<{ clearInput: () => void }, Categ
     React.useImperativeHandle(ref, () => ({
         clearInput: () => setSearchValue('')
     }));
-
-    // Create a map of prioritized category IDs for quick lookup
-    const prioritizedIds = new Set(prioritizedCategories.map(cat => cat.id));
 
     // Use the context to search for categories
     const setInput = (search: string) => {
@@ -52,25 +47,32 @@ const CategoryAutocompleteContent = forwardRef<{ clearInput: () => void }, Categ
         context.setSearch('name', search);
     };
 
+    // Create a map of prioritized category IDs for quick lookup
+    const prioritizedIds = useMemo(() => new Set((prioritizedCategories ?? []).map(cat => cat.id)), [prioritizedCategories]);
+
+    // Create a map to track unique category names (case-insensitive)
+    const uniqueNames = useMemo(() => {
+        const newUniqueNames = new Map<string, Category>();
+        if (prioritizedCategories) {
+            // First add prioritized categories
+            prioritizedCategories.forEach(cat => {
+                newUniqueNames.set(cat.name.toLowerCase(), cat);
+            });
+
+            // Then add search results, preserving prioritized categories
+            const results = context.loadedData || [];
+            results.forEach((cat: Category) => {
+                const lowerName = cat.name.toLowerCase();
+                if (!newUniqueNames.has(lowerName)) {
+                    newUniqueNames.set(lowerName, cat);
+                }
+            });
+
+        }
+        return newUniqueNames;
+    }, [prioritizedCategories, context.loadedData])
+
     useEffect(() => {
-        const results = context.loadedData || [];
-        
-        // Create a map to track unique category names (case-insensitive)
-        const uniqueNames = new Map<string, Category>();
-        
-        // First add prioritized categories
-        prioritizedCategories.forEach(cat => {
-            uniqueNames.set(cat.name.toLowerCase(), cat);
-        });
-        
-        // Then add search results, preserving prioritized categories
-        results.forEach((cat: Category) => {
-            const lowerName = cat.name.toLowerCase();
-            if (!uniqueNames.has(lowerName)) {
-                uniqueNames.set(lowerName, cat);
-            }
-        });
-        
         // Convert back to array and sort
         const uniqueResults = Array.from(uniqueNames.values());
         const sortedResults = uniqueResults.sort((a: Category, b: Category) => {
@@ -94,7 +96,7 @@ const CategoryAutocompleteContent = forwardRef<{ clearInput: () => void }, Categ
             setOptions(sortedResults);
         }
         setLoading(false);
-    }, [searchValue, context.loadedData]);
+    }, [searchValue, uniqueNames, prioritizedIds]);
 
     const handleSelect = async (selectedValue: string) => {
         if (!selectedValue) {

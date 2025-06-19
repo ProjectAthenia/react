@@ -2,7 +2,6 @@ import React from 'react';
 import {UserCollectionsContextState} from '../../../../contexts/UserCollectionsContext';
 import {
     CollectionItemsContext,
-    CollectionItemsContextProvider,
     CollectionItemsContextState
 } from '../../../../contexts/CollectionItemsContext';
 import Collection from '../../../../models/user/collection';
@@ -32,7 +31,7 @@ const MyCollectionsContent: React.FC<MyCollectionsContentProps> = ({
         );
     }
 
-    const handleEditClick = (e: React.MouseEvent, collection: Collection) => {
+    const handleEditClick = (collection: Collection) => {
         if (onEditCollection) {
             onEditCollection(collection);
         }
@@ -52,7 +51,7 @@ const MyCollectionsContent: React.FC<MyCollectionsContentProps> = ({
                             key={collection.id}
                             collection={collection}
                             itemCount={getCollectionItemsCount(collection.id!, collectionItemsContext)}
-                            onEditClick={onEditCollection ? handleEditClick : undefined}
+                            onEditClick={onEditCollection ? () => handleEditClick(collection) : undefined}
                         />
                     ))}
                 </div>

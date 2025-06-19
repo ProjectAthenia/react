@@ -1,9 +1,7 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import ServerAlert from './index';
 import { renderWithRouter } from '../../test-utils';
 
-const mockOnCloseAlert = jest.fn();
 const mockRequestError = {
   data: {
     errors: {
@@ -15,8 +13,7 @@ const mockRequestError = {
 
 test('renders ServerAlert without crashing', () => {
   renderWithRouter(
-    <ServerAlert 
-      onCloseAlert={mockOnCloseAlert}
+    <ServerAlert
       requestError={mockRequestError}
     />
   );
@@ -31,8 +28,7 @@ test('renders unknown error when no error messages are provided', () => {
   };
   
   renderWithRouter(
-    <ServerAlert 
-      onCloseAlert={mockOnCloseAlert}
+    <ServerAlert
       requestError={emptyRequestError}
     />
   );

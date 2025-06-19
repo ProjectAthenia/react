@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import Page from '../../../components/Template/Page';
 import Category from '../../../models/category';
@@ -19,15 +19,8 @@ const CategoryEditor: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        if (id) {
-            loadCategory();
-        } else {
-            setCategory(generateEmptyCategory());
-        }
-    }, [id]);
-
-    const loadCategory = async () => {
+    const loadCategory = useCallback(async () => {
+        if (!id) return;
         try {
             setLoading(true);
             const loadedCategory = await CategoryRequests.getCategory(parseInt(id));
@@ -38,9 +31,23 @@ const CategoryEditor: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [id]);
 
-    const handleSubmit = async (values: any, categoriesContext: CategoriesContextState) => {
+    useEffect(() => {
+        if (id) {
+            loadCategory();
+        } else {
+            setCategory(generateEmptyCategory());
+        }
+    }, [id, loadCategory]);
+
+    interface CategoryFormValues {
+        name: string;
+        description?: string;
+        can_be_primary: boolean;
+    }
+
+    const handleSubmit = async (values: CategoryFormValues, categoriesContext: CategoriesContextState) => {
         if (!category) return;
 
         try {

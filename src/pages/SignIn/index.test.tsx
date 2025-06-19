@@ -1,5 +1,4 @@
-import React from 'react';
-import { mockHistory, mockHistoryPush, renderWithProviders } from '../../test-utils';
+import { mockHistoryPush, renderWithProviders } from '../../test-utils';
 import { screen } from '@testing-library/react';
 import SignIn from './index';
 

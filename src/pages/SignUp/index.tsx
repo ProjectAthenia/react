@@ -7,7 +7,7 @@ import { useHistory } from "react-router-dom";
 import { Button, Form, FormControl, FormLabel } from "react-bootstrap";
 import Page from "../../components/Template/Page";
 
-const SignUp: React.FC = ({}) => {
+const SignUp: React.FC = () => {
     const history = useHistory();
     const [error, setError] = useState<string | null>(null);
 
@@ -36,8 +36,8 @@ const SignUp: React.FC = ({}) => {
             } else {
                 setError('Unknown Error');
             }
-        } catch (error: any) {
-            if (error.status && error.status === 409) {
+        } catch (error: unknown) {
+            if (typeof error === 'object' && error !== null && 'status' in error && (error as { status: unknown }).status === 409) {
                 setError('Email already exists.');
             } else {
                 setError('Failed to create account. Please try again.');

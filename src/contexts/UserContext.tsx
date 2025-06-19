@@ -1,4 +1,4 @@
-import React, {PropsWithChildren, useEffect, useState} from 'react';
+import React, {PropsWithChildren, useEffect, useState, useCallback} from 'react';
 import User, {placeholderUser} from '../models/user/user';
 import UserRequests from '../services/requests/UserRequests';
 import LoadingScreen from '../components/LoadingScreen';
@@ -12,14 +12,16 @@ export interface UserContextConsumerState {
     hasLoaded: boolean,
     notFound: boolean,
     user: User,
-    setUser: (user: User) => void,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    setUser: (_user: User) => void,
 }
 
 let defaultContext: UserContextConsumerState = {
     hasLoaded: false,
     notFound: false,
     user: placeholderUser(),
-    setUser: (user: User) => {}
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    setUser: (_user: User) => {}
 };
 
 export const UserContext = React.createContext<UserContextConsumerState>(defaultContext);
@@ -32,13 +34,15 @@ export interface UserContextProviderProps {
 export const UserContextProvider: React.FC<PropsWithChildren<UserContextProviderProps>> = ({userId, skipCache, children}) => {
     const [userState, setUserState] = useState(defaultContext);
 
-    const setUser = (user: User): void => {
-        cachedUsers[user.id!] = {...user};
-        setUserState({
-            ...userState,
-            user: user,
-        })
-    }
+    const setUser = useCallback((newUser: User): void => {
+        cachedUsers[newUser.id!] = {...newUser};
+        setUserState(prevState => ({
+            ...prevState,
+            user: newUser,
+            hasLoaded: true,
+            notFound: false,
+        }));
+    }, []);
 
     useEffect(() => {
         if (!skipCache && cachedUsers[userId]) {
@@ -49,27 +53,33 @@ export const UserContextProvider: React.FC<PropsWithChildren<UserContextProvider
                 setUser: setUser,
             });
         } else {
-            setUserState({
-                ...userState,
+            setUserState(prevState => ({
+                ...prevState,
                 hasLoaded: false,
-            });
-            UserRequests.getUser(userId).then(user => {
-                cachedUsers[userId] = user;
-                setUserState({
+                user: placeholderUser(),
+                notFound: false,
+                setUser: setUser,
+            }));
+            UserRequests.getUser(userId).then(apiUser => {
+                cachedUsers[userId] = apiUser;
+                setUserState(prevState => ({
+                    ...prevState,
                     hasLoaded: true,
                     notFound: false,
-                    user: user,
-                    setUser,
-                });
+                    user: apiUser,
+                    setUser: setUser,
+                }));
             }).catch(() => {
-                setUserState({
-                    ...userState,
+                setUserState(prevState => ({
+                    ...prevState,
                     hasLoaded: true,
                     notFound: true,
-                });
+                    user: placeholderUser(),
+                    setUser: setUser,
+                }));
             })
         }
-    }, [userId]);
+    }, [userId, skipCache, setUser]);
 
     return (
         <UserContext.Provider value={{...userState, setUser}}>

@@ -8,6 +8,7 @@ import { IconEdit, IconTrash } from '@tabler/icons-react';
 import Category from '../../../../models/category';
 import CategoryRequests from '../../../../services/requests/CategoryRequests';
 import DataList from '../../../GeneralUIElements/DataList';
+import { AccessorKeyColumnDef } from '@tanstack/react-table';
 
 interface Props {
     contextState: CategoriesContextState;
@@ -82,7 +83,7 @@ const CategoriesList: React.FC<Props> = ({ contextState }) => {
     return (
         <DataList
             context={contextState}
-            columns={columns}
+            columns={columns as AccessorKeyColumnDef<Category>[]}
             onRowClick={handleRowClick}
             rowIdField="id"
         />

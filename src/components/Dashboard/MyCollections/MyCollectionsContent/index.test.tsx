@@ -1,49 +1,9 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';
 import MyCollectionsContent from './index';
 import Collection from '../../../../models/user/collection';
-import { UserCollectionsContextState } from '../../../../contexts/UserCollectionsContext';
-import { CollectionItemsContext } from '../../../../contexts/CollectionItemsContext';
 import { mockCollection } from '../../../../test-utils/mocks/models/collection';
-import { mockCategoriesContextValue } from '../../../../test-utils/mocks/contexts';
-import { renderWithProviders } from '../../../../test-utils';
 import { mockPagination } from '../../../../test-utils/mocks';
-
-// Mock the UserCollectionsContextState type
-const mockCollections = [
-    mockCollection({
-        id: 1,
-        name: 'Test Collection 1',
-        collection_items_count: 5,
-        created_at: '2023-01-01',
-        updated_at: '2023-01-01',
-        owner_id: 1,
-        owner_type: 'user',
-        is_public: false
-    }),
-    mockCollection({
-        id: 2,
-        name: 'Test Collection 2',
-        collection_items_count: 10,
-        created_at: '2023-01-02',
-        updated_at: '2023-01-02',
-        owner_id: 1,
-        owner_type: 'user',
-        is_public: false
-    })
-];
-
-// Mock the CollectionItemsContext
-const mockCollectionItemsContext = {
-  1: mockPagination({
-    loadedData: Array(5).fill({})
-  }),
-  2: mockPagination({
-    loadedData: Array(10).fill({})
-  })
-};
 
 // Mock the CollectionCard component
 jest.mock('./CollectionCard', () => ({
@@ -53,18 +13,6 @@ jest.mock('./CollectionCard', () => ({
             {collection.name} ({itemCount} items)
         </div>
     ),
-}));
-
-// Mock the CollectionItemsContextProvider component
-jest.mock('../../../../contexts/CollectionItemsContext', () => ({
-    CollectionItemsContext: {
-        Consumer: ({ children }: { children: any }) => children({
-            // Mock context with collection items data
-            1: { loadedData: [{ id: 101 }, { id: 102 }], total: 2 },
-            2: { loadedData: [{ id: 201 }], total: 1 },
-        })
-    },
-    CollectionItemsContextProvider: ({ children }: { children: React.ReactNode }) => children
 }));
 
 describe('MyCollectionsContent', () => {

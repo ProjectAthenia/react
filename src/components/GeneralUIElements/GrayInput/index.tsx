@@ -1,10 +1,9 @@
-import React, {PropsWithChildren} from 'react'
+import React, { PropsWithChildren} from 'react'
 import './index.scss';
 
-interface Props extends PropsWithChildren<any> {
-}
+type Props = {}
 
-const GrayInput: React.FC<Props> = ({ children }) => {
+const GrayInput: React.FC<PropsWithChildren<Props>> = ({ children }) => {
 	return (
 		<div className={'gray-input'}>
 			{children}

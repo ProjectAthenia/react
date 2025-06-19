@@ -1,11 +1,12 @@
 import React, {createContext, PropsWithChildren, useEffect, useReducer} from 'react';
 import {initialState, AppState, reducers} from './state'
+import { AllActions } from './combineReducers';
 
 let appState: AppContextState;
 
 export interface AppContextState {
     state: AppState;
-    dispatch: React.Dispatch<any>;
+    dispatch: React.Dispatch<AllActions>;
 }
 
 export const AppContext = createContext<AppContextState>({

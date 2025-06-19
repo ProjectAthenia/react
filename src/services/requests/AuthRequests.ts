@@ -63,7 +63,7 @@ export default class AuthRequests {
 	 * @param userId
 	 * @param updateData
 	 */
-	static async updateMe(userId: number, updateData: any): Promise<User> {
+	static async updateMe(userId: number, updateData: Partial<User>): Promise<User> {
 		const { data } = await api.put('/users/' + userId, updateData);
 		return data as User;
 	}

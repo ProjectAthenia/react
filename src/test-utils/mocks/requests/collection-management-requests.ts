@@ -1,7 +1,3 @@
-import Collection from '../../models/user/collection';
-import CollectionItem from '../../models/user/collection-items';
-import { CollectionItemCategory } from '../../models/user/collection-item-category';
-
 export const mockCollectionManagementRequests = {
     getCollection: jest.fn(),
     createCollection: jest.fn(),

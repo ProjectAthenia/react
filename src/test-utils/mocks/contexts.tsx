@@ -1,8 +1,8 @@
-import React, { ReactNode } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { MeContextStateConsumer, MeContext } from '../../contexts/MeContext';
 import { placeholderUser } from '../../models/user/user';
-import { appState } from '../../data/AppContext';
-import { CategoriesContextState, CategoriesContext } from '../../contexts/CategoriesContext';
+import User from '../../models/user/user';
+import { CategoriesContextState } from '../../contexts/CategoriesContext';
 import Category from '../../models/category';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
@@ -10,6 +10,7 @@ import { mockCategory } from './models/category';
 import { mockPagination } from './pagination';
 
 // Mock appState
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (global as any).appState = {
     state: {
         persistent: {
@@ -42,9 +43,11 @@ export const createBaseMockContextState = <T extends Category>(data: T[]) => moc
     setFilter: jest.fn(),
     setSearch: jest.fn(),
     setOrder: jest.fn(),
-    addModel: jest.fn(),
-    removeModel: jest.fn(),
-    getModel: jest.fn(),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    addModel: jest.fn((_model: T) => {}),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    removeModel: jest.fn((_model: T) => {}),
+    getModel: jest.fn((id: number) => data.find(item => item.id === id) || null),
     params: {},
     loadNext: jest.fn(),
     refreshData: jest.fn()
@@ -52,9 +55,20 @@ export const createBaseMockContextState = <T extends Category>(data: T[]) => moc
 
 // Mock CategoriesContext
 export const mockCategoriesContextValue = {
-    ...createBaseMockContextState([
+    ...createBaseMockContextState<Category>([
         mockCategory({ id: 1, name: 'Test Category', can_be_primary: true })
     ])
+};
+
+export const mockCategoriesContextValueLoading = {
+    ...createBaseMockContextState<Category>([]),
+    initialLoadComplete: false,
+    isLoading: true
+};
+
+export const mockCategoriesContextValueEmpty = {
+    ...createBaseMockContextState<Category>([]),
+    noResults: true
 };
 
 // Mock CategoriesContext
@@ -66,22 +80,20 @@ jest.mock('../../contexts/CategoriesContext', () => ({
 // Create mock store
 const mockStore = configureStore([]);
 
-interface MeContextProviderProps {
-    children: ReactNode;
+type MeContextProviderProps = {
     initialState?: {
         me: {
-            user: any;
+            user: User;
             networkError: boolean;
             isLoggedIn: boolean;
             isLoading: boolean;
         };
     };
-    optional?: boolean;
     hideLoadingSpace?: boolean;
 }
 
 // MeContext Provider
-export const MeContextProvider: React.FC<MeContextProviderProps> = ({ children, initialState, optional, hideLoadingSpace }) => {
+export const MeContextProvider: React.FC<PropsWithChildren<MeContextProviderProps>> = ({ children, initialState, hideLoadingSpace }) => {
     const store = mockStore(initialState || {
         me: {
             user: placeholderUser(),
@@ -100,7 +112,7 @@ export const MeContextProvider: React.FC<MeContextProviderProps> = ({ children, 
 
     const fullContext = {
         ...meContext,
-        setMe: (user: any) => {
+        setMe: (user: User) => {
             setMeContext(prev => ({
                 ...prev,
                 me: user,

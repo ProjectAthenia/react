@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { CategoriesContext, CategoriesContextProvider } from './CategoriesContext';
-import { renderWithProviders } from '../test-utils';
 
 // Mock the api module
 jest.mock('../services/api', () => ({

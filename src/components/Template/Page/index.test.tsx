@@ -1,4 +1,3 @@
-import React from 'react';
 import { screen, fireEvent } from '@testing-library/react';
 import Page from './index';
 import { renderWithRouter } from '../../../test-utils';

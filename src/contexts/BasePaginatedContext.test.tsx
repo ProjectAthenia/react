@@ -1,6 +1,6 @@
 import { defaultBaseContext, prepareContextState } from './BasePaginatedContext';
 import { renderHook } from '@testing-library/react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 // Mock the api module
 jest.mock('../services/api', () => ({
@@ -56,23 +56,6 @@ describe('BasePaginatedContext', () => {
 
   describe('prepareContextState', () => {
     it('prepares context state with callbacks', () => {
-      const TestComponent = () => {
-        const [state, setState] = useState(defaultBaseContext());
-        const contextState = prepareContextState(setState, state, '/test-endpoint');
-        
-        return (
-          <div>
-            <button onClick={() => contextState.refreshData()}>Refresh</button>
-            <button onClick={() => contextState.loadNext()}>Load Next</button>
-            <button onClick={() => contextState.setFilter('name', 'test')}>Set Filter</button>
-            <button onClick={() => contextState.setSearch('name', 'test')}>Set Search</button>
-            <button onClick={() => contextState.addModel({ id: 3, name: 'Item 3' })}>Add Model</button>
-            <button onClick={() => contextState.removeModel({ id: 1, name: 'Item 1' })}>Remove Model</button>
-            <button onClick={() => contextState.getModel(1)}>Get Model</button>
-          </div>
-        );
-      };
-      
       const { result } = renderHook(() => {
         const [state, setState] = useState(defaultBaseContext());
         return prepareContextState(setState, state, '/test-endpoint');
