@@ -5,7 +5,6 @@ export interface TokenState {
 
 export interface PersistentState {
     tokenData?: TokenState;
-    organizationInitiated?: boolean;
 }
 
 export const initialPersistentState: PersistentState = {
