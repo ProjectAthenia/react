@@ -4,8 +4,6 @@ import Category from '../category';
 import { CollectionItemCategory } from './collection-item-category';
 
 export enum CollectionItemTypes {
-	POST = 'post',
-	BUSINESS = 'business',
 	USER = 'user'
 }
 
@@ -49,9 +47,9 @@ export default interface CollectionItem extends BaseModel {
 }
 
 export const placeholderCollectionItem = (): CollectionItem => ({
-	type: CollectionItemTypes.POST,
+	type: CollectionItemTypes.USER,
 	item_id: 0,
-	item_type: 'post',
+	item_type: 'user',
 	collection_id: 0,
 	order: 0,
 });

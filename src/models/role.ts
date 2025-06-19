@@ -1,12 +1,14 @@
 import BaseModel from './base-model';
 
 export enum AvailableRoles {
-    SuperAdmin = 1,
-    Administrator = 2,
-    BusinessCreator = 3,
-    BusinessManager = 4,
-    BusinessEditor = 5,
-    BusinessViewer = 6
+    AppUser = 1,
+    SuperAdmin = 2,
+    ArticleViewer = 3,
+    ArticleEditor = 4,
+    Administrator = 10,
+    Manager = 11,
+    ContentEditor = 100,
+    SupportStaff = 101
 }
 
 export default interface Role extends BaseModel {
@@ -24,7 +26,7 @@ export function getRoleName(id: number): string
         case AvailableRoles.Administrator:
             return 'Owner';
 
-        case AvailableRoles.BusinessManager:
+        case AvailableRoles.Manager:
             return 'Manager';
 
         default:
@@ -37,7 +39,7 @@ export function getRoleDescription(roleId: number): string {
         case AvailableRoles.Administrator:
             return 'Access to Billing, Add/Delete users, location activity results, Edit location details, Post ads';
 
-        case AvailableRoles.BusinessManager:
+        case AvailableRoles.Manager:
             return 'Access to location activity results, Edit location details, Post ads';
     }
     return '';
