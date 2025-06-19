@@ -40,8 +40,5 @@ export default interface Category extends BaseModel {
  * Creates a placeholder category with default values
  */
 export const placeholderCategory = (): Category => ({
-    id: 0,
-    name: '',
-    created_at: '',
-    updated_at: ''
+    name: ''
 });

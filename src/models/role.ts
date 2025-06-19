@@ -15,10 +15,7 @@ export default interface Role extends BaseModel {
 }
 
 export const placeholderRole = (): Role => ({
-    id: 0,
-    name: '',
-    created_at: '',
-    updated_at: ''
+    name: ''
 });
 
 export function getRoleName(id: number): string

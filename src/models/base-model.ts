@@ -5,17 +5,17 @@ export default interface BaseModel {
     /**
      * The id of the model
      */
-    id: number;
+    id?: number;
 
     /**
      * When the model was created
      */
-    created_at: string;
+    created_at?: string;
 
     /**
      * When the model was last updated
      */
-    updated_at: string;
+    updated_at?: string;
 }
 
 /**

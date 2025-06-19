@@ -20,8 +20,5 @@ export default interface Organization extends BaseModel {
  * Gets an organization that we can use throughout the app if we need to load the organization
  */
 export const placeholderOrganization = (): Organization => ({
-    id: 0,
-    name: '',
-    created_at: '',
-    updated_at: ''
+    name: ''
 });

@@ -151,11 +151,8 @@ export function formatUserPhoneNumber(user: User): string {
  * Creates a placeholder user to handle our default logged in user state
  */
 export const placeholderUser = (): User => ({
-    id: 0,
     name: '',
     email: '',
-    created_at: '',
-    updated_at: '',
     first_name: '',
     last_name: '',
     full_name: '',

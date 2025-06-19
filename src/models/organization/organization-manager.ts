@@ -44,11 +44,8 @@ export default interface OrganizationManager extends BaseModel {
 }
 
 export const placeholderOrganizationManager = (): OrganizationManager => ({
-    id: 0,
     organization_id: 0,
     role_id: 0,
     user_id: 0,
     organization: {} as Organization,
-    created_at: '',
-    updated_at: ''
 });

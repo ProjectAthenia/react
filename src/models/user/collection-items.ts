@@ -49,12 +49,9 @@ export default interface CollectionItem extends BaseModel {
 }
 
 export const placeholderCollectionItem = (): CollectionItem => ({
-	id: 0,
 	type: CollectionItemTypes.POST,
 	item_id: 0,
 	item_type: 'post',
 	collection_id: 0,
 	order: 0,
-	created_at: '',
-	updated_at: ''
 });
