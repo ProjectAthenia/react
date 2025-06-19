@@ -23,10 +23,7 @@ export function removeCategoryFromList(categories: Category[], name: string): Ca
  */
 export function generateEmptyCategory(): Category {
     return {
-        id: 0,
         name: "",
-        can_be_primary: false,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        can_be_primary: false
     }
 } 

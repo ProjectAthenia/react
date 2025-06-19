@@ -37,11 +37,8 @@ describe('Category Model', () => {
     it('generates an empty category with default values', () => {
       const emptyCategory = generateEmptyCategory();
       expect(emptyCategory).toEqual({
-        id: 0,
         name: '',
-        can_be_primary: false,
-        created_at: expect.any(String),
-        updated_at: expect.any(String)
+        can_be_primary: false
       });
     });
   });

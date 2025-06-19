@@ -38,11 +38,8 @@ describe('Category Utilities', () => {
         it('should return an empty category object', () => {
             const empty = generateEmptyCategory();
             expect(empty).toEqual({
-                id: 0,
                 name: "",
-                can_be_primary: false,
-                created_at: expect.any(String),
-                updated_at: expect.any(String)
+                can_be_primary: false
             });
         });
     });
