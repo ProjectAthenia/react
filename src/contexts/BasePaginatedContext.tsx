@@ -1,4 +1,4 @@
-import Page, {placeholderPage, mergePageData} from '../models/page';
+import Page, {createDummyPage, mergePageData} from '../models/page';
 import React, {Dispatch, SetStateAction} from 'react';
 import api from '../services/api';
 import { type AxiosResponse, type AxiosError } from 'axios';
@@ -107,11 +107,11 @@ export function defaultBaseContext<Model extends BaseModel>(): BasePaginatedCont
         loadedData: [] as Model[],
         loadAll: false,
         params: {},
-        loadNext: () => Promise.resolve(placeholderPage<Model>()),
-        refreshData: () => Promise.resolve(placeholderPage<Model>()),
-        setFilter: () => Promise.resolve(placeholderPage<Model>()),
-        setSearch: () => Promise.resolve(placeholderPage<Model>()),
-        setOrder: () => Promise.resolve(placeholderPage<Model>()),
+        loadNext: () => Promise.resolve(createDummyPage<Model>()),
+        refreshData: () => Promise.resolve(createDummyPage<Model>()),
+        setFilter: () => Promise.resolve(createDummyPage<Model>()),
+        setSearch: () => Promise.resolve(createDummyPage<Model>()),
+        setOrder: () => Promise.resolve(createDummyPage<Model>()),
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         addModel: (_model: Model) => {},
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -186,7 +186,7 @@ function runRequest<Model extends BaseModel>(endpoint: string, page: number, exp
     }).catch((error: AxiosError) => {
         if (error.name === 'CanceledError') {
             delete pendingRequests[endpoint]?.[page];
-            return Promise.resolve(placeholderPage<Model>());
+            return Promise.resolve(createDummyPage<Model>());
         }
         throw error;
     });
@@ -209,7 +209,7 @@ function loadPage<Model extends BaseModel>(setContext: Dispatch<SetStateAction<B
 
         if (!validResult) {
             // Ensure we return a Page<Model> consistent with the function's return type
-            return Promise.resolve(placeholderPage<Model>());
+            return Promise.resolve(createDummyPage<Model>());
         }
 
         baseContext.loadedData = [...replace ? page.data : mergePageData(page, baseContext.loadedData)];
@@ -250,7 +250,7 @@ function createLoadNextPageCallback<Model extends BaseModel>(setContext: Dispatc
                 page = page ?? lastPage.current_page + 1;
                 return loadPage<Model>(setContext, baseContext, endpoint, page);
             }
-            return Promise.resolve(placeholderPage<Model>());
+            return Promise.resolve(createDummyPage<Model>());
         } else {
             return loadPage<Model>(setContext, baseContext, endpoint, 1);
         }
