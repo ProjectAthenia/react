@@ -19,14 +19,6 @@ export function removeCategoryFromList(categories: Category[], name: string): Ca
 }
 
 /**
- * determines if a category is eligible to signup for the pro plan
- * @param category
- */
-export function isCategoryEligibleForProPlan(category: Category): boolean {
-    return category.can_be_primary ?? false;
-}
-
-/**
  * Outputs an empty Category object
  */
 export function generateEmptyCategory(): Category {
@@ -37,40 +29,4 @@ export function generateEmptyCategory(): Category {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
     }
-}
-
-/**
- * Checks if a category can be used as a primary category
- * @param category
- */
-export function canBePrimaryCategory(category: Category): boolean {
-    return category.can_be_primary ?? false;
-}
-
-/**
- * Creates a new category with default values
- * @param name
- */
-export function createNewCategory(name: string): Category {
-    return {
-        id: 0,
-        name,
-        can_be_primary: false,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        description: undefined,
-        parent_id: undefined,
-        parent: undefined,
-        children: undefined
-    };
-}
-
-export function createCategory(name: string): Category {
-    return {
-        id: 0, // Temporary ID that will be replaced by the server
-        name,
-        can_be_primary: false,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-    };
 } 

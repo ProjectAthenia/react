@@ -1,4 +1,4 @@
-import { findCategory, removeCategoryFromList, isCategoryEligibleForProPlan, generateEmptyCategory } from './category-utils';
+import { findCategory, removeCategoryFromList, generateEmptyCategory } from './category-utils';
 import Category from '../models/category';
 import { mockCategory } from '../test-utils/mocks/models/category';
 
@@ -31,16 +31,6 @@ describe('Category Utilities', () => {
         it('should return original list if category not found', () => {
             const result = removeCategoryFromList(mockCategories, 'nonexistent');
             expect(result).toEqual(mockCategories);
-        });
-    });
-
-    describe('isCategoryEligibleForProPlan', () => {
-        it('should return true for primary-eligible categories', () => {
-            expect(isCategoryEligibleForProPlan(mockCategories[0])).toBe(true);
-        });
-
-        it('should return false for non-primary-eligible categories', () => {
-            expect(isCategoryEligibleForProPlan(mockCategories[2])).toBe(false);
         });
     });
 
