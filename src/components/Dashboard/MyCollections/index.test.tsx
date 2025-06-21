@@ -4,7 +4,7 @@ import MyCollections from './index';
 import User from '../../../models/user/user';
 import { UserCollectionsContext, UserCollectionsContextState } from '../../../contexts/UserCollectionsContext';
 import CollectionManagementRequests from '../../../services/requests/CollectionManagementRequests';
-import { mockPagination } from '../../../test-utils/mocks';
+import { mockPagination } from '../../../test-utils/mocks/pagination';
 import { renderWithProviders } from '../../../test-utils';
 import Collection from '../../../models/user/collection';
 import CollectionItem from '../../../models/user/collection-items';
