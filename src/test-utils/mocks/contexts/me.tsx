@@ -8,6 +8,15 @@ import configureStore from 'redux-mock-store';
 // Create mock store
 const mockStore = configureStore([]);
 
+// Mock MeContext value
+export const mockMeContextValue = {
+    me: placeholderUser(),
+    networkError: false,
+    isLoggedIn: false,
+    isLoading: false,
+    setMe: jest.fn()
+};
+
 export type MeContextProviderProps = {
     initialState?: {
         me: {
