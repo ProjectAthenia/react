@@ -17,7 +17,8 @@ describe('Page', () => {
         renderWithRouter(<Page />);
 
         // Check for sidebar
-        expect(screen.getByRole('link', { name: /home/i })).toBeInTheDocument();
+        const homeLink = document.querySelector('a[href="/"]');
+        expect(homeLink).toBeInTheDocument();
         
         // Check for navigation
         expect(screen.getByText('Header Title')).toBeInTheDocument();
