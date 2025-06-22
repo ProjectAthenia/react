@@ -1,5 +1,5 @@
-import Category from '../../../models/category';
 import { mockPagination } from '../pagination';
+import BaseModel from '../../../models/base-model';
 
 // Mock appState
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -19,7 +19,7 @@ import { mockPagination } from '../pagination';
 export const mockSetFilter = jest.fn();
 
 // Base mock context state creator
-export const createBaseMockContextState = <T extends Category>(data: T[]) => mockPagination<T>({
+export const createBaseMockContextState = <T extends BaseModel>(data: T[]) => mockPagination<T>({
     loadedData: data,
     initialLoadComplete: true,
     refreshing: false,
@@ -39,7 +39,10 @@ export const createBaseMockContextState = <T extends Category>(data: T[]) => moc
     addModel: jest.fn((_model: T) => {}),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     removeModel: jest.fn((_model: T) => {}),
-    getModel: jest.fn((id: number) => data.find(item => item.id === id) || null),
+    getModel: jest.fn((id: number) => {
+        const found = data.find(item => typeof item.id === 'number' && item.id === id);
+        return found || null;
+    }),
     params: {},
     loadNext: jest.fn(),
     refreshData: jest.fn()
