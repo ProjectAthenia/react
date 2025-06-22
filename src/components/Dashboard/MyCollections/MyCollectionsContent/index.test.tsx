@@ -3,7 +3,7 @@ import { MantineProvider } from '@mantine/core';
 import MyCollectionsContent from './index';
 import Collection from '../../../../models/user/collection';
 import { mockCollection } from '../../../../test-utils/mocks/models/collection';
-import { mockPagination } from '../../../../test-utils/mocks';
+import { mockPagination } from '../../../../test-utils/mocks/pagination';
 
 // Mock the CollectionCard component
 jest.mock('./CollectionCard', () => ({
