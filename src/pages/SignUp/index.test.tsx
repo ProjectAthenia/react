@@ -87,7 +87,8 @@ describe('SignUp', () => {
                 email: 'test@example.com',
                 password: 'password123',
                 first_name: 'John',
-                last_name: ''
+                last_name: '',
+                invitation_token: ''
             });
         });
 
@@ -135,7 +136,8 @@ describe('SignUp', () => {
                     email: 'test@example.com',
                     password: 'password123',
                     first_name: 'John',
-                    last_name: 'Doe'
+                    last_name: 'Doe',
+                    invitation_token: ''
                 });
             });
 
