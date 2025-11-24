@@ -3,13 +3,17 @@ import * as Yup from 'yup';
 import './index.scss';
 import { useFormik } from "formik";
 import AuthRequests, { SignUpData } from "../../services/requests/AuthRequests";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { Button, Form, FormControl, FormLabel } from "react-bootstrap";
 import Page from "../../components/Template/Page";
 
 const SignUp: React.FC = () => {
     const history = useHistory();
+    const location = useLocation();
     const [error, setError] = useState<string | null>(null);
+
+    const searchParams = new URLSearchParams(location.search);
+    const invitationToken = searchParams.get('invite') || '';
 
     const SignupSchema = Yup.object().shape({
         email: Yup.string()
@@ -37,8 +41,17 @@ const SignUp: React.FC = () => {
                 setError('Unknown Error');
             }
         } catch (error: unknown) {
-            if (typeof error === 'object' && error !== null && 'status' in error && (error as { status: unknown }).status === 409) {
-                setError('Email already exists.');
+            if (typeof error === 'object' && error !== null && 'status' in error) {
+                const status = (error as { status: number }).status;
+                if (status === 409) {
+                    setError('Email already exists.');
+                } else if (status === 400) {
+                    setError('Invalid invitation token.');
+                } else if (status === 404) {
+                    setError('Invitation token not found or has expired.');
+                } else {
+                    setError('Failed to create account. Please try again.');
+                }
             } else {
                 setError('Failed to create account. Please try again.');
             }
@@ -50,7 +63,8 @@ const SignUp: React.FC = () => {
             email: '',
             password: '',
             first_name: '',
-            last_name: ''
+            last_name: '',
+            invitation_token: invitationToken
         },
         validationSchema: SignupSchema,
         onSubmit: submit
