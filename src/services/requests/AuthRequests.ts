@@ -14,6 +14,7 @@ export interface SignUpData {
 	password: string;
 	first_name: string;
 	last_name: string;
+	invitation_token?: string;
 }
 
 export default class AuthRequests {
